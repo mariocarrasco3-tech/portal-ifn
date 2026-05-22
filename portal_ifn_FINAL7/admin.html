@@ -236,7 +236,7 @@ td input[type="date"]:focus{border-color:var(--azul);background:#fffbe6;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyADH13E-UEtnRMEx_qf2CXYxsKQR0JHklw",
@@ -548,6 +548,7 @@ window.confirmarPegar=()=>{
   }
 
   let aplicadas=0;
+  const codsAfectados=[];
   lista.forEach(([cod,est],i)=>{
     if(i>=lines.length) return;
     const nota=Math.min(5,Math.max(0,parseFloat(lines[i])||0));
@@ -562,13 +563,23 @@ window.confirmarPegar=()=>{
       trim[campo][idx].nota=nota;
     }
     recalc(cod,t);
-    programarGuardado(cod);
+    codsAfectados.push(cod);
     aplicadas++;
   });
 
   cerrarModal('modalPegar');
   renderTabla();
-  toast(`✅ ${aplicadas} notas pegadas correctamente`);
+
+  // Guardar con batch atómico
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{
+      document.getElementById('savingIndicator').style.display='none';
+      toast(`✅ ${aplicadas} notas guardadas en Firebase`);
+    })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
 };
 
 // ── APLICAR FECHA/DESC A TODOS ──
@@ -580,6 +591,7 @@ window.aplicarATodos=(campo,idx)=>{
 
   const t=trimActual;
   let count=0;
+  const codsAfectados=[];
   Object.entries(DATOS).forEach(([cod,est])=>{
     if(est.grado!==gradoActual) return;
     if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
@@ -588,11 +600,20 @@ window.aplicarATodos=(campo,idx)=>{
     while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
     if(fecha) trim[campo][idx].fecha=fecha;
     if(desc)  trim[campo][idx].desc=desc;
+    codsAfectados.push(cod);
     count++;
-    programarGuardado(cod);
   });
+  // Guardar con batch atómico
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{
+      document.getElementById('savingIndicator').style.display='none';
+      toast(`✅ Aplicado y guardado en ${count} estudiantes`);
+    })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
   renderTabla();
-  toast(`✅ Aplicado a ${count} estudiantes`);
 };
 
 // ── COLUMNAS DINÁMICAS ──
