@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Importar Estudiantes a Firebase</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0a2f7a;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;}
+.card{background:white;border-radius:20px;padding:40px;max-width:600px;width:90%;text-align:center;}
+h2{color:#0a2f7a;margin-bottom:10px;}
+p{color:#555;margin-bottom:20px;font-size:15px;}
+button{background:#f0b33f;color:#0a2f7a;border:none;padding:16px 32px;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;}
+button:hover{background:#e0a030;}
+button:disabled{opacity:0.5;cursor:not-allowed;}
+.log{text-align:left;background:#f5f5f5;border-radius:12px;padding:16px;margin-top:20px;max-height:300px;overflow-y:auto;font-size:13px;font-family:monospace;}
+.ok{color:#1a7a3a;} .err{color:#c0392b;} .info{color:#0a2f7a;}
+.progress{background:#eee;border-radius:10px;height:12px;margin-top:16px;overflow:hidden;}
+.progress-bar{background:#f0b33f;height:100%;width:0%;transition:width 0.3s;border-radius:10px;}
+.warn{background:#fff8e0;border:1px solid #f0b33f;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#c07a00;}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🚀 Importar Estudiantes a Firebase</h2>
+  <div class="warn">⚠️ Este proceso <strong>borra todos los datos actuales</strong> y sube los 172 estudiantes limpios. Las notas existentes se perderán.</div>
+  <p>Solo úsalo cuando quieras reiniciar completamente la base de datos.</p>
+  <button onclick="importar()" id="btnImportar">Iniciar Importación</button>
+  <div class="progress" id="progressWrap" style="display:none">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="log" id="log" style="display:none"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDocs, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADH13E-UEtnRMEx_qf2CXYxsKQR0JHklw",
+  authDomain: "portal-ifn.firebaseapp.com",
+  projectId: "portal-ifn",
+  storageBucket: "portal-ifn.firebasestorage.app",
+  messagingSenderId: "82140985396",
+  appId: "1:82140985396:web:4204b5f22930c591507261"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+function log(msg, tipo='info') {
+  const el = document.getElementById('log');
+  el.style.display = 'block';
+  el.innerHTML += `<div class="${tipo}">${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+window.importar = async function() {
+  const btn = document.getElementById('btnImportar');
+  btn.disabled = true;
+  btn.textContent = 'Procesando...';
+  document.getElementById('progressWrap').style.display='block';
+
+  try {
+    // PASO 1 — Borrar todos los estudiantes existentes
+    log('🗑 Borrando estudiantes existentes...');
+    const snap = await getDocs(collection(db,'estudiantes'));
+    let borrados = 0;
+    for (const d of snap.docs) {
+      await deleteDoc(doc(db,'estudiantes',d.id));
+      borrados++;
+    }
+    log(`✓ ${borrados} registros borrados`, 'ok');
+
+    // PASO 2 — Cargar nuevos
+    log('📂 Cargando estudiantes.json...');
+    const resp = await fetch('estudiantes.json');
+    if (!resp.ok) throw new Error('No se encontró estudiantes.json');
+    const datos = await resp.json();
+    const keys = Object.keys(datos);
+    log(`✓ ${keys.length} estudiantes encontrados`, 'ok');
+
+    let ok=0, err=0;
+    for (let i=0; i<keys.length; i++) {
+      const cod = keys[i];
+      try {
+        await setDoc(doc(db,'estudiantes',cod), datos[cod]);
+        ok++;
+        log(`✓ ${cod} — ${datos[cod].nombre}`, 'ok');
+      } catch(e) {
+        err++;
+        log(`✗ Error en ${cod}: ${e.message}`, 'err');
+      }
+      document.getElementById('progressBar').style.width = ((i+1)/keys.length*100)+'%';
+      if (i%10===9) await new Promise(r=>setTimeout(r,300));
+    }
+
+    log(`\n🎉 Completado: ${ok} exitosos, ${err} errores`, ok>0?'ok':'err');
+    btn.textContent = '✅ Completado';
+    btn.style.background = '#1a7a3a';
+    btn.style.color = 'white';
+  } catch(e) {
+    log('❌ Error: '+e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Reintentar';
+  }
+}
+</script>
+</body>
+</html>

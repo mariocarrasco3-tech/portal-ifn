@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal IFN</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:Arial,sans-serif;
+  background:#0a2f7a;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:40px;
+  border-radius:25px;
+  width:90%;
+  max-width:500px;
+  text-align:center;
+  color:white;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+.logo{width:170px;margin-bottom:20px;background:white;padding:8px;border-radius:14px;}
+h1{font-size:55px;margin-bottom:10px;}
+h2{margin-bottom:12px;}
+p{margin-bottom:10px;}
+input{
+  width:100%;padding:16px;border:none;
+  border-radius:14px;margin-top:20px;font-size:16px;
+  text-transform:uppercase;letter-spacing:2px;
+}
+button{
+  width:100%;padding:16px;margin-top:15px;border:none;
+  border-radius:14px;background:#f0b33f;color:#0a2f7a;
+  font-size:18px;font-weight:bold;cursor:pointer;
+}
+button:hover{background:#e0a030;}
+button:disabled{opacity:0.5;cursor:not-allowed;}
+.footer{margin-top:25px;font-size:13px;opacity:0.8;}
+.error{
+  background:rgba(255,80,80,0.25);border:1px solid rgba(255,120,120,0.5);
+  color:#ffd0d0;padding:12px 16px;border-radius:12px;
+  margin-top:15px;font-size:15px;display:none;
+}
+.status{font-size:13px;opacity:0.7;margin-top:12px;}
+.admin-link{display:block;margin-top:18px;font-size:12px;opacity:0.5;color:white;text-decoration:none;}
+.admin-link:hover{opacity:0.9;}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="logo.png" class="logo" onerror="this.style.display='none'">
+  <h1>IFN</h1>
+  <h2>Instituto Fermín Naudeau</h2>
+  <p>Bienvenido al Portal de Informática</p>
+  <p><strong>Profesor:</strong> Mario Carrasco</p>
+  <input type="text" id="codigoInput" placeholder="Ingrese su código estudiantil" autocomplete="off">
+  <button onclick="consultar()" id="btnConsultar">Consultar</button>
+  <div class="error" id="errorMsg"></div>
+  <div class="status" id="statusMsg">Conectando...</div>
+  <div class="footer">Sitio creado por Mario Carrasco</div>
+  <a href="admin.html" class="admin-link">⚙ Acceso Profesor</a>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADH13E-UEtnRMEx_qf2CXYxsKQR0JHklw",
+  authDomain: "portal-ifn.firebaseapp.com",
+  projectId: "portal-ifn",
+  storageBucket: "portal-ifn.firebasestorage.app",
+  messagingSenderId: "82140985396",
+  appId: "1:82140985396:web:4204b5f22930c591507261"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const materias = {
+  "8°F":"Comercio","10°C":"Tecnología de la Información",
+  "10°D":"Tecnología de la Información","11°A":"Multimedia y Desarrollo Web",
+  "11°B":"Multimedia y Desarrollo Web","12°A":"Robótica","12°B":"Robótica"
+};
+const grupos = {
+  "8°F":"8°F","10°C":"10°C cs","10°D":"10°D cs",
+  "11°A":"11°A Tec.","11°B":"11°B Tec.","12°A":"12°A Tec.","12°B":"12°B Tec."
+};
+
+document.getElementById('statusMsg').textContent = '✓ Conectado';
+document.getElementById('btnConsultar').disabled = false;
+
+window.consultar = async function() {
+  const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
+  const errorMsg = document.getElementById('errorMsg');
+  const btn = document.getElementById('btnConsultar');
+
+  if (!codigo) {
+    errorMsg.textContent = 'Por favor ingrese su código estudiantil.';
+    errorMsg.style.display = 'block'; return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Buscando...';
+  errorMsg.style.display = 'none';
+
+  try {
+    const snap = await getDoc(doc(db, 'estudiantes', codigo));
+    if (!snap.exists()) {
+      errorMsg.textContent = 'Código no encontrado. Verifique e intente nuevamente.';
+      errorMsg.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Consultar'; return;
+    }
+    const est = snap.data();
+    const grade = est.grado;
+    const params = new URLSearchParams({
+      codigo,
+      nombre: est.nombre,
+      grupo: grupos[grade] || grade,
+      materia: materias[grade] || 'Informática'
+    });
+    window.location.href = 'estudiante.html?' + params.toString();
+  } catch(e) {
+    errorMsg.textContent = 'Error de conexión. Intenta de nuevo.';
+    errorMsg.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Consultar';
+    console.error(e);
+  }
+}
+
+document.getElementById('codigoInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.consultar();
+});
+</script>
+</body>
+</html>
