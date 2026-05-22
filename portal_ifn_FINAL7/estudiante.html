@@ -167,7 +167,7 @@ document.title = 'Notas – '+NOMBRE;
 function fmt(v){ const n=parseFloat(v); return(isNaN(n)||n===0)?'0.0':(Math.floor(n*10)/10).toFixed(1); }
 function claseN(v){ const n=parseFloat(v); if(!n||isNaN(n))return''; return n>=3.0?'n-verde':'n-rojo'; }
 function barClass(v){ const n=parseFloat(v); if(!n||isNaN(n))return'bar-azul'; return n>=3.0?'bar-verde':'bar-rojo'; }
-function promArr(arr){ const v=arr.filter(n=>n>0); return v.length?v.reduce((s,n)=>s+n,0)/v.length:0; }
+function promArr(arr){ const v=arr.map(n=>parseFloat(n)).filter(n=>n>0); return v.length?v.reduce((s,n)=>s+n,0)/v.length:0; }
 
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function fmtFecha(f){
@@ -220,16 +220,17 @@ function verificarNotificacion(est){
 function renderTrim(est,t){
   const romano=['I','II','III'][t-1];
   const trim=est['T'+t]||{};
-  const nd=(trim.notasDiarias||[]).filter(a=>a.nota>0);
-  const ap=(trim.apreciaciones||[]).filter(a=>a.nota>0);
-  const examen=trim.examen||0;
-  let notaTrim=trim.notaTrim||0;
+  const nd=(trim.notasDiarias||[]).filter(a=>parseFloat(a.nota)>0);
+  const ap=(trim.apreciaciones||[]).filter(a=>parseFloat(a.nota)>0);
+  const examen=parseFloat(trim.examen)||0;
+  // Usar notaTrim de Firebase si existe, si no calcular
+  let notaTrim=parseFloat(trim.notaTrim)||0;
   if(!notaTrim){
     const comp=[];
-    const pnd=promArr(nd.map(a=>a.nota)); if(pnd>0) comp.push(pnd);
-    const pap=promArr(ap.map(a=>a.nota)); if(pap>0) comp.push(pap);
+    const pnd=promArr(nd.map(a=>parseFloat(a.nota))); if(pnd>0) comp.push(pnd);
+    const pap=promArr(ap.map(a=>parseFloat(a.nota))); if(pap>0) comp.push(pap);
     if(examen>0) comp.push(examen);
-    notaTrim=comp.length?comp.reduce((s,n)=>s+n,0)/comp.length:0;
+    notaTrim=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
   }
 
   let html=`<div id="trim-${t}" style="${t!==1?'display:none':''}"><div class="card">`;
