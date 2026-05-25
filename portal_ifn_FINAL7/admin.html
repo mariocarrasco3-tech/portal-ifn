@@ -338,9 +338,15 @@ window.setTrim=(t,btn)=>{
 };
 
 // ── HELPERS ──
-function fmt(v){ const n=parseFloat(v); return(isNaN(n)||n===0)?'0.0':(Math.floor(n*10)/10).toFixed(1); }
+function fmt(v){ 
+  const n=parseFloat(v); 
+  if(isNaN(n)||n===0) return'0.0';
+  // Truncar sin redondear: convertir a string y cortar
+  const s=Math.floor(n*10)/10;
+  return s.toFixed(1);
+}
 function claseN(v){ const n=parseFloat(v); if(!n||isNaN(n))return''; return n>=3.0?'n-verde':'n-rojo'; }
-function promArr(arr){ const v=arr.filter(n=>n>0); return v.length?v.reduce((s,n)=>s+n,0)/v.length:0; }
+function promArr(arr){ const v=arr.map(n=>parseFloat(n)).filter(n=>n>0); return v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0; }
 
 function maxItems(campo,t){
   const ests=Object.values(DATOS).filter(e=>e.grado===gradoActual);
