@@ -228,12 +228,16 @@ function renderTrim(est,t){
   const nd=(trim.notasDiarias||[]).filter(a=>parseFloat(a.nota)>0);
   const ap=(trim.apreciaciones||[]).filter(a=>parseFloat(a.nota)>0);
   const examen=parseFloat(trim.examen)||0;
-  // Siempre recalcular desde las notas individuales
-  const comp=[];
-  const pnd=promArr(nd.map(a=>parseFloat(a.nota))); if(pnd>0) comp.push(pnd);
-  const pap=promArr(ap.map(a=>parseFloat(a.nota))); if(pap>0) comp.push(pap);
-  if(examen>0) comp.push(examen);
-  let notaTrim=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:parseFloat(trim.notaTrim)||0;
+  // Usar el notaTrim guardado por el admin en Firebase
+  let notaTrim=parseFloat(trim.notaTrim)||0;
+  // Solo recalcular si no hay notaTrim guardado
+  if(!notaTrim){
+    const comp=[];
+    const pnd=promArr(nd.map(a=>parseFloat(a.nota))); if(pnd>0) comp.push(pnd);
+    const pap=promArr(ap.map(a=>parseFloat(a.nota))); if(pap>0) comp.push(pap);
+    if(examen>0) comp.push(examen);
+    notaTrim=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
+  }
 
   let html=`<div id="trim-${t}" style="${t!==1?'display:none':''}"><div class="card">`;
 
@@ -334,9 +338,12 @@ async function cargar(){
       html+=h; notasTrim.push(notaTrim);
     }
 
-    // Siempre recalcular nota anual desde los trimestres
-    const v=notasTrim.filter(n=>n>0);
-    let notaAnual=v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0;
+    // Usar notaAnual de Firebase, solo recalcular si no existe
+    let notaAnual=parseFloat(est.notaAnual)||0;
+    if(!notaAnual){
+      const v=notasTrim.filter(n=>n>0);
+      notaAnual=v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0;
+    }
 
     const aprobado = notaAnual>=3.0;
     const estadoHTML = notaAnual>0
