@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas – IFN</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,sans-serif;background:#eef3ff;}
+.container{display:flex;min-height:100vh;}
+.left{width:22%;background:#0a2f7a;color:white;padding:36px 26px;text-align:center;position:fixed;height:100vh;overflow-y:auto;}
+.left img{width:150px;margin-bottom:18px;background:white;padding:8px;border-radius:14px;}
+.left h1{font-size:52px;margin-bottom:8px;}
+.left h2{font-size:20px;margin-bottom:16px;}
+.left .badge{background:rgba(255,255,255,0.14);border-radius:10px;padding:7px 14px;margin-top:7px;font-size:13px;}
+.left .name{font-size:15px;font-weight:bold;margin-top:12px;line-height:1.4;}
+.main{margin-left:22%;width:78%;padding:24px;display:flex;gap:18px;align-items:flex-start;}
+.col-notas{flex:1;min-width:0;}
+.col-asist{width:320px;min-width:300px;flex-shrink:0;}
+.back-btn{display:inline-block;margin-bottom:16px;padding:9px 18px;background:#0a2f7a;color:white;border-radius:10px;text-decoration:none;font-size:13px;}
+.back-btn:hover{background:#1a4fba;}
+.notif{display:none;background:#e8f0fe;border-left:4px solid #0a2f7a;border-radius:12px;padding:14px 18px;margin-bottom:20px;animation:slideIn 0.4s ease;}
+.notif.show{display:flex;align-items:center;gap:12px;}
+.notif-icon{font-size:22px;}
+.notif-text{font-size:14px;color:#0a2f7a;}
+.notif-text strong{display:block;font-size:15px;margin-bottom:2px;}
+.notif-close{margin-left:auto;background:none;border:none;cursor:pointer;color:#0a2f7a;font-size:18px;opacity:0.6;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.trim-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.trim-tab{padding:9px 18px;border-radius:20px;border:2px solid #0a2f7a;background:white;color:#0a2f7a;font-weight:bold;cursor:pointer;font-size:13px;transition:all 0.2s;}
+.trim-tab.active{background:#0a2f7a;color:white;}
+.card{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 4px 14px rgba(0,0,0,0.06);}
+.sec-title{color:#0a2f7a;font-size:17px;font-weight:bold;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #dce8ff;display:flex;align-items:center;gap:8px;}
+.notas-table{width:100%;border-collapse:collapse;margin-bottom:6px;}
+.notas-table th{background:#dce8ff;color:#0a2f7a;padding:9px 10px;font-size:12px;text-align:left;border-bottom:2px solid #b3c6f7;}
+.notas-table th.right{text-align:right;}
+.notas-table td{padding:9px 10px;font-size:13px;border-bottom:1px solid #eef3ff;}
+.notas-table td.right{text-align:right;font-weight:bold;}
+.notas-table tr:last-child td{border-bottom:none;}
+.prom-row td{background:#dce8ff;font-weight:bold;color:#0a2f7a;font-size:14px;}
+.n-rojo{color:#c0392b;font-weight:bold;}
+.n-verde{color:#1a7a3a;font-weight:bold;}
+.rubrica-panel{position:fixed;right:0;top:0;height:100vh;width:270px;background:white;box-shadow:-4px 0 20px rgba(0,0,0,0.12);padding:24px 20px;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s ease;z-index:100;}
+.rubrica-panel.show{transform:translateX(0);}
+.rubrica-panel h4{color:#0a2f7a;font-size:14px;margin-bottom:4px;}
+.rubrica-panel .sub{font-size:12px;color:#888;margin-bottom:16px;}
+.rubrica-criterio{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eef3ff;font-size:13px;}
+.rubrica-criterio .descuento{color:#c0392b;font-weight:500;}
+.rubrica-final{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid #0a2f7a;}
+.rubrica-final span:first-child{font-size:13px;font-weight:bold;color:#0a2f7a;}
+.rubrica-final .nota-final{font-size:22px;font-weight:bold;}
+.rubrica-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:#888;}
+.nota-clickable{cursor:pointer;text-decoration:underline dotted;}
+.fecha-bonita{font-size:11px;color:#0a2f7a;background:#e8f0fe;padding:3px 8px;border-radius:6px;white-space:nowrap;font-weight:500;}
+.nota-trim-bar{margin-top:16px;padding:14px 18px;border-radius:12px;text-align:center;font-weight:bold;font-size:18px;color:white;}
+.bar-rojo{background:#c0392b;}.bar-verde{background:#1a7a3a;}.bar-azul{background:#0a2f7a;}
+.nota-anual{background:linear-gradient(135deg,#0a2f7a,#1a4fba);color:white;padding:22px;border-radius:14px;text-align:center;margin-top:8px;}
+.nota-anual h3{font-size:12px;opacity:0.8;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.nota-anual .big{font-size:40px;font-weight:bold;}
+.estado-aprobado{color:#7dffb0;}.estado-reprobado{color:#ffaaaa;}
+.examen-row{background:#fff8e8;}
+.obs-card{background:#fffbe6;border-left:4px solid #f0b33f;padding:14px 18px;border-radius:10px;margin-top:16px;}
+.obs-card h4{color:#c07a00;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.obs-card p{font-size:14px;color:#555;line-height:1.5;}
+.loading{padding:60px;text-align:center;font-size:18px;color:#0a2f7a;}
+/* ASISTENCIA */
+.asist-sticky{position:sticky;top:24px;}
+.asist-card{background:white;border-radius:16px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.06);margin-bottom:14px;}
+.asist-titulo{color:#0a2f7a;font-size:16px;font-weight:bold;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #dce8ff;display:flex;align-items:center;gap:8px;}
+.asist-resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.asist-box{border-radius:10px;padding:10px 6px;text-align:center;border:1px solid #dce8ff;}
+.asist-box .num{font-size:22px;font-weight:800;line-height:1;}
+.asist-box .lbl{font-size:9px;color:#666;margin-top:3px;font-weight:500;text-transform:uppercase;}
+.box-p{background:#EAF3DE;border-color:#97C459;}.box-p .num{color:#27500A;}
+.box-a{background:#FCEBEB;border-color:#E8A0A0;}.box-a .num{color:#791F1F;}
+.box-t{background:#F1EFE8;border-color:#C8C0B0;}.box-t .num{color:#444441;}
+.box-e{background:#E6F1FB;border-color:#85B7EB;}.box-e .num{color:#0C447C;}
+.box-f{background:#FAEEDA;border-color:#E8C080;}.box-f .num{color:#633806;}
+.box-d{background:#eef3ff;border-color:#b3c6f7;}.box-d .num{color:#0a2f7a;}
+.asist-tabla-wrap{overflow-x:auto;border-radius:10px;border:1px solid #dce8ff;}
+.asist-tabla{width:100%;border-collapse:collapse;font-size:11px;background:#fff;}
+.asist-tabla th{background:#dce8ff;color:#0a2f7a;padding:6px 4px;text-align:center;border-bottom:2px solid #b3c6f7;white-space:nowrap;font-weight:700;}
+.asist-tabla td{padding:6px 3px;border-bottom:1px solid #eef3ff;text-align:center;}
+.asist-tabla tr:last-child td{border-bottom:none;}
+.asist-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-size:12px;font-weight:800;}
+.ab-p{background:#EAF3DE;color:#27500A;}.ab-a{background:#FCEBEB;color:#791F1F;}
+.ab-t{background:#F1EFE8;color:#444441;}.ab-e{background:#E6F1FB;color:#0C447C;}.ab-f{background:#FAEEDA;color:#633806;}
+.asist-vacio{padding:30px 10px;text-align:center;color:#888;font-size:13px;}
+.asist-vacio-icon{font-size:32px;margin-bottom:8px;}
+.asist-pct{margin-bottom:14px;}
+.asist-pct-lbl{display:flex;justify-content:space-between;font-size:11px;color:#0a2f7a;font-weight:600;margin-bottom:5px;}
+.asist-pct-bar{height:8px;background:#dce8ff;border-radius:999px;overflow:hidden;}
+.asist-pct-fill{height:100%;border-radius:999px;background:#1a7a3a;transition:width .5s ease;}
+.asist-pct-fill.baja{background:#c0392b;}
+.asist-trim-label{font-size:11px;color:#888;text-align:center;margin-bottom:10px;font-style:italic;}
+th.thev-est{background:#EF9F27;color:#412402;width:22px;min-width:22px;padding:0;vertical-align:top;}
+@media(min-width:901px){
+  .notas-table th{font-size:14px;padding:11px 14px;}
+  .notas-table td{font-size:15px;padding:11px 14px;}
+  .fecha-bonita{font-size:13px;padding:4px 10px;}
+  .sec-title{font-size:19px;}
+  .prom-row td{font-size:15px;}
+}
+@media(max-width:900px){
+  .left{position:relative;width:100%;height:auto;}
+  .main{margin-left:0;width:100%;flex-direction:column;padding:16px;}
+  .col-asist{width:100%;min-width:0;}
+  .col-notas{max-width:100%;}
+  .container{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="left">
+    <img src="logo.png" onerror="this.style.display='none'">
+    <h1>IFN</h1>
+    <h2>Instituto Fermín Naudeau</h2>
+    <p class="name" id="nombreEst"></p>
+    <div class="badge" id="grupoLabel"></div>
+    <div class="badge" style="margin-top:8px" id="materiaLabel"></div>
+    <div class="badge" style="margin-top:8px;font-size:12px;opacity:0.7" id="codigoLabel"></div>
+  </div>
+  <div class="main">
+    <!-- COLUMNA NOTAS -->
+    <div class="col-notas">
+      <a href="index.html" class="back-btn">← Volver</a>
+      <div class="notif" id="notifBanner">
+        <span class="notif-icon">🔔</span>
+        <div class="notif-text">
+          <strong id="notifTitulo"></strong>
+          <span id="notifMsg"></span>
+        </div>
+        <button class="notif-close" onclick="cerrarNotif()">✕</button>
+      </div>
+      <div id="contenido"><div class="loading">⏳ Cargando notas...</div></div>
+    </div>
+    <!-- COLUMNA ASISTENCIA -->
+    <div class="col-asist">
+      <div class="asist-sticky" id="asistContenido">
+        <div class="asist-card"><div class="asist-vacio"><div class="asist-vacio-icon">⏳</div>Cargando asistencia...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rubrica-panel" id="rubricaPanel">
+  <button class="rubrica-close" onclick="cerrarRubrica()">✕</button>
+  <p style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">Rúbrica</p>
+  <h4 id="rubricaPanelNombre"></h4>
+  <p class="sub" id="rubricaPanelActividad"></p>
+  <div id="rubricaPanelCriterios"></div>
+  <div class="rubrica-final">
+    <span>Nota final</span>
+    <span class="nota-final" id="rubricaPanelNota"></span>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADH13E-UEtnRMEx_qf2CXYxsKQR0JHklw",
+  authDomain: "portal-ifn.firebaseapp.com",
+  projectId: "portal-ifn",
+  storageBucket: "portal-ifn.firebasestorage.app",
+  messagingSenderId: "82140985396",
+  appId: "1:82140985396:web:4204b5f22930c591507261"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const params  = new URLSearchParams(window.location.search);
+const CODIGO  = (params.get('codigo')||'').toUpperCase();
+const NOMBRE  = params.get('nombre') ||'';
+const GRUPO   = params.get('grupo')  ||'';
+const MATERIA = params.get('materia')||'Informática';
+
+if(!CODIGO){ window.location.href='index.html'; }
+
+document.getElementById('nombreEst').textContent   = NOMBRE||'—';
+document.getElementById('grupoLabel').textContent  = '📚 '+(GRUPO||'—');
+document.getElementById('materiaLabel').textContent= MATERIA;
+document.getElementById('codigoLabel').textContent = 'Código: '+CODIGO;
+document.title = 'Notas – '+NOMBRE;
+
+// ── HELPERS ──
+function fmt(v){const n=parseFloat(v);if(isNaN(n)||n===0)return'0.0';return(Math.floor(n*10)/10).toFixed(1);}
+function claseN(v){const n=parseFloat(v);if(!n||isNaN(n))return'';return n>=3.0?'n-verde':'n-rojo';}
+function barClass(v){const n=parseFloat(v);if(!n||isNaN(n))return'bar-azul';return n>=3.0?'bar-verde':'bar-rojo';}
+function promArr(arr){const v=arr.map(n=>parseFloat(n)).filter(n=>n>0);return v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0;}
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fmtFecha(f){if(!f)return'';const[y,m,d]=f.split('-');return`${parseInt(d)}/${MESES[parseInt(m)-1]}/${y}`;}
+function fmtDia(k){const d=new Date(k+"T12:00:00");return d.getDate().toString().padStart(2,"0")+"-"+d.toLocaleDateString("es-PA",{month:"short"}).replace(/^\w/,c=>c.toUpperCase());}
+
+// ── RÚBRICA ──
+window.abrirRubricaDesdeEl=(el)=>{
+  const criterios=JSON.parse(el.dataset.rubrica||'[]');
+  mostrarRubrica(el.dataset.nombre||'',el.dataset.actividad||'',parseFloat(el.dataset.nota)||0,criterios);
+};
+window.mostrarRubrica=(nombre,actividad,nota,criterios)=>{
+  document.getElementById('rubricaPanelNombre').textContent=nombre;
+  document.getElementById('rubricaPanelActividad').textContent=actividad;
+  const notaEl=document.getElementById('rubricaPanelNota');
+  notaEl.textContent=fmt(nota);
+  notaEl.className='nota-final '+(parseFloat(nota)>=3.0?'n-verde':'n-rojo');
+  document.getElementById('rubricaPanelCriterios').innerHTML=criterios.map(r=>`
+    <div class="rubrica-criterio"><span>${r.n}</span>
+    <span>${r.obt}/${r.max}${r.obt<r.max?` <span class="descuento">(${r.obt-r.max})</span>`:''}</span></div>`).join('');
+  document.getElementById('rubricaPanel').classList.add('show');
+};
+window.cerrarRubrica=()=>document.getElementById('rubricaPanel').classList.remove('show');
+
+// ── NOTIFICACIÓN ──
+function mostrarNotif(titulo,msg){
+  document.getElementById('notifTitulo').textContent=titulo;
+  document.getElementById('notifMsg').textContent=msg;
+  document.getElementById('notifBanner').classList.add('show');
+}
+window.cerrarNotif=()=>document.getElementById('notifBanner').classList.remove('show');
+
+function verificarNotificacion(est){
+  const ultimaVisita=localStorage.getItem('ifn_visita_'+CODIGO);
+  const ahora=Date.now();
+  localStorage.setItem('ifn_visita_'+CODIGO,ahora);
+  if(!ultimaVisita){mostrarNotif('¡Bienvenido al portal!','Aquí puedes consultar tus notas por trimestre.');return;}
+  let notasNuevas=0;
+  [1,2,3].forEach(t=>{
+    const trim=est['T'+t]||{};
+    [...(trim.notasDiarias||[]),...(trim.apreciaciones||[])].forEach(a=>{
+      if(a.fecha){const[y,m,d]=a.fecha.split('-');if(new Date(y,m-1,d).getTime()>parseInt(ultimaVisita))notasNuevas++;}
+    });
+  });
+  if(notasNuevas>0)mostrarNotif(`🆕 ${notasNuevas} nota${notasNuevas>1?'s':''} nueva${notasNuevas>1?'s':''}`,`El profesor actualizó tus notas desde tu última visita.`);
+}
+
+// ── RENDER TRIMESTRE ──
+function renderTrim(est,t){
+  const romano=['I','II','III'][t-1];
+  const trim=est['T'+t]||{};
+  const nd=(trim.notasDiarias||[]).filter(a=>parseFloat(a.nota)>0);
+  const ap=(trim.apreciaciones||[]).filter(a=>parseFloat(a.nota)>0);
+  const examen=parseFloat(trim.examen)||0;
+  let notaTrim=parseFloat(trim.notaTrim)||0;
+  if(!notaTrim){
+    const comp=[];
+    const pnd=promArr(nd.map(a=>parseFloat(a.nota)));if(pnd>0)comp.push(pnd);
+    const pap=promArr(ap.map(a=>parseFloat(a.nota)));if(pap>0)comp.push(pap);
+    if(examen>0)comp.push(examen);
+    notaTrim=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
+  }
+  let html=`<div id="trim-${t}" style="${t!==1?'display:none':''}"><div class="card">`;
+  if(nd.length){
+    html+=`<div class="sec-title">📝 Notas Diarias</div>
+    <table class="notas-table"><thead><tr>
+      <th style="width:110px">Fecha</th><th>Descripción</th><th class="right" style="width:60px">Nota</th>
+    </tr></thead><tbody>`;
+    nd.forEach(a=>{
+      const hasR=a.rubrica&&a.rubrica.length>0;
+      html+=`<tr><td><span class="fecha-bonita">${fmtFecha(a.fecha)||'—'}</span></td><td>${a.desc||'Nota Diaria'}</td>
+      <td class="right">${hasR?`<span class="${claseN(a.nota)} nota-clickable" data-rubrica='${JSON.stringify(a.rubrica)}' data-nombre="${NOMBRE}" data-actividad="${a.desc||'Nota Diaria'}" data-nota="${a.nota}" onclick="abrirRubricaDesdeEl(this)">${fmt(a.nota)}</span>`:`<span class="${claseN(a.nota)}">${fmt(a.nota)}</span>`}</td></tr>`;
+    });
+    const prom=promArr(nd.map(a=>a.nota));
+    html+=`<tr class="prom-row"><td colspan="2">Promedio: ${fmt(prom)}</td><td class="right ${claseN(prom)}">${fmt(prom)}</td></tr></tbody></table>`;
+  }
+  if(ap.length){
+    html+=`<div class="sec-title" style="margin-top:18px">📋 Apreciación</div>
+    <table class="notas-table"><thead><tr>
+      <th style="width:110px">Fecha</th><th>Descripción</th><th class="right" style="width:60px">Nota</th>
+    </tr></thead><tbody>`;
+    ap.forEach(a=>{
+      const hasR=a.rubrica&&a.rubrica.length>0;
+      html+=`<tr><td><span class="fecha-bonita">${fmtFecha(a.fecha)||'—'}</span></td><td>${a.desc||'Apreciación'}</td>
+      <td class="right">${hasR?`<span class="${claseN(a.nota)} nota-clickable" data-rubrica='${JSON.stringify(a.rubrica)}' data-nombre="${NOMBRE}" data-actividad="${a.desc||'Apreciación'}" data-nota="${a.nota}" onclick="abrirRubricaDesdeEl(this)">${fmt(a.nota)}</span>`:`<span class="${claseN(a.nota)}">${fmt(a.nota)}</span>`}</td></tr>`;
+    });
+    if(ap.length>1){const prom=promArr(ap.map(a=>a.nota));html+=`<tr class="prom-row"><td colspan="2">Promedio: ${fmt(prom)}</td><td class="right ${claseN(prom)}">${fmt(prom)}</td></tr>`;}
+    html+=`</tbody></table>`;
+  }
+  if(examen>0){
+    html+=`<div class="sec-title" style="margin-top:18px">📄 Examen</div>
+    <table class="notas-table"><thead><tr><th>Evaluación</th><th class="right" style="width:60px">Nota</th></tr></thead>
+    <tbody><tr class="examen-row"><td>Examen Trimestral</td><td class="right ${claseN(examen)}">${fmt(examen)}</td></tr></tbody></table>`;
+  }
+  html+=`<div class="nota-trim-bar ${barClass(notaTrim)}" style="margin-top:16px;">Nota ${romano} Trimestre: ${fmt(notaTrim)}</div>`;
+  html+=`</div></div>`;
+  return{html,notaTrim};
+}
+
+// ── CARGA NOTAS ──
+async function cargar(){
+  if(!CODIGO){document.getElementById('contenido').innerHTML=`<div class="loading">No se recibió código. <a href="index.html">← Volver</a></div>`;return;}
+  try{
+    const snap=await getDoc(doc(db,'estudiantes',CODIGO));
+    if(!snap.exists()){
+      document.getElementById('contenido').innerHTML=`<div class="loading" style="color:#c00;">⚠ No se encontraron notas para <strong>${CODIGO}</strong>.</div>`;
+      return;
+    }
+    const est=snap.data();
+    verificarNotificacion(est);
+    let html=`<div class="trim-tabs">`;
+    ['I Trimestre','II Trimestre','III Trimestre'].forEach((lbl,i)=>{
+      html+=`<button class="trim-tab ${i===0?'active':''}" onclick="showTrim(${i+1},this)">${lbl}</button>`;
+    });
+    html+=`</div>`;
+    const notasTrim=[];
+    for(let t=1;t<=3;t++){const{html:h,notaTrim}=renderTrim(est,t);html+=h;notasTrim.push(notaTrim);}
+    let notaAnual=parseFloat(est.notaAnual)||0;
+    if(!notaAnual){const v=notasTrim.filter(n=>n>0);notaAnual=v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0;}
+    const aprobado=notaAnual>=3.0;
+    const estadoHTML=notaAnual>0?`<div class="estado ${aprobado?'estado-aprobado':'estado-reprobado'}">${aprobado?'✅ Aprobado':'❌ Reprobado'}</div>`:'';
+    html+=`<div class="nota-anual"><h3>Nota Anual</h3><div class="big">${fmt(notaAnual)}</div>${estadoHTML}</div>`;
+    if(est.observaciones)html+=`<div class="obs-card"><h4>📝 Nota del Profesor</h4><p>${est.observaciones}</p></div>`;
+    document.getElementById('contenido').innerHTML=html;
+  }catch(e){
+    console.error(e);
+    document.getElementById('contenido').innerHTML=`<div class="loading" style="color:#c00;">⚠ Error al cargar.<br><br><a href="index.html" style="color:#0a2f7a;">← Volver</a></div>`;
+  }
+}
+
+// ── TABS ──
+let trimActivo=1;
+window.showTrim=(t,btn)=>{
+  [1,2,3].forEach(i=>{const el=document.getElementById('trim-'+i);if(el)el.style.display=(i===t)?'':'none';});
+  document.querySelectorAll('.trim-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  trimActivo=t;
+  if(asistData)mostrarAsistTrim(t);
+};
+
+// ── ASISTENCIA ──
+let asistData=null;
+
+async function cargarAsistencia(){
+  try{
+    const gradoId=GRUPO.replace('°','').split(' ')[0];
+    // onSnapshot — se actualiza en tiempo real cuando el profesor cambia algo
+    onSnapshot(doc(db,'asistencia',gradoId),(snap)=>{
+      asistData=snap.exists()?snap.data():{trimestres:{T1:{},T2:{},T3:{}},eventos:{T1:{},T2:{},T3:{}}};
+      mostrarAsistTrim(trimActivo);
+    });
+  }catch(e){
+    document.getElementById('asistContenido').innerHTML=`<div class="asist-card"><div class="asist-vacio" style="color:#c00;">⚠ Error al cargar asistencia.</div></div>`;
+  }
+}
+
+function mostrarAsistTrim(t){
+  const tKey='T'+t;
+  const cont=document.getElementById('asistContenido');
+  const tDat=(asistData.trimestres||{})[tKey]||{};
+  const evMap=(asistData.eventos||{})[tKey]||{};
+  // Solo días con marca real del estudiante
+  const diasConMarca=Object.keys(tDat).filter(dk=>{const v=(tDat[dk]||{})[NOMBRE];return v!==undefined&&v!=='';}).sort();
+  const allCols=[...new Set([...diasConMarca,...Object.keys(evMap)])].sort();
+  let cp=0,ca=0,ct=0,ce=0,cf=0;
+  diasConMarca.forEach(dk=>{
+    const v=(tDat[dk]||{})[NOMBRE]||'';
+    if(v==='·')cp++;else if(v==='-')ca++;else if(v==='T')ct++;else if(v==='E')ce++;else if(v==='F')cf++;
+  });
+  const total=diasConMarca.length;
+  const pct=total>0?Math.round(cp/total*100):0;
+  const tLbl=['I','II','III'][t-1];
+  let html=`<div class="asist-card">
+    <div class="asist-titulo">📅 Asistencia</div>
+    <div class="asist-trim-label">${tLbl} Trimestre</div>`;
+  if(total===0){
+    html+=`<div class="asist-vacio"><div class="asist-vacio-icon">📋</div>Sin registros en este trimestre.</div>`;
+  }else{
+    html+=`<div class="asist-pct">
+      <div class="asist-pct-lbl"><span>Asistencia</span><span style="font-weight:800;color:${pct>=75?'#1a7a3a':'#c0392b'}">${pct}%</span></div>
+      <div class="asist-pct-bar"><div class="asist-pct-fill${pct<75?' baja':''}" style="width:${pct}%"></div></div>
+    </div>
+    <div class="asist-resumen">
+      <div class="asist-box box-p"><div class="num">${cp}</div><div class="lbl">✅ Asist.</div></div>
+      <div class="asist-box box-a"><div class="num">${ca}</div><div class="lbl">❌ Ausen.</div></div>
+      <div class="asist-box box-t"><div class="num">${ct}</div><div class="lbl">🕐 Tard.</div></div>
+      <div class="asist-box box-e"><div class="num">${ce}</div><div class="lbl">📄 Excus.</div></div>
+      <div class="asist-box box-f"><div class="num">${cf}</div><div class="lbl">🚪 Fugas</div></div>
+      <div class="asist-box box-d"><div class="num">${total}</div><div class="lbl">📆 Días</div></div>
+    </div>`;
+    if(allCols.length>0){
+      html+=`<div class="asist-tabla-wrap"><table class="asist-tabla"><thead><tr>`;
+      allCols.forEach(dk=>{
+        if(evMap[dk])html+=`<th class="thev-est"><div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;padding:5px 2px;white-space:nowrap;">${evMap[dk]}</div></th>`;
+        else html+=`<th>${fmtDia(dk)}</th>`;
+      });
+      html+=`</tr></thead><tbody><tr>`;
+      allCols.forEach(dk=>{
+        if(evMap[dk])html+=`<td style="background:#FFF3DC;min-width:22px;"></td>`;
+        else{
+          const v=(tDat[dk]||{})[NOMBRE]||'';
+          const cls=v==='·'?'ab-p':v==='-'?'ab-a':v==='T'?'ab-t':v==='E'?'ab-e':v==='F'?'ab-f':'';
+          html+=`<td style="min-width:36px;">${v?`<span class="asist-badge ${cls}">${v}</span>`:''}</td>`;
+        }
+      });
+      html+=`</tr></tbody></table></div>`;
+    }
+  }
+  html+=`</div>`;
+  cont.innerHTML=html;
+}
+
+// Arrancar ambas cargas en paralelo
+cargar();
+cargarAsistencia();
+</script>
+</body>
+</html>
