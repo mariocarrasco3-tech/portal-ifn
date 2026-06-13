@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Profesor – IFN</title>
+<style>
+:root{--azul:#0a2f7a;--amarillo:#f0b33f;--bg:#eef3ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,sans-serif;background:var(--bg);min-height:100vh;}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:#0a2f7a;display:flex;justify-content:center;align-items:center;z-index:9999;}
+.login-card{background:white;border-radius:24px;padding:44px 40px;width:90%;max-width:420px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+.login-card img{width:140px;margin-bottom:16px;background:#0a2f7a;padding:8px;border-radius:12px;}
+.login-card h2{color:#0a2f7a;font-size:22px;margin-bottom:6px;}
+.login-card p{color:#888;font-size:14px;margin-bottom:24px;}
+.login-card input{width:100%;padding:14px 16px;border:2px solid #dde4f0;border-radius:12px;font-size:15px;outline:none;margin-bottom:12px;}
+.login-card input:focus{border-color:#0a2f7a;}
+.login-card button{width:100%;padding:15px;background:#f0b33f;color:#0a2f7a;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer;}
+.login-error{color:#c0392b;font-size:14px;margin-top:10px;display:none;}
+
+/* TOPBAR */
+.topbar{background:var(--azul);color:white;padding:14px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 3px 12px rgba(0,0,0,0.3);}
+.topbar img{height:52px;background:white;padding:4px;border-radius:9px;}
+.topbar h1{font-size:20px;}
+.topbar p{font-size:13px;opacity:0.8;}
+.topbar-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+.btn{padding:9px 20px;border-radius:10px;border:none;cursor:pointer;font-weight:bold;font-size:14px;}
+.btn-primary{background:var(--amarillo);color:var(--azul);}
+.btn-primary:hover{background:#e0a030;}
+.btn-danger{background:#c0392b;color:white;}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:8px;}
+.btn-secondary{background:rgba(255,255,255,0.15);color:white;}
+.btn-logout{background:rgba(255,80,80,0.2);color:white;border:1px solid rgba(255,100,100,0.4);}
+
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 80px);}
+.sidebar{width:210px;min-width:210px;background:var(--azul);color:white;padding:20px 0;}
+.sidebar h3{padding:0 18px 12px;font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.7;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:8px;}
+.grade-btn{display:block;width:100%;padding:11px 20px;background:none;border:none;color:white;text-align:left;cursor:pointer;font-size:15px;transition:background 0.2s;}
+.grade-btn:hover{background:rgba(255,255,255,0.1);}
+.grade-btn.active{background:var(--amarillo);color:var(--azul);font-weight:bold;}
+.sidebar-count{float:right;font-size:12px;opacity:0.6;}
+
+.main{flex:1;padding:24px;overflow-x:auto;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.section-header h2{color:var(--azul);font-size:22px;}
+.trim-tabs{display:flex;gap:8px;}
+.trim-tab{padding:8px 18px;border-radius:20px;border:2px solid var(--azul);background:white;color:var(--azul);font-weight:bold;cursor:pointer;font-size:13px;}
+.trim-tab.active{background:var(--azul);color:white;}
+.search-bar{margin-bottom:16px;}
+.search-bar input{padding:9px 16px;border:2px solid #dde4f0;border-radius:10px;font-size:14px;outline:none;min-width:260px;}
+.search-bar input:focus{border-color:var(--azul);}
+
+/* STICKY COLUMNAS */
+.table-wrap{overflow-x:auto;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.07);max-height:75vh;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;background:white;}
+thead{background:var(--azul);color:white;position:sticky;top:0;z-index:10;}
+th{padding:10px 7px;font-size:12px;text-align:center;white-space:nowrap;}
+th.left{text-align:left;}
+th.sticky-col{position:sticky;left:0;z-index:11;background:var(--azul);}
+th.sticky-col2{position:sticky;left:30px;z-index:11;background:var(--azul);}
+td{padding:6px 7px;font-size:13px;border-bottom:1px solid #eef3ff;vertical-align:middle;text-align:center;}
+td.left{text-align:left;}
+td.sticky-col{position:sticky;left:0;z-index:5;background:white;border-right:2px solid #dde4f0;}
+td.sticky-col2{position:sticky;left:30px;z-index:5;background:white;border-right:2px solid #dde4f0;font-weight:bold;}
+.cod-est{display:block;font-size:10px;color:#9aa7c0;font-family:monospace;font-weight:normal;letter-spacing:0.5px;margin-top:1px;line-height:1.1;}
+.btn-edit-est{background:transparent;border:none;cursor:pointer;font-size:13px;opacity:0.35;padding:2px 4px;border-radius:6px;transition:opacity 0.15s;}
+tr:hover .btn-edit-est{opacity:1;}
+.btn-edit-est:hover{background:#e8f0fe;}
+tr:hover td{background:#f5f8ff;}
+tr:hover td.sticky-col,tr:hover td.sticky-col2{background:#f5f8ff;}
+
+/* INPUTS */
+td input[type="number"]{width:58px;padding:4px 5px;border:1.5px solid #dde4f0;border-radius:7px;font-size:13px;text-align:center;outline:none;}
+td input[type="number"]:focus{border-color:var(--azul);background:#fffbe6;}
+td input[type="text"].desc-input{width:130px;padding:4px 6px;border:1.5px solid #dde4f0;border-radius:7px;font-size:12px;outline:none;}
+td input[type="text"].desc-input:focus{border-color:var(--azul);background:#fffbe6;}
+td input[type="date"]{padding:4px 6px;border:1.5px solid #dde4f0;border-radius:7px;font-size:12px;outline:none;color:#444;}
+td input[type="date"]:focus{border-color:var(--azul);background:#fffbe6;}
+
+/* COLORES NOTA */
+.n-rojo{color:#c0392b;font-weight:bold;}
+.n-verde{color:#1a7a3a;font-weight:bold;}
+.nota-calc{font-size:14px;font-weight:bold;}
+
+tr.fila-activa td{background:#fff8e0 !important;}
+tr.fila-activa td.sticky-col,tr.fila-activa td.sticky-col2{background:#fff8e0 !important;}
+.group-sep{background:#f0f4ff !important;}
+.group-sep td{font-weight:bold;color:#0a2f7a;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:6px 10px;}
+
+/* COL HEADERS DINÁMICOS */
+.col-head{display:flex;align-items:center;justify-content:center;gap:3px;}
+.btn-del-col{background:rgba(255,100,100,0.35);border:none;color:white;border-radius:5px;padding:1px 5px;cursor:pointer;font-size:10px;}
+.btn-rellenar{background:rgba(255,200,50,0.35);border:1px solid rgba(255,200,50,0.7);color:white;border-radius:5px;padding:1px 5px;cursor:pointer;font-size:10px;white-space:nowrap;}
+.btn-rellenar:hover{background:rgba(255,200,50,0.55);}
+.nota-excusa{background:#fff3cd!important;border:1.5px solid #f0b33f!important;color:#7d5a00!important;}
+.nota-excusa-vencida{background:#f8f8f8!important;border:1.5px solid #ccc!important;}
+.nota-excusa-verde{background:#EAF3DE!important;border:1.5px solid #97C459!important;color:#27500A!important;}
+.btn-add-col{background:rgba(255,255,255,0.2);border:1px dashed rgba(255,255,255,0.6);color:white;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;}
+.btn-add-col:hover{background:rgba(255,255,255,0.35);}
+
+.btn-paste{background:rgba(255,255,255,0.2);border:1px dashed rgba(255,255,255,0.6);color:white;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:10px;white-space:nowrap;}
+.btn-paste:hover{background:rgba(255,255,255,0.35);}
+
+/* MODAL PEGAR */
+.paste-area{width:100%;height:180px;padding:10px;border:2px solid #dde4f0;border-radius:10px;font-size:13px;font-family:monospace;resize:vertical;outline:none;}
+.paste-area:focus{border-color:var(--azul);}
+.paste-preview{background:#f5f8ff;border-radius:8px;padding:10px;margin-top:10px;font-size:12px;color:#555;max-height:120px;overflow-y:auto;}
+.paste-preview span{display:inline-block;background:#0a2f7a;color:white;border-radius:4px;padding:2px 7px;margin:2px;font-size:12px;}
+.apply-row td{background:#fff8e0;padding:5px 7px;border-bottom:2px solid #f0b33f;}
+.apply-row input[type="date"],.apply-row input[type="text"]{padding:4px 6px;border:1.5px solid #f0b33f;border-radius:7px;font-size:12px;outline:none;background:white;width:100%;}
+.apply-row input:focus{border-color:#c07a00;}
+.btn-apply{background:#f0b33f;color:#0a2f7a;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:bold;cursor:pointer;white-space:nowrap;width:100%;}
+.btn-apply:hover{background:#e0a030;}
+.apply-label{font-size:10px;color:#c07a00;font-weight:bold;text-align:center;}
+
+/* STATS */
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.stat-card{background:white;border-radius:12px;padding:14px 20px;box-shadow:0 3px 10px rgba(0,0,0,0.06);text-align:center;min-width:110px;}
+.stat-card .num{font-size:26px;font-weight:bold;color:var(--azul);}
+.stat-card .lbl{font-size:12px;color:#888;margin-top:2px;}
+.stat-card{position:relative;}
+.stat-trim-tag{position:absolute;top:6px;right:8px;background:#e8f0fe;color:#0a2f7a;font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px;letter-spacing:0.5px;}
+.stat-general{background:linear-gradient(135deg,#0a2f7a,#1a5fd0);box-shadow:0 4px 14px rgba(10,47,122,0.35);}
+.info-banner{background:#e8f0fe;border:1px solid #b3c6f7;color:#0a2f7a;padding:12px 18px;border-radius:10px;font-size:14px;margin-bottom:16px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a7a3a;color:white;padding:14px 22px;border-radius:12px;font-size:15px;font-weight:bold;box-shadow:0 6px 20px rgba(0,0,0,0.2);opacity:0;transform:translateY(20px);transition:all 0.3s;pointer-events:none;z-index:9998;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.error{background:#c0392b;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;justify-content:center;align-items:center;z-index:1000;}
+.modal-bg.show{display:flex;}
+.modal{background:white;border-radius:18px;padding:30px;width:90%;max-width:480px;box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.modal h3{color:var(--azul);margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:13px;color:#555;margin-bottom:5px;font-weight:bold;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:2px solid #dde4f0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;}
+.form-group input:focus,.form-group select:focus{border-color:var(--azul);}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.saving-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f0b33f;margin-left:8px;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* RÚBRICA */
+.modal-wide{max-width:640px;}
+.rubrica-header{display:grid;grid-template-columns:1fr 70px 70px 36px;gap:8px;background:#0a2f7a;padding:8px 12px;border-radius:8px 8px 0 0;}
+.rubrica-header span{font-size:11px;color:white;opacity:0.8;text-transform:uppercase;letter-spacing:0.5px;text-align:center;}
+.rubrica-header span:first-child{text-align:left;}
+.rubrica-row{display:grid;grid-template-columns:1fr 70px 70px 36px;gap:8px;padding:7px 12px;border-bottom:1px solid #eef3ff;align-items:center;background:white;}
+.rubrica-row input[type="text"]{width:100%;padding:5px 8px;border:1.5px solid #dde4f0;border-radius:7px;font-size:13px;outline:none;}
+.rubrica-row input[type="number"]{width:100%;padding:5px 6px;border:1.5px solid #dde4f0;border-radius:7px;font-size:13px;text-align:center;outline:none;}
+.rubrica-row input:focus{border-color:var(--azul);background:#fffbe6;}
+.rubrica-result{background:#0a2f7a;color:white;padding:12px 16px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.rubrica-formula{background:#e8f0fe;color:#0a2f7a;padding:8px 12px;border-radius:8px;font-size:12px;margin-top:8px;}
+.plantilla-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f5f8ff;border-radius:8px;margin-bottom:6px;border:1px solid #dde4f0;}
+.plantilla-item:hover{background:#e8f0fe;cursor:pointer;}
+.plantilla-nombre{font-weight:500;font-size:13px;color:#0a2f7a;}
+.plantilla-info{font-size:11px;color:#888;}
+/* ── PC — mejoras visuales ── */
+@media(min-width:1024px){
+  body{font-size:15px;}
+  .topbar h1{font-size:22px;}
+  .sidebar{width:240px;min-width:240px;}
+  .grade-btn{font-size:16px;padding:12px 22px;}
+  .section-header h2{font-size:24px;}
+  .trim-tab{font-size:14px;padding:9px 22px;}
+  .search-bar input{font-size:15px;padding:10px 18px;min-width:300px;}
+  .table-wrap{border-radius:16px;max-height:78vh;}
+  table{font-size:16px;}
+  th{padding:14px 12px;font-size:14px;}
+  td{padding:12px 12px;font-size:16px;}
+  td.sticky-col2{font-size:16px;min-width:220px;}
+  th.sticky-col2{min-width:220px;}
+  .cod-est{font-size:11px;}
+  td input[type="number"]{width:76px;padding:8px 10px;font-size:16px;border-radius:8px;}
+  td input[type="number"]:focus{border-color:var(--azul);background:#fffbe6;}
+  td input[type="text"].desc-input{width:190px;padding:8px 11px;font-size:15px;border-radius:8px;}
+  td input[type="date"]{padding:8px 11px;font-size:15px;border-radius:8px;}
+  .nota-calc{font-size:18px;}
+  .btn{padding:10px 22px;font-size:15px;}
+  .btn-sm{padding:7px 14px;font-size:13px;}
+  .stat-card .num{font-size:32px;}
+  .stat-card .lbl{font-size:13px;}
+  .n-verde,.n-rojo{font-size:15px;}
+}
+/* MÓVIL */
+@media(max-width:600px){
+  th.sticky-col2,td.sticky-col2{min-width:130px;max-width:150px;left:26px;}
+  td.sticky-col2{font-size:12px;white-space:normal;word-break:break-word;}
+  th.sticky-col,td.sticky-col{min-width:26px;}
+  th{padding:8px 5px;font-size:11px;}
+  td{padding:5px 5px;font-size:12px;}
+  .cod-est{font-size:9px;}
+  td input[type="number"]{width:50px;padding:4px 4px;font-size:12px;}
+  td input[type="text"].desc-input{width:100px;font-size:11px;}
+  .stat-card{min-width:90px;padding:10px 12px;}
+  .stat-card .num{font-size:20px;}
+  .table-wrap{max-height:65vh;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <img src="logo.png" onerror="this.style.display='none'">
+    <h2>Acceso Profesor</h2>
+    <p>Instituto Fermín Naudeau · Portal IFN</p>
+    <input type="text"     id="loginUser" placeholder="Usuario" autocomplete="off">
+    <input type="password" id="loginPass" placeholder="Contraseña">
+    <button onclick="intentarLogin()">Entrar</button>
+    <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appPrincipal" style="display:none">
+  <div class="topbar">
+    <img src="logo.png" onerror="this.style.display='none'">
+    <div>
+      <h1>Panel del Profesor – IFN <span id="savingIndicator" style="display:none"><span class="saving-dot"></span></span></h1>
+      <p>Mario Carrasco · Guardado automático en Firebase</p>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="abrirModalAñoEscolar()">🗓 Nuevo Año</button>
+      <a href="index.html" class="btn btn-secondary" style="text-decoration:none">← Portal</a>
+      <a href="asistencia.html" class="btn btn-primary" style="text-decoration:none;background:#1a7a3a;border-color:#1a7a3a;">📅 Asistencia</a>
+      <button class="btn btn-logout" onclick="cerrarSesion()">🔒 Salir</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <h3>Grados</h3>
+      <div id="sidebarGrados"></div>
+      <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.15);margin-top:10px;">
+        <button class="btn btn-primary btn-sm" style="width:100%;margin-bottom:8px" onclick="abrirModalAgregarGrado()">+ Agregar Grado</button>
+        <button class="btn btn-sm" style="width:100%;background:rgba(255,100,100,0.2);color:white" onclick="eliminarGradoActual()">🗑 Eliminar Grado</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="info-banner" id="infoBanner">🔌 Conectando con Firebase...</div>
+      <div class="stats" id="statsArea" style="display:none">
+        <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">Estudiantes</div></div>
+        <div class="stat-card stat-trim"><div class="stat-trim-tag" id="statTrimTag">T1</div><div class="num n-verde" id="statAprobados">0</div><div class="lbl">Aprobados</div></div>
+        <div class="stat-card stat-trim"><div class="stat-trim-tag" id="statTrimTag2">T1</div><div class="num n-rojo" id="statReprobados">0</div><div class="lbl">Reprobados</div></div>
+        <div class="stat-card stat-trim"><div class="stat-trim-tag" id="statTrimTag3">T1</div><div class="num" id="statProm">—</div><div class="lbl">Promedio</div></div>
+        <div class="stat-card stat-general"><div class="stat-trim-tag" style="background:rgba(255,255,255,0.25);color:#fff;">ANUAL</div><div class="num" id="statPromGeneral" style="color:#fff;">—</div><div class="lbl" style="color:rgba(255,255,255,0.85);">Promedio General</div></div>
+      </div>
+      <div class="section-header">
+        <h2 id="tituloSeccion">Selecciona un grado</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <div class="trim-tabs">
+            <button class="trim-tab active" onclick="setTrim(1,this)">T1</button>
+            <button class="trim-tab" onclick="setTrim(2,this)">T2</button>
+            <button class="trim-tab" onclick="setTrim(3,this)">T3</button>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalNuevo()">+ Agregar Estudiante</button>
+          <button class="btn btn-sm" style="background:#e8f0fe;color:var(--azul)" onclick="abrirModalMatricula()">📋 Matrícula Masiva</button>
+          <button class="btn btn-sm" style="background:#e8f0fe;color:var(--azul)" onclick="abrirModalRenombrar()">✏️ Renombrar Grado</button>
+          <button class="btn btn-sm" style="background:#7b2ff7;color:white" onclick="abrirModalRubrica()">📊 Rúbricas</button>
+          <button class="btn btn-sm" style="background:#e67e22;color:white" onclick="abrirNotaGrupal()">👥 Nota Grupal</button>
+          <button class="btn btn-sm" style="background:#1a7a3a;color:white" onclick="exportarExcel()">⬇ Excel</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="buscarInput" placeholder="🔍 Buscar por nombre o código..." oninput="renderTabla()">
+      </div>
+      <div id="tablaArea"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalNuevo">
+  <div class="modal">
+    <h3>➕ Agregar Estudiante</h3>
+    <div class="form-group"><label>Código</label>
+      <input type="text" id="nuevoCodigo" placeholder="Ej: ABC123456" style="text-transform:uppercase"></div>
+    <div class="form-group"><label>Nombre completo</label>
+      <input type="text" id="nuevoNombre" placeholder="Apellido, Nombre"></div>
+    <div class="form-group"><label>Grado</label>
+      <select id="nuevoGrado"></select></div>
+    <div class="form-group"><label>Observaciones (opcional)</label>
+      <textarea id="nuevoObs" rows="2"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalNuevo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="agregarEstudiante()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PEGAR NOTAS -->
+<div class="modal-bg" id="modalNotaGrupal">
+  <div class="modal" style="max-width:480px;width:94%;">
+    <h3 style="color:#0a2f7a;margin-bottom:4px;">👥 Nota Grupal</h3>
+    <p style="font-size:12px;color:#888;margin-bottom:16px;">Selecciona los integrantes y aplica una nota a todos.</p>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">Columna</label>
+        <select id="ng-campo" style="width:100%;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+        </select>
+      </div>
+      <div style="width:80px;">
+        <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">Nota</label>
+        <input type="number" id="ng-nota" min="0" max="5" step="0.1" placeholder="0.0" style="width:100%;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+      </div>
+      <div style="flex:2;min-width:140px;">
+        <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">Descripción</label>
+        <input type="text" id="ng-desc" placeholder="ej: Proyecto grupal" style="width:100%;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">Fecha</label>
+      <input type="date" id="ng-fecha" style="width:160px;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <span style="font-size:12px;font-weight:600;color:#0a2f7a;">Integrantes del grupo</span>
+      <div style="display:flex;gap:6px;">
+        <button onclick="ngSelTodos(true)" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #b3c6f7;background:#eef3ff;color:#0a2f7a;cursor:pointer;">✓ Todos</button>
+        <button onclick="ngSelTodos(false)" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #dde4f0;background:#fff;color:#888;cursor:pointer;">✗ Ninguno</button>
+      </div>
+    </div>
+    <input type="text" id="ng-buscar" placeholder="🔍 Buscar estudiante..." oninput="ngFiltrar()" style="width:100%;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;">
+    <div id="ng-lista" style="max-height:220px;overflow-y:auto;border:1.5px solid #dde4f0;border-radius:10px;background:#fafafa;margin-bottom:14px;"></div>
+    <div id="ng-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+      <button class="btn" onclick="cerrarModal('modalNotaGrupal')" style="font-size:13px;">Cancelar</button>
+      <button class="btn" style="background:#7b2ff7;color:white;font-size:13px;" onclick="abrirRubricaGrupal()">📊 Rúbrica grupal</button>
+      <button class="btn btn-primary" onclick="aplicarNotaGrupal()" style="font-size:13px;">✔ Aplicar nota</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalRellenar">
+  <div class="modal" style="max-width:400px;width:94%;">
+    <h3 style="color:#0a2f7a;margin-bottom:4px;">⚠️ Rellenar celdas vacías</h3>
+    <p style="font-size:12px;color:#888;margin-bottom:16px;">Solo se llenan las casillas que tienen nota 0 o vacía.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;">
+        <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">Nota a colocar</label>
+        <select id="rv-nota" style="width:100%;padding:7px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+          <option value="1.0">1.0</option>
+          <option value="2.0">2.0</option>
+        </select>
+      </div>
+    </div>
+    <div style="background:#fff8e6;border:1.5px solid #f0b33f;border-radius:10px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:600;color:#7d5a00;margin-bottom:8px;">📅 Fecha límite para excusa</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;">
+          <input type="radio" name="rv-tipo" value="auto" checked onchange="toggleFechaLimite(this.value)">
+          Predeterminado (10 días)
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;">
+          <input type="radio" name="rv-tipo" value="manual" onchange="toggleFechaLimite(this.value)">
+          Manual
+        </label>
+      </div>
+      <div id="rv-fecha-wrap" style="display:none;margin-top:8px;">
+        <input type="date" id="rv-fecha" style="padding:6px 10px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;">
+      </div>
+    </div>
+    <div id="rv-error" style="display:none;color:#c0392b;font-size:12px;margin-bottom:8px;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn" onclick="cerrarModal('modalRellenar')">Cancelar</button>
+      <button class="btn btn-primary" style="background:#f0b33f;border-color:#f0b33f;color:#0a2f7a;" onclick="confirmarRellenar()">⚠️ Rellenar vacías</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalPegar">
+  <div class="modal">
+    <h3 id="modalPegarTitulo">📋 Pegar Notas</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:14px;">
+      Copia la columna de notas desde Excel y pégala aquí.<br>
+      <strong>Una nota por línea</strong>, en el mismo orden alfabético del portal.
+    </p>
+    <textarea class="paste-area" id="pasteArea" placeholder="3.6&#10;5.0&#10;4.2&#10;3.6&#10;..." oninput="previsualizarPaste()"></textarea>
+    <div class="paste-preview" id="pastePreview" style="display:none"></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalPegar')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarPegar()">✔ Aplicar a todos</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR GRADO -->
+<div class="modal-bg" id="modalAgregarGrado">
+  <div class="modal">
+    <h3>➕ Agregar Grado</h3>
+    <div class="form-group"><label>Nombre del grado</label>
+      <input type="text" id="nuevoGradoNombre" placeholder="Ej: 9°A"></div>
+    <div class="form-group"><label>Materia</label>
+      <input type="text" id="nuevoGradoMateria" placeholder="Ej: Informática"></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalAgregarGrado')">Cancelar</button>
+      <button class="btn btn-primary" onclick="agregarGrado()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RENOMBRAR GRADO -->
+<div class="modal-bg" id="modalRenombrar">
+  <div class="modal">
+    <h3>✏️ Renombrar Grado</h3>
+    <div class="form-group"><label>Nombre actual</label>
+      <input type="text" id="renombrarActual" disabled style="background:#f5f5f5"></div>
+    <div class="form-group"><label>Nuevo nombre</label>
+      <input type="text" id="renombrarNuevo" placeholder="Ej: 9°B"></div>
+    <div class="form-group"><label>Nueva materia (opcional)</label>
+      <input type="text" id="renombrarMateria" placeholder="Dejar vacío para mantener la actual"></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalRenombrar')">Cancelar</button>
+      <button class="btn btn-primary" onclick="renombrarGrado()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ESTUDIANTE -->
+<div class="modal-bg" id="modalEditarEst">
+  <div class="modal">
+    <h3>✏️ Editar Estudiante</h3>
+    <input type="hidden" id="editarCodActual">
+    <div class="form-group"><label>Código actual</label>
+      <input type="text" id="editarCodActualDisplay" disabled style="background:#f5f5f5"></div>
+    <div class="form-group"><label>Nuevo código</label>
+      <input type="text" id="editarCodNuevo" style="text-transform:uppercase"></div>
+    <div class="form-group"><label>Nombre completo</label>
+      <input type="text" id="editarNombre"></div>
+    <div class="form-group"><label>Grado</label>
+      <select id="editarGrado"></select></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalEditarEst')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEdicionEst()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MATRÍCULA MASIVA -->
+<div class="modal-bg" id="modalMatricula">
+  <div class="modal" style="max-width:560px">
+    <h3>📋 Matrícula Masiva</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:14px;">
+      Pega la lista desde Excel. Formato: <strong>CODIGO[tab]NOMBRE</strong> (una por línea).<br>
+      Si no tienes código, solo pega el nombre y se generará uno automático.
+    </p>
+    <div class="form-group"><label>Grado destino</label>
+      <select id="matriculaGrado"></select></div>
+    <textarea class="paste-area" id="matriculaArea" rows="10" placeholder="APR602276	Abadia Pineda, Ademir&#10;AGG040250	Adrian Garcia, Amanda&#10;..."></textarea>
+    <div style="margin-top:10px;font-size:13px;color:#0a2f7a" id="matriculaPreview"></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalMatricula')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarMatricula()">✔ Matricular</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO AÑO ESCOLAR -->
+<div class="modal-bg" id="modalAñoEscolar">
+  <div class="modal">
+    <h3>🗓 Nuevo Año Escolar</h3>
+    <p style="font-size:14px;color:#555;margin-bottom:16px;">
+      Esta función <strong>reinicia todas las notas</strong> de todos los estudiantes, manteniendo nombres y códigos intactos.
+    </p>
+    <div style="background:#fff8e0;border:1px solid #f0b33f;border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;color:#c07a00">
+      ⚠️ Esta acción no se puede deshacer. Asegúrate de tener un respaldo antes de continuar.
+    </div>
+    <div class="form-group"><label>Escribe <strong>CONFIRMAR</strong> para continuar</label>
+      <input type="text" id="confirmarAño" placeholder="CONFIRMAR"></div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalAñoEscolar')">Cancelar</button>
+      <button class="btn btn-danger" onclick="iniciarNuevoAño()">🗓 Reiniciar Notas</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RÚBRICAS — GESTIONAR PLANTILLAS -->
+<div class="modal-bg" id="modalRubrica">
+  <div class="modal modal-wide">
+    <h3>📊 Rúbricas</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">Crea plantillas de rúbrica y aplícalas a las actividades de tus estudiantes.</p>
+    <div id="listadoPlantillas"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="nuevaPlantilla()">+ Nueva Rúbrica</button>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalRubrica')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PLANTILLA -->
+<div class="modal-bg" id="modalEditarRubrica">
+  <div class="modal modal-wide">
+    <h3 id="tituloEditRubrica">📊 Nueva Rúbrica</h3>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Nombre de la actividad</label>
+      <input type="text" id="rubricaNombre" placeholder="Ej: Proyecto Final, Laboratorio #1">
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label>Puntaje total</label>
+      <input type="number" id="rubricaTotal" placeholder="Ej: 100" style="max-width:120px" oninput="actualizarFormulaRubrica()">
+    </div>
+    <div class="rubrica-header">
+      <span>Criterio</span><span>Pts. Máx.</span><span>Pts. Obt.</span><span></span>
+    </div>
+    <div id="rubricaCriterios" style="border:1px solid #eef3ff;border-radius:0 0 8px 8px;margin-bottom:10px;overflow:hidden"></div>
+    <button class="btn btn-sm" style="background:#e8f0fe;color:var(--azul);margin-bottom:12px" onclick="agregarCriterioRubrica()">+ Agregar criterio</button>
+    <div class="rubrica-formula" id="rubricaFormula"></div>
+    <div class="rubrica-result">
+      <span style="font-size:14px">Puntos: <strong id="rubricaPtsTotales">0</strong></span>
+      <span style="font-size:20px;font-weight:bold" id="rubricaNotaCalc">0.0</span>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalEditarRubrica')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarPlantilla()">💾 Guardar Rúbrica</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL APLICAR RÚBRICA A ESTUDIANTE -->
+<div class="modal-bg" id="modalAplicarRubrica">
+  <div class="modal modal-wide">
+    <h3 id="tituloAplicar">📋 Aplicar Rúbrica</h3>
+    <p id="subtituloAplicar" style="font-size:13px;color:#555;margin-bottom:14px"></p>
+    <div class="rubrica-header">
+      <span>Criterio</span><span>Pts. Máx.</span><span>Pts. Obt.</span><span></span>
+    </div>
+    <div id="aplicarCriterios" style="border:1px solid #eef3ff;border-radius:0 0 8px 8px;margin-bottom:10px;overflow:hidden"></div>
+    <div class="rubrica-formula" id="aplicarFormula"></div>
+    <div class="rubrica-result">
+      <span style="font-size:14px">Puntos: <strong id="aplicarPts">0</strong></span>
+      <span style="font-size:20px;font-weight:bold" id="aplicarNota">0.0</span>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" style="background:#eee;color:#333" onclick="cerrarModal('modalAplicarRubrica')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarAplicarRubrica()">✔ Guardar Nota</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyADH13E-UEtnRMEx_qf2CXYxsKQR0JHklw",
+  authDomain: "portal-ifn.firebaseapp.com",
+  projectId: "portal-ifn",
+  storageBucket: "portal-ifn.firebasestorage.app",
+  messagingSenderId: "82140985396",
+  appId: "1:82140985396:web:4204b5f22930c591507261"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── CREDENCIALES DESDE FIREBASE ──
+let CRED = { usuario:"", password:"" };
+async function cargarCredenciales(){
+  try{
+    const snap = await getDoc(doc(db,'config','admin'));
+    if(snap.exists()) CRED = snap.data();
+  }catch(e){ console.error('Error cargando credenciales',e); }
+}
+
+const GRADOS   = ['8°F','10°C','10°D','11°A','11°B','12°A','12°B'];
+const MATERIAS = {"8°F":"Comercio","10°C":"TI","10°D":"TI","11°A":"Multimedia","11°B":"Multimedia","12°A":"Robótica","12°B":"Robótica"};
+
+let DATOS={}, gradoActual=null, trimActual=1, saveTimer=null;
+
+// ── LOGIN ──
+window.intentarLogin=()=>{
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(u===CRED.usuario&&p===CRED.password){
+    sessionStorage.setItem('ifn_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appPrincipal').style.display='block';
+    init();
+  }else{
+    document.getElementById('loginError').style.display='block';
+    document.getElementById('loginPass').value='';
+  }
+};
+window.cerrarSesion=()=>{ sessionStorage.removeItem('ifn_auth'); location.reload(); };
+document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') window.intentarLogin(); });
+document.getElementById('loginUser').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+// Cargar credenciales y verificar sesión
+cargarCredenciales().then(()=>{
+  if(sessionStorage.getItem('ifn_auth')==='1'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appPrincipal').style.display='block';
+    init();
+  }
+});
+
+// ── CARGA EN TIEMPO REAL ──
+let _unsubEstudiantes=null;
+// Cache de asistencia: { "11A": { T1: { "2026-05-30": { "Nombre": "E" } } } }
+let ASIST_CACHE={};
+let _unsubAsist={};
+
+async function init(){
+  try{
+    await cargarPlantillas();
+    _unsubEstudiantes=onSnapshot(collection(db,'estudiantes'),(snap)=>{
+      snap.forEach(d=>{ DATOS[d.id]=d.data(); });
+      const ids=new Set(snap.docs.map(d=>d.id));
+      Object.keys(DATOS).forEach(id=>{ if(!ids.has(id)) delete DATOS[id]; });
+      document.getElementById('infoBanner').innerHTML=
+        `✅ <strong>${Object.keys(DATOS).length} estudiantes</strong> cargados. Cambios en tiempo real.`;
+      renderSidebar();
+      const gradoGuardado=restaurarPosAdmin();
+      const gradoInicial=gradoGuardado&&GRADOS.includes(gradoGuardado)?gradoGuardado:GRADOS[0];
+      if(gradoInicial) seleccionarGrado(gradoInicial);
+      else if(GRADOS.length) seleccionarGrado(GRADOS[0]);
+    });
+  }catch(e){ document.getElementById('infoBanner').innerHTML=`⚠️ Error: ${e.message}`; }
+}
+
+function cargarAsistenciaGrado(grado){
+  const gradoId=grado.replace('°','');
+  if(_unsubAsist[gradoId]) return; // ya escuchando
+  _unsubAsist[gradoId]=onSnapshot(doc(db,'asistencia',gradoId),(snap)=>{
+    ASIST_CACHE[gradoId]=snap.exists()?snap.data():{};
+    if(gradoActual===grado) renderTabla();
+  });
+}
+
+// Devuelve fechas donde un estudiante tiene E en asistencia para un trimestre
+function fechasExcusaEst(nombre,grado,tNum){
+  const gradoId=grado.replace('°','');
+  const dat=ASIST_CACHE[gradoId]||{};
+  const tDat=(dat.trimestres||{})['T'+tNum]||{};
+  return Object.keys(tDat).filter(dk=>(tDat[dk]||{})[nombre]==='E');
+}
+
+// ── SIDEBAR ──
+function renderSidebar(){
+  const c=document.getElementById('sidebarGrados'); c.innerHTML='';
+  GRADOS.forEach(g=>{
+    const count=Object.values(DATOS).filter(e=>e.grado===g).length;
+    const btn=document.createElement('button');
+    btn.className='grade-btn'+(g===gradoActual?' active':'');
+    btn.innerHTML=`${g} <span class="sidebar-count">${count}</span>`;
+    btn.onclick=()=>seleccionarGrado(g);
+    c.appendChild(btn);
+  });
+}
+window.seleccionarGrado=g=>{
+  gradoActual=g;
+  document.getElementById('buscarInput').value='';
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim().startsWith(g)));
+  document.getElementById('tituloSeccion').textContent=`${g} — ${MATERIAS[g]||''}`;
+  document.querySelectorAll('.trim-tab').forEach((b,i)=>{
+    b.classList.toggle('active', i+1===trimActual);
+  });
+  cargarAsistenciaGrado(g);
+  guardarPosAdmin();
+  renderStats(); renderTabla();
+};
+
+// ── STATS ──
+function calcAnual(est){
+  // Siempre recalcular desde los trimestres — ignorar notaAnual guardado
+  // ya que puede ser un valor antiguo inconsistente
+  const trims=[1,2,3].map(i=>calcTrim(est,i)).filter(x=>x>0);
+  if(!trims.length) return 0;
+  return Math.floor((trims.reduce((s,x)=>s+x,0)/trims.length)*10)/10;
+}
+// Nota del trimestre incluyendo datos parciales (para estadísticas del trimestre activo)
+function notaTrimParcial(est,t){
+  const trim=est['T'+t]||{};
+  const comp=[];
+  const nd=promArr((trim.notasDiarias||[]).map(a=>a.nota)); if(nd>0) comp.push(nd);
+  const ap=promArr((trim.apreciaciones||[]).map(a=>a.nota)); if(ap>0) comp.push(ap);
+  const ex=parseFloat(trim.examen)||0; if(ex>0) comp.push(ex);
+  return comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
+}
+function renderStats(){
+  const ests=Object.values(DATOS).filter(e=>e.grado===gradoActual);
+  const t=trimActual||1;
+  // Estadísticas del trimestre activo (con datos parciales)
+  const notasT=ests.map(e=>notaTrimParcial(e,t)).filter(n=>n>0);
+  // Promedio general anual (solo trimestres completos)
+  const notasAnual=ests.map(e=>calcAnual(e)).filter(n=>n>0);
+  // Etiquetas T1/T2/T3
+  ['statTrimTag','statTrimTag2','statTrimTag3'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.textContent='T'+t;
+  });
+  document.getElementById('statTotal').textContent=ests.length;
+  document.getElementById('statAprobados').textContent=notasT.filter(n=>n>=3.0).length;
+  document.getElementById('statReprobados').textContent=notasT.filter(n=>n<3.0&&n>0).length;
+  document.getElementById('statProm').textContent=notasT.length?(Math.floor((notasT.reduce((s,n)=>s+n,0)/notasT.length)*10)/10).toFixed(1):'—';
+  const pg=document.getElementById('statPromGeneral');
+  if(pg) pg.textContent=notasAnual.length?(Math.floor((notasAnual.reduce((s,n)=>s+n,0)/notasAnual.length)*10)/10).toFixed(1):'—';
+  document.getElementById('statsArea').style.display='flex';
+}
+
+// ── TRIM ──
+window.setTrim=(t,btn)=>{
+  trimActual=t;
+  document.querySelectorAll('.trim-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  localStorage.setItem('ifn_admin_trim',t);
+  renderStats(); // actualizar estadísticas al cambiar de trimestre
+  renderTabla();
+};
+
+function guardarPosAdmin(){
+  if(gradoActual) localStorage.setItem('ifn_admin_grado',gradoActual);
+  localStorage.setItem('ifn_admin_trim',trimActual);
+}
+
+function restaurarPosAdmin(){
+  const g=localStorage.getItem('ifn_admin_grado');
+  const t=parseInt(localStorage.getItem('ifn_admin_trim'))||1;
+  trimActual=t;
+  document.querySelectorAll('.trim-tab').forEach((b,i)=>b.classList.toggle('active',i+1===t));
+  return g; // devuelve el grado guardado para seleccionarlo
+}
+
+// ── HELPERS ──
+function fmt(v){ 
+  const n=parseFloat(v); 
+  if(isNaN(n)||n===0) return'0.0';
+  // Truncar sin redondear: convertir a string y cortar
+  const s=Math.floor(n*10)/10;
+  return s.toFixed(1);
+}
+function claseN(v){ const n=parseFloat(v); if(!n||isNaN(n))return''; return n>=3.0?'n-verde':'n-rojo'; }
+function promArr(arr){ const v=arr.map(n=>parseFloat(n)).filter(n=>n>0); return v.length?Math.floor((v.reduce((s,n)=>s+n,0)/v.length)*10)/10:0; }
+
+function maxItems(campo,t){
+  const ests=Object.values(DATOS).filter(e=>e.grado===gradoActual);
+  let max=campo==='notasDiarias'?3:2;
+  ests.forEach(e=>{ const arr=e['T'+t]?.[campo]||[]; if(arr.length>max) max=arr.length; });
+  return max;
+}
+
+function calcTrim(est,t){
+  const trim=est['T'+t]||{};
+  const nd=(trim.notasDiarias||[]).filter(a=>parseFloat(a.nota)>0);
+  const ap=(trim.apreciaciones||[]).filter(a=>parseFloat(a.nota)>0);
+  const examen=parseFloat(trim.examen)||0;
+  // Trimestre completo requiere ND + Ap + Examen
+  const completo=nd.length>0&&ap.length>0&&examen>0;
+  if(!completo) return 0;
+  // Si hay notaTrim guardada manualmente Y el trimestre está completo, usarla
+  let nota=parseFloat(trim.notaTrim)||0;
+  if(!nota){
+    const pnd=promArr(nd.map(a=>a.nota));
+    const pap=promArr(ap.map(a=>a.nota));
+    const comp=[pnd,pap,examen].filter(n=>n>0);
+    nota=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
+  }
+  return nota;
+}
+
+// ── MODO VISTA / EDICIÓN ──
+let modoEdicion=false;
+let colEditando=null; // {campo:'notasDiarias'|'apreciaciones'|'examen', idx:0}
+
+function buildCols(){
+  const t=trimActual;
+  const numND=maxItems('notasDiarias',t);
+  const numAP=maxItems('apreciaciones',t);
+  const cols=[];
+  for(let i=0;i<numND;i++) cols.push({campo:'notasDiarias',idx:i,label:`ND${i+1}`});
+  for(let i=0;i<numAP;i++) cols.push({campo:'apreciaciones',idx:i,label:`Ap.${i+1}`});
+  cols.push({campo:'examen',idx:0,label:'Examen'});
+  return cols;
+}
+
+function renderModoBar(){
+  const cols=buildCols();
+  const colSel=colEditando?`${colEditando.campo}__${colEditando.idx}`:'';
+  let html=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;padding:8px 12px;background:#f0f4ff;border-radius:10px;border:1px solid #dce8ff;">
+    <button onclick="setModo(false)" style="padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:${!modoEdicion?'#0a2f7a':'#fff'};color:${!modoEdicion?'#fff':'#0a2f7a'};border:1.5px solid #0a2f7a;">👁 Vista</button>
+    <button onclick="setModo(true)" style="padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:${modoEdicion?'#0a2f7a':'#fff'};color:${modoEdicion?'#fff':'#0a2f7a'};border:1.5px solid #0a2f7a;">✏️ Editar</button>`;
+  if(modoEdicion){
+    html+=`<span style="font-size:12px;color:#666;margin-left:4px;">Columna:</span>
+    <select onchange="setColEditando(this.value)" style="padding:5px 10px;border-radius:8px;border:1.5px solid #dce8ff;font-size:12px;font-weight:600;color:#0a2f7a;">`;
+    cols.forEach(c=>{
+      const val=`${c.campo}__${c.idx}`;
+      html+=`<option value="${val}" ${val===colSel?'selected':''}>${c.label}</option>`;
+    });
+    html+=`</select>
+    <button onclick="addColActual()" style="padding:5px 12px;border-radius:8px;border:1.5px dashed #b3c6f7;background:#fff;color:#0a2f7a;font-size:12px;cursor:pointer;">+ Col</button>`;
+    // Opciones contextuales para la columna activa
+    if(colEditando&&colEditando.campo!=='examen'){
+      html+=`<div style="margin-left:auto;display:flex;gap:6px;">
+        <button onclick="aplicarATodosActual()" style="padding:5px 12px;border-radius:8px;background:#EAF3DE;color:#27500A;border:1px solid #97C459;font-size:12px;cursor:pointer;">✔ Aplicar a todos</button>
+        <button onclick="abrirRellenarVacias('${colEditando.campo}',${colEditando.idx})" style="padding:5px 12px;border-radius:8px;background:#fff3cd;color:#7d5a00;border:1px solid #f0b33f;font-size:12px;cursor:pointer;">⚠️ Rellenar vacías</button>
+        <button onclick="abrirPegar('${colEditando.campo}',${colEditando.idx})" style="padding:5px 12px;border-radius:8px;background:#e8f0fe;color:#0a2f7a;border:1px solid #b3c6f7;font-size:12px;cursor:pointer;">📋 Pegar</button>
+        <button onclick="delColActual()" style="padding:5px 12px;border-radius:8px;background:#fce8e8;color:#791F1F;border:1px solid #E8A0A0;font-size:12px;cursor:pointer;">🗑 Eliminar col</button>
+        <button onclick="borrarTodoActual()" style="padding:5px 12px;border-radius:8px;background:#791F1F;color:#fff;border:1px solid #791F1F;font-size:12px;cursor:pointer;font-weight:600;">🗑 Borrar todo</button>
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  return html;
+}
+
+window.borrarTodoActual=()=>{
+  if(!colEditando) return;
+  const {campo,idx,label}=colEditando;
+  if(!confirm(`⚠️ BORRAR TODO de "${label}"\n\nSe eliminarán por completo: notas, fechas, descripciones, rúbricas, comentarios y excusas de TODOS los estudiantes del grado.\n\n¿Continuar?`)) return;
+  if(!confirm('Esta acción NO se puede deshacer. ¿Confirmas el borrado total?')) return;
+  const t=trimActual;
+  const codsAfectados=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=est['T'+t];
+    if(campo==='examen'){
+      trim.examen=0;
+    } else {
+      if(!trim[campo]) trim[campo]=[];
+      while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+      // Reemplazar el objeto completo — elimina rúbrica, comentario, excusa y todo dato relacionado
+      trim[campo][idx]={nota:0,desc:'',fecha:''};
+    }
+    recalc(cod,t);
+    codsAfectados.push(cod);
+  });
+  renderTabla();
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{ document.getElementById('savingIndicator').style.display='none'; toast(`🗑 Datos de "${label}" borrados por completo (${codsAfectados.length} estudiantes)`); })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
+};
+
+window.setModo=(editar)=>{
+  modoEdicion=editar;
+  if(editar&&!colEditando){
+    const cols=buildCols();
+    if(cols.length) colEditando={campo:cols[0].campo,idx:cols[0].idx,label:cols[0].label};
+  }
+  renderTabla();
+};
+
+window.setColEditando=(val)=>{
+  const [campo,idx]=val.split('__');
+  const cols=buildCols();
+  const col=cols.find(c=>`${c.campo}__${c.idx}`===val);
+  colEditando={campo,idx:parseInt(idx),label:col?.label||''};
+  renderTabla();
+};
+
+window.addColActual=()=>{
+  if(!colEditando) return;
+  const campo=colEditando.campo==='examen'?'notasDiarias':colEditando.campo;
+  Object.entries(DATOS).forEach(([,est])=>{
+    if(est.grado!==gradoActual) return;
+    const t=trimActual;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    if(!est['T'+t][campo]) est['T'+t][campo]=[];
+    est['T'+t][campo].push({nota:0,desc:'',fecha:''});
+  });
+  const cols=buildCols();
+  const nuevaIdx=(Object.values(DATOS).find(e=>e.grado===gradoActual)?.['T'+trimActual]?.[campo]?.length||1)-1;
+  colEditando={campo,idx:nuevaIdx,label:campo==='notasDiarias'?`ND${nuevaIdx+1}`:`Ap.${nuevaIdx+1}`};
+  renderTabla();
+  toast('✅ Columna agregada');
+};
+
+window.delColActual=async()=>{
+  if(!colEditando||colEditando.campo==='examen') return;
+  const {campo,idx}=colEditando;
+  if(maxItems(campo,trimActual)<=1){toast('Debe haber al menos 1 columna',true);return;}
+  if(!confirm(`¿Eliminar ${colEditando.label}? Se borran esas notas para todos.`)) return;
+  const cods=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    const arr=est['T'+trimActual]?.[campo]||[];
+    if(arr.length>idx) arr.splice(idx,1);
+    cods.push(cod);
+  });
+  colEditando=null;
+  renderTabla();
+  const batch=writeBatch(db);
+  cods.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  await batch.commit();
+  toast('✅ Columna eliminada');
+};
+
+window.aplicarATodosActual=()=>{
+  if(!colEditando) return;
+  const {campo,idx}=colEditando;
+  const pfx=campo==='notasDiarias'?'nd':'ap';
+  const fecha=document.getElementById(`applyFecha_${pfx}_${idx}`)?.value||'';
+  const desc=document.getElementById(`applyDesc_${pfx}_${idx}`)?.value||'';
+  if(!fecha&&!desc){ toast('Ingresa fecha o descripción para aplicar',true); return; }
+  let count=0;
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    const t=trimActual;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    if(!est['T'+t][campo]) est['T'+t][campo]=[];
+    while(est['T'+t][campo].length<=idx) est['T'+t][campo].push({nota:0,desc:'',fecha:''});
+    if(fecha) est['T'+t][campo][idx].fecha=fecha;
+    if(desc) est['T'+t][campo][idx].desc=desc;
+    recalc(cod,t);
+    programarGuardado(cod);
+    count++;
+  });
+  renderTabla();
+  toast(`✅ Aplicado a ${count} estudiantes`);
+};
+
+// ── TABLA ──
+window.renderTabla=()=>{
+  if(!gradoActual) return;
+  const wrap=document.querySelector('.table-wrap');
+  const scrollX=wrap?wrap.scrollLeft:0;
+  const scrollY=wrap?wrap.scrollTop:0;
+  const buscar=document.getElementById('buscarInput').value.toLowerCase();
+  const t=trimActual;
+  const numND=maxItems('notasDiarias',t);
+  const numAP=maxItems('apreciaciones',t);
+
+  let lista=Object.entries(DATOS)
+    .filter(([,e])=>e.grado===gradoActual)
+    .filter(([cod,e])=>!buscar||e.nombre.toLowerCase().includes(buscar)||cod.toLowerCase().includes(buscar))
+    .sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre));
+
+  const area=document.getElementById('tablaArea');
+  if(!lista.length){area.innerHTML=`<div style="padding:40px;text-align:center;color:#888;">No se encontraron estudiantes.</div>`;return;}
+
+  // Asegurar colEditando válido
+  if(modoEdicion&&!colEditando){
+    const cols=buildCols();
+    if(cols.length) colEditando={campo:cols[0].campo,idx:cols[0].idx,label:cols[0].label};
+  }
+
+  let html=renderModoBar();
+
+  if(!modoEdicion){
+    // ── MODO VISTA ──
+    html+=`<div class="table-wrap"><table><thead><tr>
+      <th class="left sticky-col">#</th>
+      <th class="left sticky-col2" style="min-width:185px">Nombre</th>`;
+    for(let i=0;i<numND;i++) html+=`<th>ND${i+1}</th>`;
+    html+=`<th style="background:#d6eaf8;color:#1a5276;font-weight:700;">Total ND</th>`;
+    for(let i=0;i<numAP;i++) html+=`<th>Ap.${i+1}</th>`;
+    html+=`<th style="background:#d6eaf8;color:#1a5276;font-weight:700;">Total Ap</th>`;
+    html+=`<th>Examen</th><th style="background:#0a2f7a;color:#fff;">Nota T${t}</th><th style="background:#0a2f7a;color:#fff;">Nota Anual</th></tr></thead><tbody>`;
+    lista.forEach(([cod,est],idx)=>{
+      const trim=est['T'+t]||{};
+      const nd=trim.notasDiarias||[];
+      const ap=trim.apreciaciones||[];
+      const examen=parseFloat(trim.examen)||0;
+      const notaTrim=calcTrim(est,t);
+      const notaAnual=calcAnual(est);
+      html+=`<tr onclick="resaltarFila(this)" style="cursor:pointer">
+        <td class="left sticky-col" style="color:#aaa;font-size:12px">${idx+1}</td>
+        <td class="left sticky-col2"><div style="display:flex;align-items:center;gap:6px;justify-content:space-between;"><div>${est.nombre}<span class="cod-est">${cod}</span></div><button class="btn-edit-est" title="Editar nombre y código" onclick="event.stopPropagation();abrirEditarEst('${cod}')">✏️</button></div></td>`;
+      for(let i=0;i<numND;i++){
+        const ex=nd[i]?._excusa;
+        const fechasE=fechasExcusaEst(est.nombre,gradoActual,t);
+        const autoAc=ex&&!ex.aceptada&&nd[i]?.fecha&&fechasE.includes(nd[i].fecha);
+        const esAc=ex?.aceptada||autoAc;
+        const esEx=ex&&!esAc;
+        const venc=esEx&&ex.fechaLimite&&Date.now()>new Date(ex.fechaLimite+'T23:59:59').getTime();
+        const v=nd[i]?.nota||0;
+        const cls=v>0?claseN(v):'';
+        const bg=esAc?'background:#EAF3DE;':esEx&&!venc?'background:#fff3cd;':esEx&&venc?'background:#f0f0f0;':'';
+        html+=`<td style="text-align:center;font-weight:500;${bg}"><span class="${cls}">${v>0?fmt(v):'—'}</span>${esAc?' ✅':esEx&&!venc?' ⚠️':''}</td>`;
+      }
+      if(numND>1){const p=promArr(nd.map(a=>a.nota));html+=`<td style="text-align:center;font-weight:bold;background:#d6eaf8;"><span class="${claseN(p)}">${p>0?fmt(p):'—'}</span></td>`;}
+      else{const v=nd[0]?.nota||0;html+=`<td style="text-align:center;font-weight:bold;background:#d6eaf8;"><span class="${claseN(v)}">${v>0?fmt(v):'—'}</span></td>`;}
+      for(let i=0;i<numAP;i++){
+        const ex=ap[i]?._excusa;
+        const fechasE=fechasExcusaEst(est.nombre,gradoActual,t);
+        const autoAc=ex&&!ex.aceptada&&ap[i]?.fecha&&fechasE.includes(ap[i].fecha);
+        const esAc=ex?.aceptada||autoAc;
+        const esEx=ex&&!esAc;
+        const venc=esEx&&ex.fechaLimite&&Date.now()>new Date(ex.fechaLimite+'T23:59:59').getTime();
+        const v=ap[i]?.nota||0;
+        const cls=v>0?claseN(v):'';
+        const bg=esAc?'background:#EAF3DE;':esEx&&!venc?'background:#fff3cd;':esEx&&venc?'background:#f0f0f0;':'';
+        html+=`<td style="text-align:center;font-weight:500;${bg}"><span class="${cls}">${v>0?fmt(v):'—'}</span>${esAc?' ✅':esEx&&!venc?' ⚠️':''}</td>`;
+      }
+      if(numAP>1){const p=promArr(ap.map(a=>a.nota));html+=`<td style="text-align:center;font-weight:bold;background:#d6eaf8;"><span class="${claseN(p)}">${p>0?fmt(p):'—'}</span></td>`;}
+      else{const v=ap[0]?.nota||0;html+=`<td style="text-align:center;font-weight:bold;background:#d6eaf8;"><span class="${claseN(v)}">${v>0?fmt(v):'—'}</span></td>`;}
+      html+=`<td style="text-align:center;font-weight:500;"><span class="${claseN(examen)}">${examen>0?fmt(examen):'—'}</span></td>
+        <td style="text-align:center;font-weight:bold;"><span class="${claseN(notaTrim)}">${notaTrim>0?fmt(notaTrim):'—'}</span></td>
+        <td style="text-align:center;font-weight:bold;"><span class="${claseN(notaAnual)}">${notaAnual>0?fmt(notaAnual):'—'}</span></td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+
+  } else {
+    // ── MODO EDICIÓN ──
+    const {campo,idx}=colEditando;
+    const esExamen=campo==='examen';
+    const pfx=campo==='notasDiarias'?'nd':'ap';
+
+    // Fila aplicar a todos (solo ND y AP)
+    let applyHtml='';
+    if(!esExamen){
+      applyHtml=`<tr class="apply-row">
+        <td colspan="2" class="apply-label">📋 Aplicar a todos:</td>
+        <td><input type="date" id="applyFecha_${pfx}_${idx}" style="width:130px"></td>
+        <td><input type="text" id="applyDesc_${pfx}_${idx}" placeholder="Descripción común" style="width:160px"></td>
+        <td></td></tr>`;
+    }
+
+    html+=`<div class="table-wrap"><table><thead><tr>
+      <th class="left sticky-col">#</th>
+      <th class="left sticky-col2" style="min-width:185px">Nombre</th>
+      ${!esExamen?`<th style="min-width:120px">Fecha</th><th style="min-width:160px">Descripción</th>`:''}
+      <th style="min-width:80px">Nota</th>
+    </tr></thead><tbody>${applyHtml}`;
+
+    lista.forEach(([cod,est],i)=>{
+      const trim=est['T'+t]||{};
+      let item;
+      if(esExamen){
+        item={nota:trim.examen||0};
+      } else {
+        const arr=trim[campo]||[];
+        while(arr.length<=idx) arr.push({nota:0,desc:'',fecha:''});
+        item=arr[idx];
+      }
+      const ex=item?._excusa;
+      // Auto-aceptar visualmente si la fecha de la nota coincide con E en asistencia
+      const fechasE=fechasExcusaEst(est.nombre,gradoActual,t);
+      const autoAceptada=ex&&!ex.aceptada&&item?.fecha&&fechasE.includes(item.fecha);
+      const esExcusa=ex&&!ex.aceptada&&!autoAceptada;
+      const esAceptada=ex?.aceptada||autoAceptada;
+      const hoyMs=Date.now();
+      const limMs=ex?.fechaLimite?new Date(ex.fechaLimite+'T23:59:59').getTime():0;
+      const vencida=esExcusa&&limMs&&hoyMs>limMs;
+      const notaCls=esAceptada?'nota-excusa-verde':esExcusa?(vencida?'nota-excusa-vencida':'nota-excusa'):'';
+      html+=`<tr onclick="resaltarFila(this)">
+        <td class="left sticky-col" style="color:#aaa;font-size:12px">${i+1}</td>
+        <td class="left sticky-col2">${est.nombre}<span class="cod-est">${cod}</span></td>`;
+      if(!esExamen){
+        html+=`<td><input type="date" value="${item?.fecha||''}" onchange="updN('${cod}',${t},'${campo}',${idx},'fecha',this.value)"></td>
+               <td><input type="text" class="desc-input" value="${item?.desc||''}" placeholder="Descripción" onchange="updN('${cod}',${t},'${campo}',${idx},'desc',this.value)" style="width:160px"></td>`;
+      }
+      html+=`<td style="white-space:nowrap">
+        <input type="number" min="0" max="5" step="0.1"
+          value="${item?.nota>0?fmt(item.nota):'0.0'}"
+          onchange="${esExamen?`updExamen('${cod}',${t},this.value)`:`updN('${cod}',${t},'${campo}',${idx},'nota',this.value)`}"
+          style="width:65px" class="${notaCls}">
+        ${esAceptada?`<button title="Excusa aceptada — clic para quitar marcador" onclick="gestionarExcusa('${cod}',${t},'${campo}',${idx})" style="background:#1a7a3a;border:none;color:white;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:12px;margin-left:3px">✅</button>`
+        :esExcusa?`<button title="${vencida?'No presentó excusa':'Pendiente excusa'}" onclick="gestionarExcusa('${cod}',${t},'${campo}',${idx})" style="background:${vencida?'#888':'#f0b33f'};border:none;color:white;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:12px;margin-left:3px">${vencida?'❗':'⚠️'}</button>`:''}
+        ${!esExamen?`<button title="Rúbrica" onclick="aplicarRubricaANota('${cod}',${t},'${campo}',${idx})" style="background:#7b2ff7;border:none;color:white;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:12px;margin-left:3px">📊</button>`:''}
+      </td></tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }
+
+  area.innerHTML=html;
+  const newWrap=document.querySelector('.table-wrap');
+  if(newWrap){newWrap.scrollLeft=scrollX;newWrap.scrollTop=scrollY;}
+};
+
+
+// ── PEGAR NOTAS DESDE EXCEL ──
+let _pagarCampo=null, _pegarIdx=null;
+
+window.abrirPegar=(campo,idx)=>{
+  _pagarCampo=campo; _pegarIdx=idx;
+  const label=campo==='examen'?'Examen':campo==='notasDiarias'?`ND${idx+1}`:`Aprec.${idx+1}`;
+  document.getElementById('modalPegarTitulo').textContent=`📋 Pegar notas — ${label}`;
+  document.getElementById('pasteArea').value='';
+  document.getElementById('pastePreview').style.display='none';
+  document.getElementById('modalPegar').classList.add('show');
+  setTimeout(()=>document.getElementById('pasteArea').focus(),100);
+};
+
+window.previsualizarPaste=()=>{
+  const lines=document.getElementById('pasteArea').value
+    .split('\n').map(l=>l.trim().replace(',','.')).filter(l=>l!=='');
+  const prev=document.getElementById('pastePreview');
+  if(!lines.length){ prev.style.display='none'; return; }
+  prev.style.display='block';
+  prev.innerHTML='<strong style="color:#0a2f7a;font-size:12px">Vista previa ('+lines.length+' notas):</strong><br>'+
+    lines.map(n=>`<span>${parseFloat(n)||0}</span>`).join('');
+};
+
+window.confirmarPegar=()=>{
+  const lines=document.getElementById('pasteArea').value
+    .split('\n').map(l=>l.trim().replace(',','.')).filter(l=>l!=='');
+  if(!lines.length){ toast('No hay notas para pegar',true); return; }
+
+  const t=trimActual;
+  const campo=_pagarCampo;
+  const idx=_pegarIdx;
+
+  const lista=Object.entries(DATOS)
+    .filter(([,e])=>e.grado===gradoActual)
+    .sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre));
+
+  if(lines.length>lista.length){
+    if(!confirm(`Tienes ${lines.length} notas pero solo ${lista.length} estudiantes. ¿Continuar con las primeras ${lista.length}?`)) return;
+  }
+
+  let aplicadas=0;
+  const codsAfectados=[];
+  lista.forEach(([cod,est],i)=>{
+    if(i>=lines.length) return;
+    const nota=Math.min(5,Math.max(0,parseFloat(lines[i])||0));
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+
+    if(campo==='examen'){
+      est['T'+t].examen=nota;
+    } else {
+      const trim=est['T'+t];
+      if(!trim[campo]) trim[campo]=[];
+      while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+      trim[campo][idx].nota=nota;
+    }
+    recalc(cod,t);
+    codsAfectados.push(cod);
+    aplicadas++;
+  });
+
+  cerrarModal('modalPegar');
+  renderTabla();
+
+  // Guardar con batch atómico
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{
+      document.getElementById('savingIndicator').style.display='none';
+      toast(`✅ ${aplicadas} notas guardadas en Firebase`);
+    })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
+};
+
+// ── LIMPIAR COLUMNA COMPLETA ──
+window.limpiarColumna=async(campo,idx)=>{
+  if(!confirm(`¿Limpiar fecha, descripción y nota de ${campo==='notasDiarias'?'ND':'Aprec.'}${idx+1} para todos?`)) return;
+  const t=trimActual;
+  const codsAfectados=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=est['T'+t];
+    if(!trim[campo]) trim[campo]=[];
+    while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+    trim[campo][idx]={nota:0,desc:'',fecha:''};
+    recalc(cod,t);
+    codsAfectados.push(cod);
+  });
+  renderTabla();
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{ document.getElementById('savingIndicator').style.display='none'; toast('✅ Columna limpiada y guardada'); })
+    .catch(e=>toast('❌ Error: '+e.message,true));
+};
+
+// ── APLICAR FECHA/DESC A TODOS ──
+window.aplicarATodos=(campo,idx)=>{
+  const prefix = campo==='notasDiarias'?'nd':'ap';
+  const fecha = document.getElementById(`applyFecha_${prefix}_${idx}`)?.value || '';
+  const desc  = document.getElementById(`applyDesc_${prefix}_${idx}`)?.value || '';
+  if(!fecha && !desc){ toast('Escribe una fecha o descripción primero',true); return; }
+
+  const t=trimActual;
+  let count=0;
+  const codsAfectados=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=est['T'+t];
+    if(!trim[campo]) trim[campo]=[];
+    while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+    if(fecha) trim[campo][idx].fecha=fecha;
+    if(desc)  trim[campo][idx].desc=desc;
+    codsAfectados.push(cod);
+    count++;
+  });
+  // Guardar con batch atómico
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{
+      document.getElementById('savingIndicator').style.display='none';
+      toast(`✅ Aplicado y guardado en ${count} estudiantes`);
+    })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
+  renderTabla();
+};
+
+// ── COLUMNAS DINÁMICAS ──
+window.addCol=campo=>{
+  const codsAfectados=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    const t=trimActual;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    if(!est['T'+t][campo]) est['T'+t][campo]=[];
+    est['T'+t][campo].push({nota:0,desc:'',fecha:''});
+    codsAfectados.push(cod);
+  });
+  renderTabla();
+  // Guardar en Firebase para que la columna persista
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit().then(()=>toast('✅ Columna agregada y guardada')).catch(e=>toast('❌ Error: '+e.message,true));
+};
+window.delCol=async(campo,idx)=>{
+  if(maxItems(campo,trimActual)<=1){ toast('Debe haber al menos 1',true); return; }
+  if(!confirm(`¿Eliminar columna ${idx+1}? Se borran esas notas para todos.`)) return;
+  const codsAfectados=[];
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    const arr=est['T'+trimActual]?.[campo]||[];
+    if(arr.length>idx) arr.splice(idx,1);
+    codsAfectados.push(cod);
+  });
+  renderTabla();
+  // Guardar en Firebase con batch
+  document.getElementById('savingIndicator').style.display='inline';
+  const batch=writeBatch(db);
+  codsAfectados.forEach(cod=>batch.set(doc(db,'estudiantes',cod),DATOS[cod]));
+  batch.commit()
+    .then(()=>{ document.getElementById('savingIndicator').style.display='none'; toast('✅ Columna eliminada y guardada'); })
+    .catch(e=>toast('❌ Error al guardar: '+e.message,true));
+};
+
+// ── EDICIÓN ──
+window.updN=(cod,t,campo,idx,subcampo,valor)=>{
+  if(!DATOS[cod]['T'+t]) DATOS[cod]['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+  const trim=DATOS[cod]['T'+t];
+  if(!trim[campo]) trim[campo]=[];
+  while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+  if(subcampo==='nota'){
+    const n=Math.min(5,Math.max(0,parseFloat(valor)||0));
+    trim[campo][idx].nota=n;
+    // Forzar visual con 1 decimal en el input
+    const inputs=document.querySelectorAll(`input[onchange*="updN('${cod}',${t},'${campo}',${idx},'nota'"]`);
+    inputs.forEach(inp=>{ if(document.activeElement!==inp) inp.value=(Math.floor(n*10)/10).toFixed(1); });
+  } else trim[campo][idx][subcampo]=valor;
+  recalc(cod,t); programarGuardado(cod);
+};
+window.updExamen=(cod,t,valor)=>{
+  if(!DATOS[cod]['T'+t]) DATOS[cod]['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+  DATOS[cod]['T'+t].examen=Math.min(5,Math.max(0,parseFloat(valor)||0));
+  recalc(cod,t); programarGuardado(cod);
+};
+function recalc(cod,t){
+  const trim=DATOS[cod]['T'+t]||{};
+  // Solo recalcular si no fue editado manualmente
+  if(!trim._manual){
+    const ndArr=(trim.notasDiarias||[]).filter(a=>parseFloat(a.nota)>0);
+    const apArr=(trim.apreciaciones||[]).filter(a=>parseFloat(a.nota)>0);
+    const examen=parseFloat(trim.examen)||0;
+    // Trimestre completo = tiene ND + Ap + Examen
+    const completo=ndArr.length>0&&apArr.length>0&&examen>0;
+    if(completo){
+      const nd=promArr(ndArr.map(a=>a.nota));
+      const ap=promArr(apArr.map(a=>a.nota));
+      const comp=[nd,ap,examen].filter(n=>n>0);
+      trim.notaTrim=comp.length?Math.floor((comp.reduce((s,n)=>s+n,0)/comp.length)*10)/10:0;
+    } else {
+      trim.notaTrim=0; // No guardar nota parcial en Firebase
+    }
+  }
+  if(!DATOS[cod]._manualAnual){
+    // Solo incluir trimestres completos (notaTrim > 0 y con _manual, o calcTrim > 0)
+    const trims=[1,2,3].map(t2=>calcTrim(DATOS[cod],t2)).filter(x=>x>0);
+    DATOS[cod].notaAnual=trims.length?Math.floor((trims.reduce((s,x)=>s+x,0)/trims.length)*10)/10:0;
+  }
+  const nt=document.getElementById(`nt_${cod}_${t}`);
+  const na=document.getElementById(`na_${cod}`);
+  if(nt){ nt.value=fmt(trim.notaTrim); nt.style.color=claseColor(trim.notaTrim); }
+  if(na){ na.value=fmt(DATOS[cod].notaAnual); na.style.color=claseColor(DATOS[cod].notaAnual); }
+  renderStats();
+}
+
+// ── OVERRIDE MANUAL NOTA TRIM / ANUAL ──
+window.overrideNota=(cod,t,tipo,valor)=>{
+  const n=Math.min(5,Math.max(0,parseFloat(valor)||0));
+  if(tipo==='trim'){
+    if(!DATOS[cod]['T'+t]) DATOS[cod]['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    DATOS[cod]['T'+t].notaTrim=n;
+    DATOS[cod]['T'+t]._manual=true; // marcar como manual
+    // Recalcular anual con calcTrim (solo trimestres completos)
+    const trims=[1,2,3].map(t2=>calcTrim(DATOS[cod],t2)).filter(x=>x>0);
+    if(!DATOS[cod]._manualAnual)
+      DATOS[cod].notaAnual=trims.length?Math.floor((trims.reduce((s,x)=>s+x,0)/trims.length)*10)/10:0;
+    const na=document.getElementById(`na_${cod}`);
+    if(na&&!DATOS[cod]._manualAnual){ na.value=fmt(DATOS[cod].notaAnual); na.style.color=claseColor(DATOS[cod].notaAnual); }
+    const nt=document.getElementById(`nt_${cod}_${t}`);
+    if(nt){ nt.style.color=claseColor(n); }
+  } else {
+    DATOS[cod].notaAnual=n;
+    DATOS[cod]._manualAnual=true;
+    const na=document.getElementById(`na_${cod}`);
+    if(na){ na.style.color=claseColor(n); }
+  }
+  programarGuardado(cod);
+};
+
+function claseColor(v){ const n=parseFloat(v); if(!n||isNaN(n))return'#555'; if(n>=4.0)return'#1a7a3a'; if(n>=3.0)return'#c07a00'; return'#c0392b'; }
+
+window.resaltarFila=(fila)=>{
+  document.querySelectorAll('tr.fila-activa').forEach(f=>f.classList.remove('fila-activa'));
+  fila.classList.add('fila-activa');
+};
+
+// ── GUARDAR ──
+// Cola de guardados pendientes — garantiza que TODOS los estudiantes
+// modificados se guarden (antes, llamadas en bucle cancelaban guardados previos)
+const _pendientesGuardar=new Set();
+function programarGuardado(cod){
+  _pendientesGuardar.add(cod);
+  document.getElementById('savingIndicator').style.display='inline';
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    const codes=[..._pendientesGuardar];
+    _pendientesGuardar.clear();
+    try{
+      // writeBatch admite hasta 500 operaciones — dividir si fuera necesario
+      for(let i=0;i<codes.length;i+=400){
+        const batch=writeBatch(db);
+        codes.slice(i,i+400).forEach(c=>{ if(DATOS[c]) batch.set(doc(db,'estudiantes',c),DATOS[c]); });
+        await batch.commit();
+      }
+      document.getElementById('savingIndicator').style.display='none';
+      toast(`✅ Guardado en Firebase (${codes.length} estudiante${codes.length!==1?'s':''})`);
+    }catch(e){
+      // Reintentar: volver a poner en cola los que fallaron
+      codes.forEach(c=>_pendientesGuardar.add(c));
+      toast('❌ Error al guardar — reintentando...',true);
+      setTimeout(()=>{ if(_pendientesGuardar.size) programarGuardado([..._pendientesGuardar][0]); },3000);
+    }
+  },1200);
+}
+window.editarObs=cod=>{
+  const obs=prompt('Observación para '+DATOS[cod].nombre+':',DATOS[cod].observaciones||'');
+  if(obs!==null){ DATOS[cod].observaciones=obs; programarGuardado(cod); }
+};
+
+// ── AGREGAR / ELIMINAR ──
+window.abrirModalNuevo=()=>{
+  const sel=document.getElementById('nuevoGrado');
+  sel.innerHTML=GRADOS.map(g=>`<option${g===gradoActual?' selected':''}>${g}</option>`).join('');
+  document.getElementById('modalNuevo').classList.add('show');
+};
+window.cerrarModal=id=>document.getElementById(id).classList.remove('show');
+
+// ── RELLENAR VACÍAS CON EXCUSA ──
+let _rvCampo='', _rvIdx=0;
+
+window.abrirRellenarVacias=(campo,idx)=>{
+  _rvCampo=campo; _rvIdx=idx;
+  document.getElementById('rv-error').style.display='none';
+  document.querySelector('input[name="rv-tipo"][value="auto"]').checked=true;
+  document.getElementById('rv-fecha-wrap').style.display='none';
+  document.getElementById('modalRellenar').classList.add('show');
+};
+
+window.toggleFechaLimite=(val)=>{
+  document.getElementById('rv-fecha-wrap').style.display=val==='manual'?'block':'none';
+};
+
+window.confirmarRellenar=()=>{
+  const errEl=document.getElementById('rv-error');
+  errEl.style.display='none';
+  const nota=parseFloat(document.getElementById('rv-nota').value);
+  const tipo=document.querySelector('input[name="rv-tipo"]:checked').value;
+  let fechaLimite='';
+  if(tipo==='auto'){
+    const d=new Date(); d.setDate(d.getDate()+10);
+    fechaLimite=d.toLocaleDateString('en-CA',{timeZone:'America/Panama'});
+  } else {
+    fechaLimite=document.getElementById('rv-fecha').value;
+    if(!fechaLimite){ errEl.textContent='Selecciona una fecha límite.'; errEl.style.display='block'; return; }
+  }
+  let count=0;
+  const t=trimActual;
+  Object.entries(DATOS).forEach(([cod,est])=>{
+    if(est.grado!==gradoActual) return;
+    if(!est['T'+t]) est['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=est['T'+t];
+    if(!trim[_rvCampo]) trim[_rvCampo]=[];
+    while(trim[_rvCampo].length<=_rvIdx) trim[_rvCampo].push({nota:0,desc:'',fecha:''});
+    const item=trim[_rvCampo][_rvIdx];
+    const notaActual=parseFloat(item.nota)||0;
+    if(notaActual===0){
+      trim[_rvCampo][_rvIdx]={...item, nota, _excusa:{fechaLimite, aceptada:false}};
+      recalc(cod,t); programarGuardado(cod); count++;
+    }
+  });
+  cerrarModal('modalRellenar');
+  renderTabla();
+  toast(`⚠️ ${count} casilla${count!==1?'s':''} rellenada${count!==1?'s':''} con ${nota.toFixed(1)}`);
+};
+
+window.gestionarExcusa=(cod,t,campo,idx)=>{
+  const item=DATOS[cod]?.['T'+t]?.[campo]?.[idx];
+  if(!item?._excusa) return;
+  const hoyMs=Date.now();
+  const limMs=item._excusa.fechaLimite?new Date(item._excusa.fechaLimite+'T23:59:59').getTime():0;
+  const vencida=limMs&&hoyMs>limMs;
+  if(vencida){
+    if(confirm('¿Quitar el marcador? La nota quedará como normal sin mensaje.')){
+      delete DATOS[cod]['T'+t][campo][idx]._excusa;
+      programarGuardado(cod);renderTabla();toast('✅ Marcador quitado');
+    }
+  } else {
+    if(confirm('¿Aceptar la excusa? El estudiante verá "Se ha recibido su excusa justificada".')){
+      // Marcar como aceptada — aparece verde en el portal del estudiante
+      DATOS[cod]['T'+t][campo][idx]._excusa={...item._excusa,aceptada:true};
+      programarGuardado(cod);renderTabla();toast('✅ Excusa aceptada — el estudiante verá confirmación verde');
+    }
+  }
+};
+
+// ── NOTA GRUPAL ──
+let _ngEsts=[];
+window.abrirNotaGrupal=()=>{
+  _ngEsts=Object.entries(DATOS)
+    .filter(([,e])=>e.grado===gradoActual)
+    .sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre));
+  if(!_ngEsts.length){ toast('No hay estudiantes en este grado',true); return; }
+
+  // Poblar selector de columnas con la activa pre-seleccionada
+  const cols=buildCols();
+  const sel=document.getElementById('ng-campo');
+  sel.innerHTML=cols.map(c=>`<option value="${c.campo}__${c.idx}">${c.label}</option>`).join('');
+  // Pre-seleccionar columna activa en modo edición
+  if(colEditando){
+    const val=`${colEditando.campo}__${colEditando.idx}`;
+    if([...sel.options].some(o=>o.value===val)) sel.value=val;
+  }
+
+  const hoy=new Date().toLocaleDateString('en-CA',{timeZone:'America/Panama'});
+  document.getElementById('ng-fecha').value=hoy;
+  document.getElementById('ng-nota').value='';
+  document.getElementById('ng-desc').value='';
+  document.getElementById('ng-buscar').value='';
+  document.getElementById('ng-error').style.display='none';
+  ngRenderLista('');
+  document.getElementById('modalNotaGrupal').classList.add('show');
+};
+
+function ngRenderLista(filtro){
+  const lista=document.getElementById('ng-lista');
+  const filtrados=filtro?_ngEsts.filter(([,e])=>e.nombre.toLowerCase().includes(filtro.toLowerCase())):_ngEsts;
+  lista.innerHTML=filtrados.map(([cod,e])=>`
+    <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #eef3ff;cursor:pointer;font-size:13px;color:#1a1a1a;" onmouseenter="this.style.background='#eef3ff'" onmouseleave="this.style.background=''">
+      <input type="checkbox" class="ng-check" data-cod="${cod}" style="width:16px;height:16px;cursor:pointer;accent-color:#0a2f7a;">
+      <span>${e.nombre}</span>
+    </label>`).join('');
+}
+
+window.ngFiltrar=()=>ngRenderLista(document.getElementById('ng-buscar').value);
+window.ngSelTodos=(sel)=>document.querySelectorAll('.ng-check').forEach(cb=>cb.checked=sel);
+
+window.aplicarNotaGrupal=()=>{
+  const errEl=document.getElementById('ng-error');
+  errEl.style.display='none';
+  const campoVal=document.getElementById('ng-campo').value;
+  const [campo,idxStr]=campoVal.split('__');
+  const idx=parseInt(idxStr);
+  const notaRaw=parseFloat(document.getElementById('ng-nota').value);
+  const desc=document.getElementById('ng-desc').value.trim();
+  const fecha=document.getElementById('ng-fecha').value;
+  const seleccionados=[...document.querySelectorAll('.ng-check:checked')].map(cb=>cb.dataset.cod);
+  if(!seleccionados.length){ errEl.textContent='Selecciona al menos un integrante.'; errEl.style.display='block'; return; }
+  if(isNaN(notaRaw)||notaRaw<0||notaRaw>5){ errEl.textContent='La nota debe estar entre 0 y 5.'; errEl.style.display='block'; return; }
+  if(!fecha){ errEl.textContent='Selecciona una fecha.'; errEl.style.display='block'; return; }
+  const nota=Math.floor(notaRaw*10)/10;
+
+  seleccionados.forEach(cod=>{
+    const t=trimActual;
+    if(!DATOS[cod]['T'+t]) DATOS[cod]['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=DATOS[cod]['T'+t];
+    if(!trim[campo]) trim[campo]=[];
+    while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:''});
+    trim[campo][idx]={nota,desc:desc||'Nota Grupal',fecha};
+    recalc(cod,t);
+    programarGuardado(cod);
+  });
+  cerrarModal('modalNotaGrupal');
+  renderTabla();
+  toast(`✅ Nota ${nota.toFixed(1)} aplicada a ${seleccionados.length} estudiante${seleccionados.length>1?'s':''}`);
+};
+window.agregarEstudiante=async()=>{
+  const cod=document.getElementById('nuevoCodigo').value.trim().toUpperCase();
+  const nombre=document.getElementById('nuevoNombre').value.trim();
+  const grado=document.getElementById('nuevoGrado').value;
+  const obs=document.getElementById('nuevoObs').value.trim();
+  if(!cod||!nombre){ toast('Completa código y nombre',true); return; }
+  if(DATOS[cod]){ toast('Ese código ya existe',true); return; }
+  const et=()=>({notasDiarias:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],apreciaciones:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],examen:0,notaTrim:0});
+  const nuevo={nombre,grado,T1:et(),T2:et(),T3:et(),notaAnual:0,observaciones:obs};
+  try{
+    await setDoc(doc(db,'estudiantes',cod),nuevo);
+    DATOS[cod]=nuevo;
+    cerrarModal('modalNuevo');
+    ['nuevoCodigo','nuevoNombre','nuevoObs'].forEach(id=>document.getElementById(id).value='');
+    renderSidebar(); seleccionarGrado(grado);
+    toast('✅ Estudiante agregado');
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+window.eliminarEstudiante=async cod=>{
+  if(!confirm(`¿Eliminar a ${DATOS[cod].nombre}?`)) return;
+  try{
+    await deleteDoc(doc(db,'estudiantes',cod));
+    delete DATOS[cod];
+    renderSidebar(); renderStats(); renderTabla();
+    toast('Estudiante eliminado');
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+
+// ══ RÚBRICAS ══
+let PLANTILLAS = {}; // {id: {nombre, total, criterios:[{n,max}]}}
+let _rubricaEditId = null;
+let _aplicarCod = null, _aplicarTrim = null, _aplicarCampo = null, _aplicarIdx = null;
+let _criteriosAplicar = [];
+
+// Cargar plantillas desde Firebase
+async function cargarPlantillas(){
+  try{
+    const snap = await getDoc(doc(db,'config','rubricas'));
+    if(snap.exists()) PLANTILLAS = snap.data().plantillas || {};
+  }catch(e){ PLANTILLAS={}; }
+}
+
+async function guardarPlantillasFirebase(){
+  await setDoc(doc(db,'config','rubricas'),{plantillas:PLANTILLAS});
+}
+
+// Abrir gestor de rúbricas
+window.abrirModalRubrica=()=>{
+  renderListadoPlantillas();
+  document.getElementById('modalRubrica').classList.add('show');
+};
+
+function renderListadoPlantillas(){
+  const cont=document.getElementById('listadoPlantillas');
+  const keys=Object.keys(PLANTILLAS);
+  if(!keys.length){
+    cont.innerHTML='<p style="color:#888;font-size:13px;text-align:center;padding:20px">No hay rúbricas creadas aún.</p>';
+    return;
+  }
+  cont.innerHTML=keys.map(id=>{
+    const p=PLANTILLAS[id];
+    return`<div class="plantilla-item">
+      <div>
+        <div class="plantilla-nombre">${p.nombre}</div>
+        <div class="plantilla-info">${p.criterios.length} criterios · ${p.total} pts totales</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" style="background:#e8f0fe;color:var(--azul)" onclick="editarPlantilla('${id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarPlantilla('${id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.nuevaPlantilla=()=>{
+  _rubricaEditId = 'r_'+Date.now();
+  document.getElementById('tituloEditRubrica').textContent='📊 Nueva Rúbrica';
+  document.getElementById('rubricaNombre').value='';
+  document.getElementById('rubricaTotal').value='';
+  document.getElementById('rubricaCriterios').innerHTML='';
+  document.getElementById('rubricaFormula').textContent='';
+  document.getElementById('rubricaPtsTotales').textContent='0';
+  document.getElementById('rubricaNotaCalc').textContent='0.0';
+  // Agregar 3 criterios por defecto
+  _criteriosEdit=[];
+  for(let i=0;i<3;i++) _criteriosEdit.push({n:'',max:0,obt:0});
+  renderCriteriosEdit();
+  cerrarModal('modalRubrica');
+  document.getElementById('modalEditarRubrica').classList.add('show');
+};
+
+window.editarPlantilla=id=>{
+  _rubricaEditId=id;
+  const p=PLANTILLAS[id];
+  document.getElementById('tituloEditRubrica').textContent='✏️ Editar Rúbrica';
+  document.getElementById('rubricaNombre').value=p.nombre;
+  document.getElementById('rubricaTotal').value=p.total;
+  _criteriosEdit=p.criterios.map(c=>({n:c.n,max:c.max,obt:0}));
+  renderCriteriosEdit();
+  cerrarModal('modalRubrica');
+  document.getElementById('modalEditarRubrica').classList.add('show');
+};
+
+window.eliminarPlantilla=id=>{
+  if(!confirm(`¿Eliminar la rúbrica "${PLANTILLAS[id].nombre}"?`)) return;
+  delete PLANTILLAS[id];
+  guardarPlantillasFirebase();
+  renderListadoPlantillas();
+  toast('Rúbrica eliminada');
+};
+
+let _criteriosEdit=[];
+
+function renderCriteriosEdit(){
+  const cont=document.getElementById('rubricaCriterios');
+  cont.innerHTML=_criteriosEdit.map((c,i)=>`
+    <div class="rubrica-row">
+      <input type="text" value="${c.n}" placeholder="Nombre del criterio"
+        oninput="_criteriosEdit[${i}].n=this.value">
+      <input type="number" min="0" value="${c.max}" placeholder="0"
+        onchange="_criteriosEdit[${i}].max=parseFloat(this.value)||0;actualizarFormulaRubrica()">
+      <input type="number" min="0" value="${c.obt}" placeholder="0"
+        onchange="_criteriosEdit[${i}].obt=Math.min(_criteriosEdit[${i}].max,parseFloat(this.value)||0);this.value=_criteriosEdit[${i}].obt;actualizarFormulaRubrica()">
+      <button type="button" onclick="eliminarCriterioRubrica(${i})" title="Eliminar criterio"
+        style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px;padding:4px 8px;">✕</button>
+    </div>`).join('');
+  actualizarFormulaRubrica();
+}
+
+// Sincroniza los valores escritos en el DOM hacia _criteriosEdit
+// (evita perder cambios o borrar la fila equivocada por eventos pendientes)
+function syncCriteriosDesdeDOM(){
+  const rows=document.getElementById('rubricaCriterios').querySelectorAll('.rubrica-row');
+  rows.forEach((row,i)=>{
+    if(!_criteriosEdit[i]) return;
+    const inputs=row.querySelectorAll('input');
+    if(inputs.length>=3){
+      _criteriosEdit[i].n=inputs[0].value;
+      _criteriosEdit[i].max=parseFloat(inputs[1].value)||0;
+      _criteriosEdit[i].obt=parseFloat(inputs[2].value)||0;
+    }
+  });
+}
+
+window.eliminarCriterioRubrica=async(i)=>{
+  // 1. Leer primero TODOS los valores actuales del DOM para no perder nada
+  syncCriteriosDesdeDOM();
+  // 2. Eliminar exactamente el criterio i sin afectar los demás
+  _criteriosEdit.splice(i,1);
+  // 3. Re-renderizar de inmediato
+  renderCriteriosEdit();
+  // 4. Autoguardar en Firebase si la rúbrica ya existe (no espera al botón Guardar)
+  if(PLANTILLAS[_rubricaEditId]){
+    const nombre=document.getElementById('rubricaNombre').value.trim()||PLANTILLAS[_rubricaEditId].nombre;
+    const total=parseFloat(document.getElementById('rubricaTotal').value)||PLANTILLAS[_rubricaEditId].total;
+    PLANTILLAS[_rubricaEditId]={nombre,total,criterios:_criteriosEdit.map(c=>({n:(c.n||'').trim()||'Sin nombre',max:c.max}))};
+    try{
+      await guardarPlantillasFirebase();
+      toast('🗑 Criterio eliminado y guardado');
+    }catch(e){ toast('❌ Error al guardar: '+e.message,true); }
+  }
+};
+
+window.agregarCriterioRubrica=()=>{
+  _criteriosEdit.push({n:'',max:0,obt:0});
+  renderCriteriosEdit();
+};
+
+window.actualizarFormulaRubrica=()=>{
+  const total=parseFloat(document.getElementById('rubricaTotal').value)||0;
+  const obt=_criteriosEdit.reduce((s,c)=>s+c.obt,0);
+  const nota=total>0?Math.min(5,Math.floor(((obt*4/total)+1)*10)/10):0;
+  document.getElementById('rubricaPtsTotales').textContent=obt+'/'+total;
+  document.getElementById('rubricaNotaCalc').textContent=nota.toFixed(1);
+  document.getElementById('rubricaFormula').textContent=
+    total>0?`Fórmula MEDUCA: (${obt} × 4 ÷ ${total}) + 1 = ${nota.toFixed(1)}`:'';
+};
+
+window.guardarPlantilla=async()=>{
+  const nombre=document.getElementById('rubricaNombre').value.trim();
+  const total=parseFloat(document.getElementById('rubricaTotal').value)||0;
+  if(!nombre){ toast('Escribe el nombre de la actividad',true); return; }
+  if(!total){ toast('Escribe el puntaje total',true); return; }
+  
+  // Leer valores directamente de los inputs del DOM
+  const rows=document.getElementById('rubricaCriterios').querySelectorAll('.rubrica-row');
+  const criterios=[];
+  rows.forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    if(inputs.length>=2){
+      const n=inputs[0].value.trim();
+      const max=parseFloat(inputs[1].value)||0;
+      criterios.push({n:n||'Sin nombre',max});
+    }
+  });
+  
+  PLANTILLAS[_rubricaEditId]={nombre,total,criterios};
+  await guardarPlantillasFirebase();
+  cerrarModal('modalEditarRubrica');
+  toast('✅ Rúbrica guardada');
+};
+
+// Aplicar rúbrica a una nota específica
+window.abrirRubricaGrupal=()=>{
+  const keys=Object.keys(PLANTILLAS);
+  if(!keys.length){ toast('Crea una rúbrica primero desde el botón 📊 Rúbricas',true); return; }
+  // Marcar que es uso grupal
+  _aplicarCod='__GRUPAL__'; _aplicarTrim=trimActual; _rubricaGuardadaActual=[];
+  const campoVal=document.getElementById('ng-campo').value;
+  const [campo,idxStr]=campoVal.split('__');
+  _aplicarCampo=campo; _aplicarIdx=parseInt(idxStr);
+  _rubricaComentario='';
+  document.getElementById('tituloAplicar').textContent='📊 Rúbrica Grupal';
+  document.getElementById('subtituloAplicar').textContent='Se aplicará a todos los integrantes seleccionados';
+  if(keys.length===1){
+    cargarRubricaAplicar(keys[0],[]);
+  } else {
+    document.getElementById('aplicarCriterios').innerHTML=
+      `<div style="padding:10px">
+        <p style="font-size:13px;margin-bottom:8px;color:#555">Selecciona la rúbrica:</p>
+        ${keys.map(id=>`<div class="plantilla-item" onclick="cargarRubricaAplicar('${id}')">
+          <div><div class="plantilla-nombre">${PLANTILLAS[id].nombre}</div>
+          <div class="plantilla-info">${PLANTILLAS[id].total} pts</div></div>
+          <span style="color:#0a2f7a;font-size:18px">→</span>
+        </div>`).join('')}
+      </div>`;
+    document.getElementById('aplicarFormula').textContent='';
+    document.getElementById('aplicarPts').textContent='—';
+    document.getElementById('aplicarNota').textContent='—';
+  }
+  document.getElementById('modalAplicarRubrica').classList.add('show');
+};
+
+window.aplicarRubricaANota=(cod,t,campo,idx)=>{
+  const keys=Object.keys(PLANTILLAS);
+  if(!keys.length){ toast('Crea una rúbrica primero desde el botón 📊 Rúbricas',true); return; }
+  _aplicarCod=cod; _aplicarTrim=t; _aplicarCampo=campo; _aplicarIdx=idx;
+  const nombre=DATOS[cod]?.nombre||cod;
+  const trim=DATOS[cod]?.['T'+t];
+  const arr=trim?.[campo]||[];
+  const desc=arr[idx]?.desc||'Nota';
+  const rubricaGuardada=arr[idx]?.rubrica||[];
+  _rubricaGuardadaActual=rubricaGuardada;
+  _rubricaComentario=arr[idx]?.comentario||'';
+  document.getElementById('tituloAplicar').textContent=`📋 ${desc}`;
+  document.getElementById('subtituloAplicar').textContent=`Estudiante: ${nombre}`;
+  if(keys.length===1){
+    cargarRubricaAplicar(keys[0], rubricaGuardada);
+  } else {
+    document.getElementById('aplicarCriterios').innerHTML=
+      `<div style="padding:10px">
+        <p style="font-size:13px;margin-bottom:8px;color:#555">Selecciona la rúbrica a aplicar:</p>
+        ${keys.map(id=>`<div class="plantilla-item" onclick="cargarRubricaAplicar('${id}')">
+          <div><div class="plantilla-nombre">${PLANTILLAS[id].nombre}</div>
+          <div class="plantilla-info">${PLANTILLAS[id].total} pts</div></div>
+          <span style="color:#0a2f7a;font-size:18px">→</span>
+        </div>`).join('')}
+      </div>`;
+    document.getElementById('aplicarFormula').textContent='';
+    document.getElementById('aplicarPts').textContent='—';
+    document.getElementById('aplicarNota').textContent='—';
+  }
+  document.getElementById('modalAplicarRubrica').classList.add('show');
+};
+
+let _rubricaGuardadaActual=[];
+window.cargarRubricaAplicar=(id, rubricaGuardada)=>{
+  if(rubricaGuardada===undefined) rubricaGuardada=_rubricaGuardadaActual||[];
+  const p=PLANTILLAS[id];
+  _criteriosAplicar=p.criterios.map((c,i)=>({
+    n:c.n,
+    max:c.max,
+    obt:rubricaGuardada[i]?.obt||0  // pre-llenar con valores guardados
+  }));
+  renderCriteriosAplicar(p.total);
+};
+
+function renderCriteriosAplicar(total){
+  const cont=document.getElementById('aplicarCriterios');
+  cont.innerHTML=_criteriosAplicar.map((c,i)=>`
+    <div class="rubrica-row">
+      <div style="font-size:13px;color:var(--azul)">${c.n}${c.obt<c.max&&c.max>0?`<br><span style="font-size:10px;color:#c0392b">${c.obt-c.max} pts</span>`:''}</div>
+      <span style="text-align:center;font-size:13px;color:#888">${c.max}</span>
+      <input type="number" min="0" max="${c.max}" value="${c.obt}"
+        onchange="_criteriosAplicar[${i}].obt=Math.min(${c.max},Math.max(0,parseFloat(this.value)||0));this.value=_criteriosAplicar[${i}].obt;actualizarAplicar(${total})"
+        style="text-align:center;font-size:13px;font-weight:500;padding:4px;border-radius:6px;border:1.5px solid #dde4f0;outline:none;width:100%">
+      <span></span>
+    </div>`).join('')+
+    `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #eef3ff;">
+      <label style="font-size:11px;color:#888;font-weight:600;display:block;margin-bottom:4px;">💬 Comentario (opcional — no afecta puntaje)</label>
+      <textarea id="rubricaComentario" rows="2" placeholder="Observaciones sobre el desempeño del estudiante..."
+        style="width:100%;padding:8px;border:1.5px solid #dde4f0;border-radius:8px;font-size:13px;resize:vertical;outline:none;">${_rubricaComentario||''}</textarea>
+    </div>`;
+  actualizarAplicar(total);
+}
+let _rubricaComentario='';
+
+function actualizarAplicar(total){
+  const obt=_criteriosAplicar.reduce((s,c)=>s+c.obt,0);
+  const nota=total>0?Math.min(5,Math.floor(((obt*4/total)+1)*10)/10):0;
+  document.getElementById('aplicarPts').textContent=obt+'/'+total;
+  document.getElementById('aplicarNota').textContent=nota.toFixed(1);
+  document.getElementById('aplicarFormula').textContent=
+    `Fórmula MEDUCA: (${obt} × 4 ÷ ${total}) + 1 = ${nota.toFixed(1)}`;
+}
+
+window.confirmarAplicarRubrica=()=>{
+  // Leer valores directamente del DOM
+  const rows=document.getElementById('aplicarCriterios').querySelectorAll('.rubrica-row');
+  rows.forEach((row,i)=>{
+    const inputs=row.querySelectorAll('input[type="number"]');
+    if(inputs.length>=1 && _criteriosAplicar[i]){
+      _criteriosAplicar[i].obt=Math.min(_criteriosAplicar[i].max, parseFloat(inputs[0].value)||0);
+    }
+  });
+
+  const obt=_criteriosAplicar.reduce((s,c)=>s+c.obt,0);
+  const total=_criteriosAplicar.reduce((s,c)=>s+c.max,0)||1;
+  // Buscar el total correcto de la plantilla seleccionada
+  const plantillasKeys=Object.keys(PLANTILLAS);
+  let totalReal=total;
+  plantillasKeys.forEach(id=>{ if(PLANTILLAS[id].criterios.length===_criteriosAplicar.length) totalReal=PLANTILLAS[id].total; });
+  
+  const nota=Math.min(5,Math.floor(((obt*4/totalReal)+1)*10)/10);
+  if(obt===0){ toast('Ingresa los puntos obtenidos',true); return; }
+  const comentario=document.getElementById('rubricaComentario')?.value.trim()||'';
+
+  const cod=_aplicarCod, t=_aplicarTrim, campo=_aplicarCampo, idx=_aplicarIdx;
+  if(cod!=='__GRUPAL__'){
+    // Caso INDIVIDUAL
+    if(!DATOS[cod]['T'+t]) DATOS[cod]['T'+t]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+    const trim=DATOS[cod]['T'+t];
+    if(!trim[campo]) trim[campo]=[];
+    while(trim[campo].length<=idx) trim[campo].push({nota:0,desc:'',fecha:'',rubrica:[]});
+    trim[campo][idx].nota=nota;
+    trim[campo][idx].rubrica=_criteriosAplicar.map(c=>({n:c.n,max:c.max,obt:c.obt}));
+    if(comentario) trim[campo][idx].comentario=comentario;
+    else delete trim[campo][idx].comentario;
+  recalc(cod,t);
+  programarGuardado(cod);
+  cerrarModal('modalAplicarRubrica');
+  renderTabla();
+  toast(`✅ Nota ${nota.toFixed(1)} guardada`);
+  } else {
+    // Caso GRUPAL — aplicar a todos los seleccionados en el modal de nota grupal
+    const seleccionados=[...document.querySelectorAll('.ng-check:checked')].map(cb=>cb.dataset.cod);
+    if(!seleccionados.length){ toast('Selecciona al menos un integrante en Nota Grupal',true); return; }
+    const fecha=document.getElementById('ng-fecha').value;
+    const desc=document.getElementById('ng-desc').value.trim();
+    seleccionados.forEach(c=>{
+      const t2=trimActual;
+      if(!DATOS[c]['T'+t2]) DATOS[c]['T'+t2]={notasDiarias:[],apreciaciones:[],examen:0,notaTrim:0};
+      const trim2=DATOS[c]['T'+t2];
+      if(!trim2[campo]) trim2[campo]=[];
+      while(trim2[campo].length<=idx) trim2[campo].push({nota:0,desc:'',fecha:'',rubrica:[]});
+      trim2[campo][idx].nota=nota;
+      trim2[campo][idx].rubrica=_criteriosAplicar.map(c=>({n:c.n,max:c.max,obt:c.obt}));
+      if(fecha) trim2[campo][idx].fecha=fecha;
+      if(desc) trim2[campo][idx].desc=desc||'Nota Grupal';
+      if(comentario) trim2[campo][idx].comentario=comentario;
+      else delete trim2[campo][idx].comentario;
+      recalc(c,t2); programarGuardado(c);
+    });
+    cerrarModal('modalAplicarRubrica');
+    cerrarModal('modalNotaGrupal');
+    renderTabla();
+    toast(`✅ Nota ${nota.toFixed(1)} aplicada a ${seleccionados.length} estudiantes`);
+  }
+};
+
+// ══ EXPORTAR EXCEL ══
+window.exportarExcel=()=>{
+  if(!gradoActual){ toast('Selecciona un grado primero',true); return; }
+  const lista=Object.entries(DATOS)
+    .filter(([,e])=>e.grado===gradoActual)
+    .sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre));
+  
+  let csv='Nombre,Código';
+  // Agregar columnas por trimestre
+  [1,2,3].forEach(t=>{
+    const numND=maxItems('notasDiarias',t);
+    const numAP=maxItems('apreciaciones',t);
+    for(let i=0;i<numND;i++) csv+=`,ND${i+1} T${t}`;
+    for(let i=0;i<numAP;i++) csv+=`,Aprec${i+1} T${t}`;
+    csv+=`,Examen T${t},Nota T${t}`;
+  });
+  csv+=',Nota Anual\n';
+
+  lista.forEach(([cod,est])=>{
+    let row=`"${est.nombre}",${cod}`;
+    [1,2,3].forEach(t=>{
+      const trim=est['T'+t]||{};
+      const numND=maxItems('notasDiarias',t);
+      const numAP=maxItems('apreciaciones',t);
+      const nd=trim.notasDiarias||[];
+      const ap=trim.apreciaciones||[];
+      for(let i=0;i<numND;i++) row+=`,${nd[i]?.nota||0}`;
+      for(let i=0;i<numAP;i++) row+=`,${ap[i]?.nota||0}`;
+      row+=`,${trim.examen||0},${fmt(calcTrim(est,t))}`;
+    });
+    row+=`,${fmt(calcAnual(est))}`;
+    csv+=row+'\n';
+  });
+
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`notas_${gradoActual.replace('°','')}_T${trimActual}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('✅ Excel descargado');
+};
+
+window.toast=(msg,isError=false)=>{
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show'+(isError?' error':'');
+  setTimeout(()=>el.className='toast',3000);
+};
+document.getElementById('modalNuevo').addEventListener('click',function(e){if(e.target===this)cerrarModal('modalNuevo');});
+
+// ══ GESTIÓN DE GRADOS ══
+
+window.abrirModalAgregarGrado=()=>{
+  document.getElementById('nuevoGradoNombre').value='';
+  document.getElementById('nuevoGradoMateria').value='';
+  document.getElementById('modalAgregarGrado').classList.add('show');
+};
+
+window.agregarGrado=()=>{
+  const nombre=document.getElementById('nuevoGradoNombre').value.trim();
+  const materia=document.getElementById('nuevoGradoMateria').value.trim();
+  if(!nombre){ toast('Escribe el nombre del grado',true); return; }
+  if(GRADOS.includes(nombre)){ toast('Ese grado ya existe',true); return; }
+  GRADOS.push(nombre);
+  if(materia) MATERIAS[nombre]=materia;
+  cerrarModal('modalAgregarGrado');
+  renderSidebar();
+  seleccionarGrado(nombre);
+  toast(`✅ Grado ${nombre} agregado`);
+};
+
+window.eliminarGradoActual=async()=>{
+  if(!gradoActual){ toast('Selecciona un grado primero',true); return; }
+  const count=Object.values(DATOS).filter(e=>e.grado===gradoActual).length;
+  if(!confirm(`¿Eliminar el grado ${gradoActual} y sus ${count} estudiantes?\nEsto no se puede deshacer.`)) return;
+  try{
+    const batch=writeBatch(db);
+    Object.entries(DATOS).forEach(([cod,est])=>{
+      if(est.grado===gradoActual) batch.delete(doc(db,'estudiantes',cod));
+    });
+    await batch.commit();
+    Object.keys(DATOS).forEach(cod=>{ if(DATOS[cod].grado===gradoActual) delete DATOS[cod]; });
+    GRADOS.splice(GRADOS.indexOf(gradoActual),1);
+    delete MATERIAS[gradoActual];
+    gradoActual=GRADOS[0]||null;
+    renderSidebar();
+    if(gradoActual) seleccionarGrado(gradoActual);
+    else document.getElementById('tablaArea').innerHTML='';
+    toast(`Grado eliminado`);
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+
+window.abrirModalRenombrar=()=>{
+  if(!gradoActual){ toast('Selecciona un grado primero',true); return; }
+  document.getElementById('renombrarActual').value=gradoActual;
+  document.getElementById('renombrarNuevo').value=gradoActual;
+  document.getElementById('renombrarMateria').value=MATERIAS[gradoActual]||'';
+  document.getElementById('modalRenombrar').classList.add('show');
+};
+
+window.renombrarGrado=async()=>{
+  const nuevoNombre=document.getElementById('renombrarNuevo').value.trim();
+  const nuevaMateria=document.getElementById('renombrarMateria').value.trim();
+  if(!nuevoNombre){ toast('Escribe el nuevo nombre',true); return; }
+  if(nuevoNombre!==gradoActual && GRADOS.includes(nuevoNombre)){ toast('Ese nombre ya existe',true); return; }
+  try{
+    const batch=writeBatch(db);
+    Object.entries(DATOS).forEach(([cod,est])=>{
+      if(est.grado===gradoActual){
+        est.grado=nuevoNombre;
+        batch.set(doc(db,'estudiantes',cod),est);
+      }
+    });
+    await batch.commit();
+    const idx=GRADOS.indexOf(gradoActual);
+    GRADOS[idx]=nuevoNombre;
+    delete MATERIAS[gradoActual];
+    if(nuevaMateria) MATERIAS[nuevoNombre]=nuevaMateria;
+    gradoActual=nuevoNombre;
+    cerrarModal('modalRenombrar');
+    renderSidebar();
+    seleccionarGrado(nuevoNombre);
+    toast(`✅ Grado renombrado a ${nuevoNombre}`);
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+
+// ══ EDITAR ESTUDIANTE ══
+
+window.abrirEditarEst=cod=>{
+  const est=DATOS[cod];
+  document.getElementById('editarCodActual').value=cod;
+  document.getElementById('editarCodActualDisplay').value=cod;
+  document.getElementById('editarCodNuevo').value=cod;
+  document.getElementById('editarNombre').value=est.nombre;
+  const sel=document.getElementById('editarGrado');
+  sel.innerHTML=GRADOS.map(g=>`<option${g===est.grado?' selected':''}>${g}</option>`).join('');
+  document.getElementById('modalEditarEst').classList.add('show');
+};
+
+window.guardarEdicionEst=async()=>{
+  const codViejo=document.getElementById('editarCodActual').value;
+  const codNuevo=document.getElementById('editarCodNuevo').value.trim().toUpperCase();
+  const nombre=document.getElementById('editarNombre').value.trim();
+  const grado=document.getElementById('editarGrado').value;
+  if(!codNuevo||!nombre){ toast('Completa todos los campos',true); return; }
+  if(codNuevo!==codViejo && DATOS[codNuevo]){ toast('Ese código ya existe',true); return; }
+  try{
+    const nombreViejo=DATOS[codViejo]?.nombre||'';
+    const gradoViejo=DATOS[codViejo]?.grado||grado;
+    const datosEst={...DATOS[codViejo], nombre, grado};
+    const batch=writeBatch(db);
+    if(codNuevo!==codViejo){
+      batch.set(doc(db,'estudiantes',codNuevo),datosEst);
+      batch.delete(doc(db,'estudiantes',codViejo));
+      delete DATOS[codViejo];
+    } else {
+      batch.set(doc(db,'estudiantes',codNuevo),datosEst);
+    }
+    await batch.commit();
+    DATOS[codNuevo]=datosEst;
+
+    // ── Migrar asistencia si cambió el nombre o el grado ──
+    const nombreCambio=nombreViejo&&nombreViejo!==nombre;
+    const gradoCambio=gradoViejo!==grado;
+    if(nombreCambio||gradoCambio){
+      await migrarAsistencia(nombreViejo,nombre,gradoViejo,grado,nombreCambio,gradoCambio);
+    }
+
+    cerrarModal('modalEditarEst');
+    renderSidebar();
+    seleccionarGrado(grado);
+    toast('✅ Estudiante actualizado');
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+
+// Migra las marcas de asistencia cuando cambia nombre o grado
+async function migrarAsistencia(nombreViejo,nombreNuevo,gradoViejo,gradoNuevo,nombreCambio,gradoCambio){
+  try{
+    const gradoIdViejo=gradoViejo.replace('°','');
+    const gradoIdNuevo=gradoNuevo.replace('°','');
+    const snapViejo=await getDoc(doc(db,'asistencia',gradoIdViejo));
+    if(!snapViejo.exists()) return; // No hay asistencia registrada, nada que migrar
+
+    const dat=snapViejo.data();
+    const trimestres=dat.trimestres||{};
+    let huboMarcas=false;
+
+    // Si cambió el grado, preparar también el doc del grado nuevo
+    let datNuevo=null;
+    if(gradoCambio&&gradoIdNuevo!==gradoIdViejo){
+      const snapNuevo=await getDoc(doc(db,'asistencia',gradoIdNuevo));
+      datNuevo=snapNuevo.exists()?snapNuevo.data():{trimestres:{T1:{},T2:{},T3:{}},eventos:{T1:{},T2:{},T3:{}}};
+    }
+
+    // Recorrer todos los trimestres y fechas
+    ['T1','T2','T3'].forEach(tKey=>{
+      const tDat=trimestres[tKey]||{};
+      Object.keys(tDat).forEach(fecha=>{
+        const diaObj=tDat[fecha];
+        if(!diaObj||diaObj[nombreViejo]===undefined) return;
+        const valor=diaObj[nombreViejo];
+        huboMarcas=true;
+
+        if(gradoCambio&&gradoIdNuevo!==gradoIdViejo){
+          // Mover al grado nuevo
+          if(!datNuevo.trimestres[tKey]) datNuevo.trimestres[tKey]={};
+          if(!datNuevo.trimestres[tKey][fecha]) datNuevo.trimestres[tKey][fecha]={};
+          datNuevo.trimestres[tKey][fecha][nombreNuevo]=valor;
+          // Borrar del grado viejo
+          delete tDat[fecha][nombreViejo];
+          if(Object.keys(tDat[fecha]).length===0) delete tDat[fecha];
+        } else if(nombreCambio){
+          // Solo renombrar la clave dentro del mismo grado
+          tDat[fecha][nombreNuevo]=valor;
+          delete tDat[fecha][nombreViejo];
+        }
+      });
+    });
+
+    if(!huboMarcas) return; // No tenía asistencia registrada
+
+    // Guardar cambios
+    if(gradoCambio&&gradoIdNuevo!==gradoIdViejo){
+      await setDoc(doc(db,'asistencia',gradoIdViejo),dat);
+      await setDoc(doc(db,'asistencia',gradoIdNuevo),datNuevo);
+    } else {
+      await setDoc(doc(db,'asistencia',gradoIdViejo),dat);
+    }
+    console.log('✅ Asistencia migrada:',nombreViejo,'→',nombreNuevo,'|',gradoViejo,'→',gradoNuevo);
+  }catch(e){
+    console.error('⚠ Error migrando asistencia:',e);
+    // No bloquear el flujo principal — el estudiante ya fue actualizado
+  }
+}
+
+// ══ MATRÍCULA MASIVA ══
+
+window.abrirModalMatricula=()=>{
+  const sel=document.getElementById('matriculaGrado');
+  sel.innerHTML=GRADOS.map(g=>`<option${g===gradoActual?' selected':''}>${g}</option>`).join('');
+  document.getElementById('matriculaArea').value='';
+  document.getElementById('matriculaPreview').textContent='';
+  document.getElementById('modalMatricula').classList.add('show');
+};
+
+window.confirmarMatricula=async()=>{
+  const grado=document.getElementById('matriculaGrado').value;
+  const lines=document.getElementById('matriculaArea').value.split('\n').map(l=>l.trim()).filter(l=>l);
+  if(!lines.length){ toast('No hay datos para importar',true); return; }
+
+  const et=()=>({notasDiarias:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],apreciaciones:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],examen:0,notaTrim:0});
+
+  const nuevos=[];
+  lines.forEach(line=>{
+    const partes=line.split('\t');
+    let cod,nombre;
+    if(partes.length>=2){
+      cod=partes[0].trim().toUpperCase();
+      nombre=partes.slice(1).join(' ').trim();
+    } else {
+      nombre=partes[0].trim();
+      cod=Math.random().toString(36).substr(2,8).toUpperCase();
+    }
+    if(cod && nombre && !DATOS[cod]){
+      nuevos.push({cod,nombre,grado});
+    }
+  });
+
+  if(!nuevos.length){ toast('No hay estudiantes nuevos para agregar',true); return; }
+  if(!confirm(`¿Agregar ${nuevos.length} estudiantes al grado ${grado}?`)) return;
+
+  try{
+    const batch=writeBatch(db);
+    nuevos.forEach(({cod,nombre,grado})=>{
+      const est={nombre,grado,T1:et(),T2:et(),T3:et(),notaAnual:0,observaciones:''};
+      batch.set(doc(db,'estudiantes',cod),est);
+      DATOS[cod]=est;
+    });
+    await batch.commit();
+    cerrarModal('modalMatricula');
+    renderSidebar();
+    seleccionarGrado(grado);
+    toast(`✅ ${nuevos.length} estudiantes matriculados`);
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+
+// ══ NUEVO AÑO ESCOLAR ══
+
+window.abrirModalAñoEscolar=()=>{
+  document.getElementById('confirmarAño').value='';
+  document.getElementById('modalAñoEscolar').classList.add('show');
+};
+
+window.iniciarNuevoAño=async()=>{
+  if(document.getElementById('confirmarAño').value!=='CONFIRMAR'){
+    toast('Escribe CONFIRMAR para continuar',true); return;
+  }
+  try{
+    const et=()=>({notasDiarias:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],apreciaciones:[{nota:0,desc:'',fecha:''},{nota:0,desc:'',fecha:''}],examen:0,notaTrim:0});
+    // Procesar en lotes de 500 (límite de Firebase)
+    const cods=Object.keys(DATOS);
+    for(let i=0;i<cods.length;i+=400){
+      const batch=writeBatch(db);
+      cods.slice(i,i+400).forEach(cod=>{
+        DATOS[cod].T1=et(); DATOS[cod].T2=et(); DATOS[cod].T3=et(); DATOS[cod].notaAnual=0;
+        batch.set(doc(db,'estudiantes',cod),DATOS[cod]);
+      });
+      await batch.commit();
+    }
+    cerrarModal('modalAñoEscolar');
+    renderTabla();
+    renderStats();
+    toast('✅ Notas reiniciadas — Nuevo año escolar iniciado');
+  }catch(e){ toast('Error: '+e.message,true); }
+};
+</script>
+</body>
+</html>
