@@ -19,7 +19,7 @@ const ESTUDIANTE_DEMO = { nombre: "Estudiante Demo", grado: "Demo" };
 // --- Especialidades del aula ---
 const MATERIAS = [
   { id:'comercio',   n:'Comercio',         d:'Contabilidad, emprendimiento y gestión empresarial aplicada.', icon:'ti-briefcase', prog:62, lvl:4 },
-  { id:'tecnologia', n:'Tecnología (TIC)', d:'Hardware, software, redes y tecnologías de la información.',    icon:'ti-cpu',       prog:80, lvl:5 },
+  { id:'tecnologia', n:'TIC', d:'Hardware, software, redes y tecnologías de la información.',    icon:'ti-cpu',       prog:80, lvl:5 },
   { id:'multimedia', n:'Multimedia',       d:'Diseño gráfico, edición de imagen, video y producción digital.', icon:'ti-palette',   prog:45, lvl:3 },
   { id:'robotica',   n:'Robótica',         d:'Circuitos, sensores, programación y construcción de prototipos.', icon:'ti-robot',     prog:38, lvl:3 }
 ];
