@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Panel Docente — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#05060a;--panel:#0b0f1a;--panel2:#10141f;--linea:rgba(0,240,255,.14);--linea2:rgba(0,240,255,.3);--tx:#e9f6ff;--tx2:#8aa0b8;--tx3:#52647a;--neon:#00f0ff;--ok:#00ffa3;--err:#ff4d6d;--oro:#ffd23f;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);line-height:1.6;overflow-x:hidden;min-height:100vh;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 20% 0%,rgba(0,240,255,.1),transparent 38%),radial-gradient(circle at 90% 12%,rgba(255,45,155,.08),transparent 40%);pointer-events:none;}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.br{display:flex;align-items:center;gap:12px;}.br img{height:42px;width:42px;object-fit:contain;border-radius:9px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:14px;color:#fff;display:block;line-height:1.1;}.br span{font-size:10px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+.back{font-size:13px;color:var(--tx2);text-decoration:none;padding:8px 14px;border:1px solid var(--linea2);border-radius:7px;display:flex;align-items:center;gap:6px;cursor:pointer;}.back:hover{color:var(--neon);}
+.box{background:var(--panel);border:1px solid var(--linea2);border-radius:12px;padding:28px 26px;position:relative;overflow:hidden;box-shadow:0 0 50px -22px rgba(0,240,255,.3);}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--neon);box-shadow:0 0 12px var(--neon);}
+.ico-big{width:70px;height:70px;border-radius:18px;background:rgba(255,210,63,.1);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--oro);margin:0 auto 18px;}
+.box h1{font-family:'Chakra Petch';font-size:26px;color:#fff;text-align:center;margin-bottom:6px;}
+.box .sub{text-align:center;color:var(--tx2);font-size:14px;margin-bottom:24px;}
+.fl{max-width:360px;margin:0 auto;}
+.fl label{display:block;font-family:'Chakra Petch';font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.fl input{width:100%;padding:14px 16px;font-family:'Chakra Petch';font-size:16px;font-weight:600;letter-spacing:3px;border:1.5px solid var(--linea2);border-radius:8px;color:var(--neon);background:var(--bg);text-align:center;}
+.fl input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 4px rgba(0,240,255,.12);}
+.be{width:100%;margin-top:14px;padding:15px;font-family:'Chakra Petch';font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--bg);background:var(--neon);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:.18s;box-shadow:0 0 24px -6px var(--neon);}
+.be:hover{transform:translateY(-1px);}.be:disabled{opacity:.5;cursor:not-allowed;}
+.be.sec{background:transparent;border:1px solid var(--linea2);color:var(--tx2);box-shadow:none;}.be.sec:hover{color:var(--neon);border-color:var(--neon);}
+.be.sm{width:auto;margin:0;padding:9px 16px;font-size:13px;}
+.msg{font-size:13px;font-weight:500;padding:11px 14px;border-radius:8px;margin-top:14px;text-align:center;display:none;}
+.msg.err{display:block;background:rgba(255,77,109,.12);color:#ffb3c0;border:1px solid rgba(255,77,109,.3);}
+.msg.ok{display:block;background:rgba(0,255,163,.12);color:#7dffce;border:1px solid rgba(0,255,163,.3);}
+.msg.warn{display:block;background:rgba(255,210,63,.12);color:#ffe79a;border:1px solid rgba(255,210,63,.3);}
+.hide{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea2);border-top-color:var(--neon);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}@keyframes sp{to{transform:rotate(360deg);}}
+/* tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{font-family:'Chakra Petch';font-size:13px;padding:9px 16px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;transition:.15s;}
+.tab.on{background:var(--neon);color:var(--bg);border-color:var(--neon);}.tab:not(.on):hover{color:var(--neon);}
+/* materia section */
+.msec{margin-bottom:24px;}
+.msec-hdr{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel2);border:1px solid var(--linea);border-radius:10px;cursor:pointer;user-select:none;margin-bottom:0;}
+.msec-hdr:hover{border-color:var(--linea2);}
+.msec-hdr .mic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.msec-hdr b{font-family:'Chakra Petch';font-size:15px;color:#fff;flex:1;}
+.msec-hdr .mchev{color:var(--tx3);transition:.2s;}
+.msec-hdr.open .mchev{transform:rotate(90deg);}
+.msec-body{display:none;padding:12px 0 0 0;}
+.msec-hdr.open + .msec-body{display:block;}
+/* grupo accordion */
+.gsec{margin-bottom:10px;border:1px solid var(--linea);border-radius:10px;overflow:hidden;}
+.gsec-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);cursor:pointer;user-select:none;}
+.gsec-hdr:hover{background:rgba(0,240,255,.03);}
+.gsec-hdr b{font-family:'Chakra Petch';font-size:13px;color:var(--tx2);flex:1;}
+.gsec-hdr .gchev{color:var(--tx3);font-size:14px;transition:.2s;}
+.gsec-hdr.open .gchev{transform:rotate(90deg);}
+.gsec-body{display:none;padding:12px;}
+.gsec-hdr.open + .gsec-body{display:block;}
+/* actcard */
+.actcard{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:18px;margin-bottom:12px;}
+.actcard .ahead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.actcard .ai{width:42px;height:42px;border-radius:10px;background:rgba(0,240,255,.1);color:var(--neon);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.actcard .at{flex:1;min-width:140px;}.actcard .at b{font-family:'Chakra Petch';font-size:14px;color:#fff;display:block;}.actcard .at span{font-size:11px;color:var(--tx2);}
+.estado{font-family:'Chakra Petch';font-size:10px;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.estado.abierta{background:rgba(0,255,163,.15);color:var(--ok);border:1px solid rgba(0,255,163,.3);}
+.estado.cerrada{background:rgba(255,77,109,.15);color:var(--err);border:1px solid rgba(255,77,109,.3);}
+.estado.sync{background:rgba(0,240,255,.12);color:var(--neon);border:1px solid rgba(0,240,255,.3);}
+.estado.nosync{background:var(--bg);color:var(--tx3);border:1px solid var(--linea);}
+.ctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding-top:14px;border-top:1px solid var(--linea);}
+.ctrl label{display:block;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.ctrl input,.ctrl select{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--tx);font-family:'Inter';}
+.ctrl input:focus,.ctrl select:focus{outline:none;border-color:var(--neon);}
+.ctrl.full{grid-column:1/-1;display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+.tg{width:50px;height:26px;border-radius:100px;background:var(--bg);border:1px solid var(--linea2);cursor:pointer;position:relative;transition:.2s;flex-shrink:0;}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--tx3);transition:.2s;}
+.tg.on{background:rgba(0,255,163,.2);border-color:var(--ok);}.tg.on::after{left:24px;background:var(--ok);box-shadow:0 0 10px var(--ok);}
+.tgwrap{display:flex;align-items:center;gap:8px;}.tgwrap b{font-family:'Chakra Petch';font-size:12px;color:#fff;}
+/* stats + tabla */
+.dstat{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.ds{flex:1;min-width:100px;background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:14px;text-align:center;}
+.ds b{font-family:'Chakra Petch';font-size:24px;color:var(--neon);display:block;line-height:1;}.ds span{font-size:11px;color:var(--tx2);}
+.ds.ap b{color:var(--ok);}.ds.re b{color:var(--err);}
+.dtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+.dtools select,.dtools button{font-family:'Inter';font-size:13px;padding:9px 14px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx);cursor:pointer;}
+.dtools button:hover{border-color:var(--neon);color:var(--neon);}
+.dtools .sp{flex:1;}
+.tbl-wrap{max-height:440px;overflow:auto;border:1px solid var(--linea);border-radius:10px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-family:'Chakra Petch';font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--linea2);position:sticky;top:0;background:var(--panel);}
+td{padding:10px 12px;border-bottom:1px solid var(--linea);color:var(--tx);}
+tr:hover td{background:rgba(0,240,255,.04);}
+.tnota{font-family:'Chakra Petch';font-weight:700;}.tnota.ap{color:var(--ok);}.tnota.re{color:var(--err);}
+.selact{margin-bottom:14px;}
+.selact label{display:block;font-family:'Chakra Petch';font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.selact select{width:100%;max-width:420px;padding:10px 14px;font-size:13px;border:1px solid var(--linea2);border-radius:8px;background:var(--panel2);color:var(--tx);}
+/* notas aula */
+.trimtabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.trim-tab{font-family:'Chakra Petch';font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;transition:.15s;}
+.trim-tab.on{background:var(--neon);color:var(--bg);border-color:var(--neon);}
+.trim-tab:not(.on):hover{color:var(--neon);}
+.celledit{width:64px;padding:6px 4px;font-size:13px;text-align:center;border:1px solid var(--linea2);border-radius:6px;background:var(--bg);color:var(--tx);font-family:'Chakra Petch';font-weight:600;}
+.celledit:focus{outline:none;border-color:var(--neon);}
+.celledit.ap{color:var(--ok);}.celledit.re{color:var(--err);}
+th.colact{min-width:90px;text-align:center;}
+.delcolbtn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:13px;margin-left:4px;vertical-align:middle;}
+.delcolbtn:hover{color:var(--err);}
+.thcolname{background:var(--bg);border:1px solid var(--linea2);border-radius:6px;color:var(--neon);font-family:'Chakra Petch';font-size:11px;font-weight:600;text-align:center;width:70px;padding:4px 2px;text-transform:uppercase;}
+.thcolname:focus{outline:none;border-color:var(--neon);}
+.notatotal{background:rgba(0,240,255,.08);font-weight:700;}
+.n-verde{color:var(--ok);}.n-rojo{color:var(--err);}
+.sticky-col{position:sticky;left:0;background:var(--panel);z-index:2;}
+.sticky-col2{position:sticky;left:36px;background:var(--panel);z-index:2;}
+.exp-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px;}
+.exp-modal.hide{display:none!important;}
+/* materiales */
+.mat-item{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:16px 18px;margin-bottom:12px;}
+.mat-item.inact{opacity:.5;}
+.mat-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.mat-ico{width:38px;height:38px;border-radius:9px;background:rgba(255,210,63,.1);color:var(--oro);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.mat-body{flex:1;min-width:200px;}
+.mat-body b{font-family:'Chakra Petch';font-size:13px;color:#fff;display:block;margin-bottom:2px;}
+.mat-body .url-chip{font-size:11px;color:var(--tx3);word-break:break-all;}
+.mat-body .fecha-chip{font-size:11px;color:var(--neon);margin-top:3px;}
+.mat-acts{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.mat-acts button{font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--linea2);background:var(--bg);color:var(--tx2);cursor:pointer;}
+.mat-acts button:hover{border-color:var(--neon);color:var(--neon);}
+.mat-acts .bdel{border-color:rgba(255,77,109,.3);color:var(--err);}
+.mat-acts .bdel:hover{background:rgba(255,77,109,.1);}
+.mat-new{background:var(--panel2);border:1px dashed var(--linea2);border-radius:10px;padding:20px;}
+.mat-new h3{font-family:'Chakra Petch';font-size:13px;color:var(--neon);margin-bottom:14px;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fg input{width:100%;padding:9px 11px;font-size:13px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--tx);font-family:'Inter';}
+.fg input:focus{outline:none;border-color:var(--neon);}
+.mat-msec{margin-bottom:28px;}
+.mat-msec h2{font-family:'Chakra Petch';font-size:13px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;padding:10px 0 10px;border-bottom:1px solid var(--linea);margin-bottom:14px;}
+@media(max-width:560px){.box{padding:22px 16px;}.ds{min-width:80px;}}
+</style></head><body><div class="wrap">
+
+<div class="top">
+  <div class="br"><img src="logo.png"><div><b>Instituto Fermín Naudeau</b><span>Aula Virtual · Panel Docente</span></div></div>
+  <a class="back" href="index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+</div>
+
+<!-- LOGIN -->
+<div class="box" id="scrLogin">
+  <div class="ico-big"><i class="ti ti-shield-lock"></i></div>
+  <h1>Panel Académico</h1>
+  <p class="sub">Control del aula virtual. Acceso restringido al docente.</p>
+  <div class="fl">
+    <label>Clave de profesor</label>
+    <input id="inPass" type="password" placeholder="••••••">
+    <button class="be" id="btnLogin" onclick="entrar()"><i class="ti ti-login-2"></i> Entrar</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="box hide" id="scrPanel">
+  <div class="top" style="margin-bottom:18px">
+    <h1 style="font-size:22px;text-align:left">Panel Académico</h1>
+    <a class="back" onclick="salir()"><i class="ti ti-logout"></i> Salir</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabCtrl" onclick="verTab('ctrl')"><i class="ti ti-settings"></i> Control</button>
+    <button class="tab" id="tabMat" onclick="verTab('mat')"><i class="ti ti-paperclip"></i> Materiales</button>
+    <button class="tab" id="tabRes" onclick="verTab('res')"><i class="ti ti-chart-bar"></i> Resultados</button>
+    <button class="tab" id="tabNotas" onclick="verTab('notas')"><i class="ti ti-table"></i> Notas del Aula</button>
+  </div>
+
+  <!-- CONTROL DE ACTIVIDADES -->
+  <div id="panCtrl">
+    <div id="listaCtrl"></div>
+    <div class="msg" id="msgCtrl"></div>
+  </div>
+
+  <!-- MATERIALES -->
+  <div id="panMat" class="hide">
+    <div id="listaMat"></div>
+    <div class="msg" id="msgMat"></div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="panRes" class="hide">
+    <div class="dtools">
+      <div class="selact" style="margin:0;flex:1">
+        <select id="selActRes" onchange="cargarResultados()"></select>
+      </div>
+      <select id="filGrado" onchange="renderTabla()"><option value="">Todos los grupos</option></select>
+      <button onclick="cargarResultados()"><i class="ti ti-refresh"></i></button>
+      <div class="sp"></div>
+      <button onclick="exportarCSV()"><i class="ti ti-file-spreadsheet"></i> Exportar</button>
+    </div>
+    <div class="dstat">
+      <div class="ds"><b id="dsTot">0</b><span>Entregas</span></div>
+      <div class="ds ap"><b id="dsAp">0</b><span>Aprobados</span></div>
+      <div class="ds re"><b id="dsRe">0</b><span>Reprobados</span></div>
+      <div class="ds"><b id="dsProm">—</b><span>Promedio</span></div>
+    </div>
+    <div class="tbl-wrap">
+      <table><thead><tr><th>#</th><th>Estudiante</th><th>Grupo</th><th>Puntaje</th><th>Nota (editable)</th><th>Intentos</th><th>Fecha</th></tr></thead><tbody id="tbRes"></tbody></table>
+    </div>
+    <div class="msg" id="msgRes"></div>
+  </div>
+
+  <!-- NOTAS DEL AULA -->
+  <div id="panNotas" class="hide">
+    <div class="trimtabs">
+      <button class="trim-tab on" id="ntrim1" onclick="setTrimNotas(1,this)">Trimestre 1</button>
+      <button class="trim-tab" id="ntrim2" onclick="setTrimNotas(2,this)">Trimestre 2</button>
+      <button class="trim-tab" id="ntrim3" onclick="setTrimNotas(3,this)">Trimestre 3</button>
+    </div>
+    <div class="dtools" style="margin-bottom:14px">
+      <div class="selact" style="margin:0">
+        <select id="selGradoNotas" onchange="cargarNotasGrado()"></select>
+      </div>
+      <button onclick="agregarColNotas()"><i class="ti ti-plus"></i> Columna</button>
+      <div class="sp"></div>
+      <button onclick="guardarNotasGrado()"><i class="ti ti-device-floppy"></i> Guardar</button>
+      <button onclick="exportarCSVNotas()"><i class="ti ti-file-spreadsheet"></i> Exportar</button>
+    </div>
+    <div class="tbl-wrap">
+      <table><thead><tr id="theadNotas"></tr></thead><tbody id="tbNotas"></tbody></table>
+    </div>
+    <div class="msg" id="msgNotas"></div>
+  </div>
+</div>
+
+</div>
+
+<!-- MODAL EXPORTAR NOTAS -->
+<div id="expModal" class="exp-modal hide">
+  <div style="background:var(--panel);border:1px solid var(--linea2);border-radius:14px;padding:26px;max-width:420px;width:100%;position:relative;box-shadow:0 0 60px -10px rgba(0,240,255,.3);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-family:'Chakra Petch';font-size:15px;color:#fff"><i class="ti ti-file-spreadsheet" style="color:var(--neon)"></i> Exportar columnas</h3>
+      <button onclick="cerrarExpModal()" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:20px"><i class="ti ti-x"></i></button>
+    </div>
+    <p style="font-size:12px;color:var(--tx2);margin-bottom:14px">Selecciona las columnas que deseas incluir en el archivo CSV.</p>
+    <div id="expColList" style="max-height:260px;overflow-y:auto;margin-bottom:18px;padding-right:4px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="cerrarExpModal()" style="font-family:'Chakra Petch';font-size:12px;padding:9px 16px;border-radius:8px;border:1px solid var(--linea2);background:transparent;color:var(--tx2);cursor:pointer">Cancelar</button>
+      <button onclick="confirmarExportNotas()" style="font-family:'Chakra Petch';font-size:12px;padding:9px 16px;border-radius:8px;border:none;background:var(--neon);color:var(--bg);cursor:pointer;font-weight:700"><i class="ti ti-download"></i> Descargar</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, where, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+function show(s){ ['scrLogin','scrPanel'].forEach(x=>$(x).classList.add('hide')); $(s).classList.remove('hide'); window.scrollTo(0,0); }
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let CONFIG_ACTS = {};
+let RESULTADOS = [];
+let NOTAS_INIT = false;
+let trimNotas = 1;
+let gradoNotas = null;
+let NOTAS_DATA = {};
+let NOTAS_COLS = [];
+let SYNCED_COLS = {};
+const GRADOS_AULA = ['8°F','10°C','10°D','11°A','11°B','12°A','12°B'];
+
+// ============================================================
+// LOGIN
+// ============================================================
+window.entrar = async () => {
+  const p=$('inPass').value, m=$('msgLogin');
+  if(!p){ m.className='msg err'; m.textContent='Escribe la clave.'; return; }
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; $('btnLogin').disabled=true;
+  try{
+    const s=await getDoc(doc(db,'config','admin'));
+    const real=s.exists()?s.data().password:null;
+    $('btnLogin').disabled=false;
+    if(real && p===real){ m.className='msg'; abrirPanel(); }
+    else{ m.className='msg err'; m.textContent='Clave incorrecta.'; }
+  }catch(e){ $('btnLogin').disabled=false; m.className='msg err'; m.textContent='Error de conexión.'; }
+};
+window.salir = ()=>{ $('inPass').value=''; show('scrLogin'); };
+
+async function abrirPanel(){
+  show('scrPanel');
+  await cargarConfigActs();
+  renderControl();
+  $('selActRes').innerHTML = CATALOGO_ACTIVIDADES.map(a=>`<option value="${a.id}">${a.nombre} (${(MATERIA_GRUPOS[a.materia]||[]).join(', ')})</option>`).join('');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+window.verTab = (t)=>{
+  ['ctrl','mat','res','notas'].forEach(x=>{
+    $('tab'+x.charAt(0).toUpperCase()+x.slice(1))?.classList.toggle('on',t===x);
+    const el = $('pan'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(el) el.classList.toggle('hide',t!==x);
+  });
+  if(t==='res' && !RESULTADOS.length) cargarResultados();
+  if(t==='mat') cargarMateriales();
+  if(t==='notas' && !NOTAS_INIT){ NOTAS_INIT=true; initNotas(); }
+};
+
+// ============================================================
+// CONFIG DE ACTIVIDADES
+// ============================================================
+async function cargarConfigActs(){
+  CONFIG_ACTS={};
+  for(const a of CATALOGO_ACTIVIDADES){
+    try{
+      const s=await getDoc(doc(db,'actividades',a.id));
+      CONFIG_ACTS[a.id]=s.exists()?s.data():{};
+    }catch(e){ CONFIG_ACTS[a.id]={}; }
+  }
+}
+
+function gKey(grado){ return 'g_'+grado.replace(/[°\s]/g,''); }
+
+// ============================================================
+// CONTROL DE ACTIVIDADES — por materia → grupo → actividad
+// ============================================================
+function renderControl(){
+  const materiasConActs = MATERIAS.filter(m=>
+    CATALOGO_ACTIVIDADES.some(a=>a.materia===m.id)
+  );
+  $('listaCtrl').innerHTML = materiasConActs.map(m=>{
+    const grupos = MATERIA_GRUPOS[m.id]||[];
+    return `<div class="msec">
+      <div class="msec-hdr" onclick="toggleMsec(this)">
+        <div class="mic" style="background:rgba(0,240,255,.1);color:var(--neon)"><i class="ti ${m.icon}"></i></div>
+        <b>${m.n}</b>
+        <i class="ti ti-chevron-right mchev"></i>
+      </div>
+      <div class="msec-body">
+        ${grupos.map(g=>renderGrupo(m.id,g)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderGrupo(materiaId, grado){
+  const acts = CATALOGO_ACTIVIDADES.filter(a=>a.materia===materiaId && a.grupos.includes(grado));
+  if(!acts.length) return '';
+  return `<div class="gsec">
+    <div class="gsec-hdr" onclick="toggleGsec(this)">
+      <i class="ti ti-users" style="color:var(--tx3)"></i>
+      <b>${grado}</b>
+      <span style="font-size:11px;color:var(--tx3)">${acts.length} actividad${acts.length>1?'es':''}</span>
+      <i class="ti ti-chevron-right gchev"></i>
+    </div>
+    <div class="gsec-body">
+      ${acts.map(a=>renderActCard(a,grado)).join('')}
+    </div>
+  </div>`;
+}
+
+function renderActCard(a, grado){
+  const c = CONFIG_ACTS[a.id]||{};
+  const gc = c[gKey(grado)]||{};
+  const abierta = gc.abierta !== undefined ? gc.abierta : (c.abierta !== false);
+  const intentos = gc.intentos || c.intentos || 1;
+  const apertura = gc.apertura||'';
+  const cierre = gc.cierre||'';
+  const sync = c.sync||{};
+  const syncOn = !!sync.activo;
+  const syncTrim = sync.trimestre||1;
+  const syncCol = sync.columna||'Act#1';
+  const colOpts = COLUMNAS_SUGERIDAS.map(co=>`<option value="${co}" ${co===syncCol?'selected':''}>${co}</option>`).join('');
+  const uid = a.id+'__'+grado.replace(/[°\s]/g,'');
+  return `<div class="actcard">
+    <div class="ahead">
+      <div class="ai"><i class="ti ${a.icon}"></i></div>
+      <div class="at"><b>${a.nombre}</b><span>${a.sub}</span></div>
+      <span class="estado ${abierta?'abierta':'cerrada'}" id="est_${uid}">${abierta?'● Abierta':'● Cerrada'}</span>
+      ${syncOn?`<span class="estado sync"><i class="ti ti-link"></i> T${syncTrim}·${syncCol}</span>`:`<span class="estado nosync">Sin sincronizar</span>`}
+    </div>
+    <div class="ctrls">
+      <div class="ctrl"><label>Intentos</label>
+        <input type="number" min="1" max="20" id="int_${uid}" value="${intentos}"></div>
+      <div class="ctrl"><label>Apertura</label>
+        <input type="datetime-local" id="ap_${uid}" value="${apertura}"></div>
+      <div class="ctrl"><label>Cierre</label>
+        <input type="datetime-local" id="ci_${uid}" value="${cierre}"></div>
+      <div class="ctrl full">
+        <div class="tgwrap"><b>Abierta</b>
+          <div class="tg ${abierta?'on':''}" id="tg_${uid}" onclick="toggleAct('${a.id}','${grado}')"></div></div>
+        <button class="be sm" onclick="guardarAct('${a.id}','${grado}')"><i class="ti ti-device-floppy"></i> Guardar</button>
+      </div>
+      <div class="ctrl full" style="justify-content:flex-start;border-top:1px dashed var(--linea);padding-top:12px">
+        <div class="tgwrap"><b>Sincronizar con Notas del Aula</b>
+          <div class="tg ${syncOn?'on':''}" id="syncTg_${a.id}" onclick="toggleSync('${a.id}')"></div></div>
+      </div>
+      <div class="ctrl ${syncOn?'':'hide'}" id="sTrimW_${a.id}"><label>Trimestre</label>
+        <select id="sTrim_${a.id}">
+          <option value="1" ${syncTrim===1?'selected':''}>Trimestre 1</option>
+          <option value="2" ${syncTrim===2?'selected':''}>Trimestre 2</option>
+          <option value="3" ${syncTrim===3?'selected':''}>Trimestre 3</option>
+        </select></div>
+      <div class="ctrl ${syncOn?'':'hide'}" id="sColW_${a.id}"><label>Columna de notas</label>
+        <select id="sCol_${a.id}">${colOpts}</select></div>
+      <div class="ctrl full ${syncOn?'':'hide'}" id="sSaveW_${a.id}">
+        <button class="be sm" onclick="guardarSync('${a.id}')"><i class="ti ti-link"></i> Guardar sincronización</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+window.toggleMsec = (hdr)=>{ hdr.classList.toggle('open'); };
+window.toggleGsec = (hdr)=>{ hdr.classList.toggle('open'); };
+
+window.toggleAct = (actId, grado)=>{
+  const c=CONFIG_ACTS[actId]||{}; const k=gKey(grado);
+  if(!c[k]) c[k]={};
+  const prev = c[k].abierta !== undefined ? c[k].abierta : (c.abierta !== false);
+  c[k].abierta = !prev;
+  CONFIG_ACTS[actId]=c;
+  const uid=actId+'__'+grado.replace(/[°\s]/g,'');
+  $('tg_'+uid).classList.toggle('on', c[k].abierta);
+  const e=$('est_'+uid), ab=c[k].abierta;
+  e.className='estado '+(ab?'abierta':'cerrada'); e.textContent=ab?'● Abierta':'● Cerrada';
+};
+
+window.guardarAct = async (actId, grado)=>{
+  const a=CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const c=CONFIG_ACTS[actId]||{}; const k=gKey(grado);
+  if(!c[k]) c[k]={};
+  const uid=actId+'__'+grado.replace(/[°\s]/g,'');
+  c[k] = {
+    ...c[k],
+    abierta: $('tg_'+uid).classList.contains('on'),
+    intentos: parseInt($('int_'+uid).value)||1,
+    apertura: $('ap_'+uid).value||'',
+    cierre: $('ci_'+uid).value||''
+  };
+  CONFIG_ACTS[actId]=c;
+  const m=$('msgCtrl');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    const data={nombre:a.nombre};
+    data[k]=c[k];
+    await setDoc(doc(db,'actividades',actId),data,{merge:true});
+    m.className='msg ok'; m.textContent=`✓ "${a.nombre}" guardado para ${grado}.`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// Sincronización
+window.toggleSync = (actId)=>{
+  const on=$('syncTg_'+actId).classList.toggle('on');
+  ['sTrimW_','sColW_','sSaveW_'].forEach(p=>$( p+actId)?.classList.toggle('hide',!on));
+  if(!on) guardarSync(actId, true);
+};
+
+window.guardarSync = async (actId, off)=>{
+  const a=CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const c=CONFIG_ACTS[actId]||{};
+  const activo=off?false:$('syncTg_'+actId).classList.contains('on');
+  const sync=activo?{activo:true,trimestre:parseInt($('sTrim_'+actId).value)||1,columna:$('sCol_'+actId).value||'Act#1'}:{activo:false};
+  const m=$('msgCtrl');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    await setDoc(doc(db,'actividades',actId),{sync},{merge:true});
+    CONFIG_ACTS[actId]={...c,sync};
+    if(activo) await propagarActividadANotas(actId);
+    renderControl();
+    m.className='msg ok'; m.textContent=`✓ Sincronización de "${a.nombre}" actualizada.`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+async function propagarNotaAula(grado,codigo,trimestre,columna,nota){
+  const ref=doc(db,'notasAula',grado.replace('°',''));
+  const snap=await getDoc(ref); const data=snap.exists()?snap.data():{};
+  const tKey='T'+trimestre;
+  if(!data[tKey]) data[tKey]={cols:[columna],valores:{}};
+  if(!data[tKey].cols) data[tKey].cols=[columna];
+  if(!data[tKey].cols.includes(columna)) data[tKey].cols.push(columna);
+  const idx=data[tKey].cols.indexOf(columna);
+  if(!data[tKey].valores) data[tKey].valores={};
+  const arr=data[tKey].valores[codigo]||[];
+  while(arr.length<data[tKey].cols.length) arr.push(1.0);
+  arr[idx]=nota;
+  data[tKey].valores[codigo]=arr;
+  await setDoc(ref,data,{merge:true});
+}
+
+async function propagarActividadANotas(actId){
+  const c=CONFIG_ACTS[actId]||{}; const sync=c.sync||{};
+  if(!sync.activo) return;
+  const snap=await getDocs(collection(db,'actividades',actId,'resultados'));
+  const porGrado={};
+  snap.forEach(d=>{ const r=d.data(); if(typeof r.nota==='number'){ if(!porGrado[r.grado]) porGrado[r.grado]={}; porGrado[r.grado][d.id]=r.nota; }});
+  for(const grado of Object.keys(porGrado)){
+    const ref=doc(db,'notasAula',grado.replace('°',''));
+    const gs=await getDoc(ref); const data=gs.exists()?gs.data():{};
+    const tKey='T'+sync.trimestre;
+    if(!data[tKey]) data[tKey]={cols:[sync.columna],valores:{}};
+    if(!data[tKey].cols) data[tKey].cols=[sync.columna];
+    if(!data[tKey].cols.includes(sync.columna)) data[tKey].cols.push(sync.columna);
+    const idx=data[tKey].cols.indexOf(sync.columna);
+    if(!data[tKey].valores) data[tKey].valores={};
+    Object.entries(porGrado[grado]).forEach(([cod,nota])=>{
+      const arr=data[tKey].valores[cod]||[];
+      while(arr.length<data[tKey].cols.length) arr.push(1.0);
+      arr[idx]=nota; data[tKey].valores[cod]=arr;
+    });
+    await setDoc(ref,data,{merge:true});
+  }
+}
+
+// ============================================================
+// MATERIALES
+// ============================================================
+async function cargarMateriales(){
+  const m=$('msgMat'); m.className='msg'; m.textContent='';
+  $('listaMat').innerHTML='<div style="padding:20px;color:var(--tx3)"><span class="spin"></span> Cargando…</div>';
+  try{
+    let html='';
+    for(const mat of MATERIAS){
+      const snap=await getDoc(doc(db,'materiales',mat.id));
+      const items = snap.exists() ? (snap.data().items || []) : [];
+      html+=`<div class="mat-msec">
+        <h2><i class="ti ${mat.icon}"></i> ${mat.n}</h2>
+        ${items.map((it,i)=>renderMatItem(mat.id,it,i)).join('')}
+        ${renderMatNew(mat.id)}
+      </div>`;
+    }
+    $('listaMat').innerHTML=html;
+  }catch(e){ m.className='msg err'; m.textContent='Error al cargar: '+e.message; }
+}
+
+function renderMatItem(matId,it,i){
+  const activo=it.activo!==false;
+  return `<div class="mat-item ${activo?'':'inact'}" id="mitem_${matId}_${i}">
+    <div class="mat-row">
+      <div class="mat-ico"><i class="ti ti-file-description"></i></div>
+      <div class="mat-body">
+        <b>${it.titulo||'Sin título'}</b>
+        ${it.descripcion?`<div style="font-size:12px;color:var(--tx2);margin-top:2px">${it.descripcion}</div>`:''}
+        ${it.url?`<div class="url-chip"><i class="ti ti-link"></i> ${it.url}</div>`:''}
+        ${it.fechaEvento?`<div class="fecha-chip"><i class="ti ti-calendar-event"></i> ${new Date(it.fechaEvento).toLocaleDateString('es-PA',{day:'numeric',month:'long',year:'numeric'})}</div>`:''}
+      </div>
+    </div>
+    <div class="mat-acts">
+      <button onclick="toggleMatActivo('${matId}',${i})">${activo?'<i class="ti ti-eye-off"></i> Desactivar':'<i class="ti ti-eye"></i> Activar'}</button>
+      <button class="bdel" onclick="eliminarMat('${matId}',${i})"><i class="ti ti-trash"></i> Eliminar</button>
+    </div>
+  </div>`;
+}
+
+function renderMatNew(matId){
+  return `<div class="mat-new" id="matNew_${matId}">
+    <h3><i class="ti ti-plus"></i> Nuevo material — ${MATERIAS.find(m=>m.id===matId)?.n||matId}</h3>
+    <div class="fg"><label>Título</label><input id="mt_${matId}" placeholder="Ej: Guía del Parcial #1"></div>
+    <div class="fg"><label>Descripción corta (opcional)</label><input id="md_${matId}" placeholder="Ej: Repasa los temas 3 y 4"></div>
+    <div class="fg"><label>Enlace (Google Drive, OneDrive, etc.)</label><input id="mu_${matId}" placeholder="https://drive.google.com/..."></div>
+    <div class="fg"><label>Fecha del evento (opcional)</label><input type="date" id="mf_${matId}"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="be sm" onclick="agregarMat('${matId}')"><i class="ti ti-plus"></i> Publicar material</button>
+    </div>
+  </div>`;
+}
+
+window.agregarMat = async (matId)=>{
+  const titulo=$('mt_'+matId).value.trim();
+  if(!titulo){ $('msgMat').className='msg warn'; $('msgMat').textContent='Escribe un título.'; return; }
+  const item={
+    titulo,
+    descripcion:$('md_'+matId).value.trim()||'',
+    url:$('mu_'+matId).value.trim()||'',
+    fechaEvento:$('mf_'+matId).value||'',
+    activo:true,
+    creado:new Date().toISOString()
+  };
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Publicando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref);
+    const data=snap.exists()?snap.data():{items:[]};
+    if(!data.items) data.items=[];
+    data.items.push(item);
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Material publicado en '+MATERIAS.find(x=>x.id===matId)?.n+'.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.toggleMatActivo = async (matId,idx)=>{
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Actualizando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    data.items[idx].activo=!data.items[idx].activo;
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Estado actualizado.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.eliminarMat = async (matId,idx)=>{
+  if(!confirm('¿Eliminar este material? No se puede deshacer.')) return;
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Eliminando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    data.items.splice(idx,1);
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Material eliminado.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ============================================================
+// RESULTADOS
+// ============================================================
+window.cargarResultados = async ()=>{
+  const actId=$('selActRes').value; if(!actId) return;
+  const m=$('msgRes');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Cargando…';
+  try{
+    const snap=await getDocs(collection(db,'actividades',actId,'resultados'));
+    RESULTADOS=[]; snap.forEach(d=>RESULTADOS.push({...d.data(),_codigo:d.id}));
+    RESULTADOS.sort((a,b)=>(a.grado||'').localeCompare(b.grado||'')||(a.nombre||'').localeCompare(b.nombre||''));
+    const grados=[...new Set(RESULTADOS.map(r=>r.grado))].sort();
+    const sel=$('filGrado'); const cur=sel.value;
+    sel.innerHTML='<option value="">Todos los grupos</option>'+grados.map(g=>`<option value="${g}">${g}</option>`).join('');
+    sel.value=cur; m.className='msg'; m.textContent='';
+    renderTabla();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.renderTabla = ()=>{
+  const fil=$('filGrado').value;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  const notas=rows.map(r=>r.nota).filter(n=>typeof n==='number');
+  $('dsTot').textContent=rows.length;
+  $('dsAp').textContent=notas.filter(n=>n>=3.0).length;
+  $('dsRe').textContent=notas.filter(n=>n<3.0).length;
+  $('dsProm').textContent=notas.length?(notas.reduce((s,n)=>s+n,0)/notas.length).toFixed(1):'—';
+  $('tbRes').innerHTML=rows.length?rows.map((r,i)=>{
+    const f=r.fecha?new Date(r.fecha).toLocaleDateString('es-PA',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';
+    const n=typeof r.nota==='number'?r.nota:1.0; const cls=n>=3.0?'ap':'re';
+    return `<tr><td>${i+1}</td><td>${r.nombre}<br><span style="font-size:11px;color:var(--tx3)">${r._codigo}</span></td><td>${r.grado}</td><td>${r.puntaje??'—'}</td>
+    <td><input type="number" min="1" max="5" step="0.1" class="celledit ${cls}" value="${n.toFixed(1)}" onchange="editarNotaRes('${r._codigo}',this)"></td>
+    <td>${r.intentos||1}</td><td>${f}</td></tr>`;
+  }).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:28px">Aún no hay entregas.</td></tr>';
+};
+
+window.editarNotaRes = async (codigo,input)=>{
+  let v=parseFloat(input.value); if(isNaN(v))v=1.0; if(v<1)v=1.0; if(v>5)v=5.0;
+  v=Math.round(v*10)/10; input.value=v.toFixed(1);
+  input.classList.remove('ap','re'); input.classList.add(v>=3?'ap':'re');
+  const actId=$('selActRes').value;
+  const r=RESULTADOS.find(x=>x._codigo===codigo); if(r) r.nota=v;
+  const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    await setDoc(doc(db,'actividades',actId,'resultados',codigo),{nota:v},{merge:true});
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    if(sync?.activo && r) await propagarNotaAula(r.grado,codigo,sync.trimestre,sync.columna,v);
+    m.className='msg ok'; m.textContent='✓ Nota actualizada.';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.exportarCSV = ()=>{
+  const fil=$('filGrado').value;
+  const actId=$('selActRes').value;
+  const actNom=CATALOGO_ACTIVIDADES.find(a=>a.id===actId)?.nombre||actId;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  if(!rows.length){ $('msgRes').className='msg warn'; $('msgRes').textContent='No hay datos.'; return; }
+  let csv='\uFEFF#,Código,Estudiante,Grado,Correctas,Incorrectas,Puntaje,Nota,Intentos,Fecha\n';
+  rows.forEach((r,i)=>{
+    const f=r.fecha?new Date(r.fecha).toLocaleString('es-PA'):'';
+    csv+=`${i+1},"${r.codigo||r._codigo}","${r.nombre}","${r.grado}",${r.correctas??''},${r.incorrectas??''},"${r.puntaje??''}",${(typeof r.nota==='number'?r.nota:1.0).toFixed(1)},${r.intentos||1},"${f}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`${actNom.replace(/ /g,'_')}_${fil||'todos'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); $('msgRes').className='msg ok'; $('msgRes').textContent='✓ Exportado.';
+};
+
+// ============================================================
+// NOTAS DEL AULA
+// ============================================================
+function initNotas(){
+  $('selGradoNotas').innerHTML=GRADOS_AULA.map(g=>`<option value="${g}">${g}</option>`).join('');
+  gradoNotas=GRADOS_AULA[0]; cargarNotasGrado();
+}
+
+window.setTrimNotas=(t,btn)=>{
+  trimNotas=t;
+  document.querySelectorAll('.trim-tab').forEach(b=>b.classList.remove('on'));
+  btn?.classList.add('on'); cargarNotasGrado();
+};
+
+window.cargarNotasGrado = async ()=>{
+  gradoNotas=$('selGradoNotas').value;
+  const m=$('msgNotas'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Cargando…';
+  try{
+    // 1) Estudiantes del grado, ordenados alfabéticamente
+    const snap=await getDocs(query(collection(db,'estudiantes'),where('grado','==',gradoNotas)));
+    const estudiantes=[];
+    snap.forEach(d=>estudiantes.push({codigo:d.id,nombre:d.data().nombre||'(sin nombre)'}));
+    estudiantes.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    // 2) Notas guardadas
+    const ref=doc(db,'notasAula',gradoNotas.replace('°',''));
+    const ns=await getDoc(ref); const data=ns.exists()?ns.data():{};
+    const trimData=data['T'+trimNotas]||{};
+    NOTAS_COLS=trimData.cols&&trimData.cols.length?trimData.cols:['Act#1'];
+    const valores=trimData.valores||{};
+    // 3) Columnas sincronizadas
+    SYNCED_COLS={};
+    for(const act of CATALOGO_ACTIVIDADES){
+      const sync=(CONFIG_ACTS[act.id]||{}).sync;
+      if(sync?.activo && sync.trimestre===trimNotas) SYNCED_COLS[sync.columna]={actId:act.id,nombre:act.nombre};
+    }
+    // 4) Quiz results para columnas sincronizadas
+    const quizData={};
+    for(const [col,sc] of Object.entries(SYNCED_COLS)){
+      try{
+        const rs=await getDocs(collection(db,'actividades',sc.actId,'resultados'));
+        quizData[col]={};
+        rs.forEach(d=>{ const r=d.data(); if(typeof r.nota==='number') quizData[col][d.id]=r.nota; });
+      }catch(e){}
+    }
+    // 5) Construir NOTAS_DATA
+    NOTAS_DATA={};
+    estudiantes.forEach(e=>{
+      const guardado=valores[e.codigo]||[];
+      const cols=NOTAS_COLS.map((c,i)=>{
+        if(SYNCED_COLS[c]){
+          // Columna sincronizada: fuente de verdad es el quiz, nunca el caché
+          const qv=quizData[c]?.[e.codigo];
+          return qv!==undefined ? qv : 0.0;
+        }
+        // Columna manual: leer lo guardado, default 0.0
+        if(guardado[i]!==undefined&&guardado[i]!==null) return guardado[i];
+        return 0.0;
+      });
+      NOTAS_DATA[e.codigo]={nombre:e.nombre,cols};
+    });
+    m.className='msg'; m.textContent=''; renderTablaNotas();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+function renderTablaNotas(){
+  const codigos=Object.keys(NOTAS_DATA);
+  let thead=`<th class="sticky-col" style="min-width:28px">#</th><th class="sticky-col2" style="min-width:180px">Nombre</th>`;
+  NOTAS_COLS.forEach((c,i)=>{
+    const sc=SYNCED_COLS[c];
+    thead+=`<th class="colact"><input class="thcolname" value="${c}" onchange="renombrarColNotas(${i},this.value)" title="${sc?'Sincronizada con: '+sc.nombre:''}">${sc?`<i class="ti ti-link" style="color:var(--neon);font-size:10px;vertical-align:middle;margin-left:2px"></i>`:''}<button class="delcolbtn" onclick="quitarColNotas(${i})"><i class="ti ti-x"></i></button></th>`;
+  });
+  thead+=`<th class="colact notatotal">Promedio</th>`;
+  $('theadNotas').innerHTML=thead;
+  if(!codigos.length){
+    $('tbNotas').innerHTML=`<tr><td colspan="${NOTAS_COLS.length+3}" style="text-align:center;color:var(--tx3);padding:30px">No hay estudiantes en este grado.</td></tr>`;
+    return;
+  }
+  $('tbNotas').innerHTML=codigos.map((cod,idx)=>{
+    const est=NOTAS_DATA[cod];
+    let row=`<tr><td class="sticky-col" style="color:var(--tx3);font-size:12px">${idx+1}</td>
+      <td class="sticky-col2">${est.nombre}<br><span style="font-size:11px;color:var(--tx3)">${cod}</span></td>`;
+    est.cols.forEach((v,i)=>{
+      const n=parseFloat(v)||0.0; const cls=n>=3?'ap':'re';
+      row+=`<td style="text-align:center"><input type="number" min="0" max="5" step="0.1" class="celledit ${cls}" value="${n.toFixed(1)}" onchange="editarNota('${cod}',${i},this)"></td>`;
+    });
+    const prom=est.cols.length?(est.cols.reduce((s,v)=>s+(parseFloat(v)||0.0),0)/est.cols.length):0.0;
+    row+=`<td class="notatotal" style="text-align:center"><span class="${prom>=3?'n-verde':'n-rojo'}">${prom.toFixed(1)}</span></td></tr>`;
+    return row;
+  }).join('');
+}
+
+window.editarNota = async (cod,i,input)=>{
+  let v=parseFloat(input.value); if(isNaN(v))v=0.0; if(v<0)v=0.0; if(v>5)v=5;
+  v=Math.round(v*10)/10; input.value=v.toFixed(1);
+  input.classList.remove('ap','re'); input.classList.add(v>=3?'ap':'re');
+  NOTAS_DATA[cod].cols[i]=v; renderTablaNotas();
+  const sc=SYNCED_COLS[NOTAS_COLS[i]];
+  if(sc){ try{ await setDoc(doc(db,'actividades',sc.actId,'resultados',cod),{nota:v},{merge:true}); }catch(e){} }
+};
+
+window.renombrarColNotas=(i,n)=>{ NOTAS_COLS[i]=n.trim()||`Act#${i+1}`; renderTablaNotas(); };
+
+window.agregarColNotas=()=>{
+  NOTAS_COLS.push(`Act#${NOTAS_COLS.length+1}`);
+  Object.values(NOTAS_DATA).forEach(e=>e.cols.push(0.0)); renderTablaNotas();
+};
+
+window.quitarColNotas=(i)=>{
+  if(NOTAS_COLS.length<=1){ $('msgNotas').className='msg warn'; $('msgNotas').textContent='Debe quedar al menos una columna.'; return; }
+  const idx=typeof i==='number'?i:NOTAS_COLS.length-1;
+  if(!confirm(`¿Eliminar columna "${NOTAS_COLS[idx]}"?`)) return;
+  NOTAS_COLS.splice(idx,1); Object.values(NOTAS_DATA).forEach(e=>e.cols.splice(idx,1)); renderTablaNotas();
+};
+
+window.guardarNotasGrado = async ()=>{
+  const m=$('msgNotas'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    const valores={};
+    Object.entries(NOTAS_DATA).forEach(([cod,e])=>{ valores[cod]=e.cols; });
+    const ref=doc(db,'notasAula',gradoNotas.replace('°',''));
+    const snap=await getDoc(ref); const data=snap.exists()?snap.data():{};
+    data['T'+trimNotas]={cols:NOTAS_COLS,valores};
+    await setDoc(ref,data,{merge:true});
+    m.className='msg ok'; m.textContent=`✓ Notas guardadas — ${gradoNotas} · T${trimNotas}.`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.exportarCSVNotas=()=>{
+  const codigos=Object.keys(NOTAS_DATA); if(!codigos.length){ $('msgNotas').className='msg warn'; $('msgNotas').textContent='No hay datos para exportar.'; return; }
+  // Mostrar modal de selección de columnas
+  $('expColList').innerHTML = `
+    <label style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--linea);cursor:pointer">
+      <input type="checkbox" id="expTodas" checked onchange="toggleTodasCols(this)">
+      <b style="font-family:'Chakra Petch';font-size:13px;color:var(--neon)">Todas las columnas + Promedio</b>
+    </label>
+    ${NOTAS_COLS.map((c,i)=>`
+    <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer">
+      <input type="checkbox" class="expColCk" data-i="${i}" checked>
+      <span style="font-size:13px">${c}${SYNCED_COLS[c]?` <i class="ti ti-link" style="color:var(--neon);font-size:11px"></i>`:''}
+      </span>
+    </label>`).join('')}
+  `;
+  $('expModal').classList.remove('hide');
+};
+
+window.toggleTodasCols=(cb)=>{
+  document.querySelectorAll('.expColCk').forEach(c=>c.checked=cb.checked);
+};
+
+window.cerrarExpModal=()=>{ $('expModal').classList.add('hide'); };
+
+window.confirmarExportNotas=()=>{
+  const codigos=Object.keys(NOTAS_DATA);
+  const selIdx=[...document.querySelectorAll('.expColCk')].filter(c=>c.checked).map(c=>parseInt(c.dataset.i));
+  if(!selIdx.length){ $('msgNotas').className='msg warn'; $('msgNotas').textContent='Selecciona al menos una columna.'; cerrarExpModal(); return; }
+  const colsExp=selIdx.map(i=>NOTAS_COLS[i]);
+  let csv='\uFEFF#,Código,Nombre,'+colsExp.join(',')+',Promedio\n';
+  codigos.forEach((cod,i)=>{
+    const e=NOTAS_DATA[cod];
+    const vals=selIdx.map(ci=>parseFloat(e.cols[ci])||0.0);
+    const prom=(vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(1);
+    csv+=`${i+1},"${cod}","${e.nombre}",${vals.map(v=>v.toFixed(1)).join(',')},${prom}\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const colLabel=selIdx.length===NOTAS_COLS.length?'todas':colsExp.join('-').replace(/#/g,'');
+  a.download=`Notas_${gradoNotas.replace('°','')}_T${trimNotas}_${colLabel}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  cerrarExpModal();
+  $('msgNotas').className='msg ok'; $('msgNotas').textContent=`✓ Exportado: ${colsExp.join(', ')}.`;
+};
+
+$('inPass').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+</script>
+</body></html>
