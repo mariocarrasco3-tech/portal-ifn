@@ -1,1 +1,502 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dispositivos E/S/M — Taller #2 TIC</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#05060a;--panel:#0b0f1a;--panel2:#10141f;--linea:rgba(0,240,255,.14);--linea2:rgba(0,240,255,.3);--tx:#e9f6ff;--tx2:#8aa0b8;--tx3:#52647a;--neon:#00f0ff;--ent:#00ffa3;--sal:#ff2d9b;--mix:#ffd23f;--ok:#00ffa3;--err:#ff4d6d;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 15% 0%,rgba(0,240,255,.1),transparent 40%),radial-gradient(circle at 85% 10%,rgba(255,45,155,.08),transparent 40%),radial-gradient(circle at 50% 100%,rgba(255,210,63,.05),transparent 40%);pointer-events:none;}
+body::after{content:"";position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,240,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.025) 1px,transparent 1px);background-size:42px 42px;pointer-events:none;mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 70%);}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:24px 20px 80px;}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
+.br{display:flex;align-items:center;gap:10px;}.br img{height:40px;width:40px;object-fit:contain;border-radius:8px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:13px;color:#fff;display:block;line-height:1.1;}.br span{font-size:10px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;}
+.back{font-size:12px;color:var(--tx2);text-decoration:none;padding:8px 14px;border:1px solid var(--linea2);border-radius:7px;display:flex;align-items:center;gap:6px;cursor:pointer;}.back:hover{color:var(--neon);}
+.hide{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea2);border-top-color:var(--neon);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}@keyframes sp{to{transform:rotate(360deg);}}
+.msg{font-size:13px;font-weight:500;padding:11px 14px;border-radius:8px;margin-top:14px;text-align:center;display:none;}
+.msg.err{display:block;background:rgba(255,77,109,.12);color:#ffb3c0;border:1px solid rgba(255,77,109,.3);}
+.msg.ok{display:block;background:rgba(0,255,163,.12);color:#7dffce;border:1px solid rgba(0,255,163,.3);}
+.msg.warn{display:block;background:rgba(255,210,63,.12);color:#ffe79a;border:1px solid rgba(255,210,63,.3);}
 
+/* ── BOX ── */
+.box{background:var(--panel);border:1px solid var(--linea2);border-radius:16px;padding:36px 32px;position:relative;overflow:hidden;box-shadow:0 0 60px -20px rgba(0,240,255,.3);}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ent),var(--neon),var(--sal));box-shadow:0 0 14px var(--neon);}
+
+/* ── PANTALLA INICIO ── */
+.ico-act{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,rgba(0,240,255,.15),rgba(0,240,255,.05));border:1px solid var(--linea2);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--neon);margin:0 auto 20px;box-shadow:0 0 30px -8px var(--neon);}
+.act-tag{font-family:'Chakra Petch';font-size:11px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:10px;}
+.act-title{font-family:'Chakra Petch';font-size:32px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;text-shadow:0 0 30px rgba(0,240,255,.3);}
+.act-sub{font-size:14px;color:var(--tx2);text-align:center;margin-bottom:28px;}
+.who-box{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--panel2);border:1px solid var(--linea);border-radius:12px;margin-bottom:24px;}
+.who-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--neon),#0088aa);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch';font-weight:700;color:var(--bg);font-size:20px;flex-shrink:0;}
+.who-av.demo{background:linear-gradient(135deg,var(--mix),#a06000);}
+.who-info b{font-family:'Chakra Petch';color:#fff;font-size:15px;display:block;}.who-info span{font-size:12px;color:var(--tx2);}
+
+/* Chips de categorías */
+.cat-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.cat-chip{text-align:center;padding:18px 12px;border-radius:12px;border:1px solid;}
+.cat-chip.ent{background:rgba(0,255,163,.07);border-color:rgba(0,255,163,.3);color:var(--ent);}
+.cat-chip.sal{background:rgba(255,45,155,.07);border-color:rgba(255,45,155,.3);color:var(--sal);}
+.cat-chip.mix{background:rgba(255,210,63,.07);border-color:rgba(255,210,63,.3);color:var(--mix);}
+.cat-chip i{font-size:28px;display:block;margin-bottom:6px;}
+.cat-chip b{font-family:'Chakra Petch';font-size:13px;display:block;margin-bottom:3px;}
+.cat-chip span{font-size:11px;opacity:.7;}
+.inst-box{background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:18px 20px;margin-bottom:24px;}
+.inst-box h3{font-family:'Chakra Petch';font-size:12px;color:var(--neon);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.inst-box ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.inst-box li{font-size:13px;color:var(--tx2);display:flex;align-items:flex-start;gap:8px;}
+.inst-box li::before{content:"›";color:var(--neon);font-weight:700;flex-shrink:0;}
+.be{width:100%;padding:16px;font-family:'Chakra Petch';font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--bg);background:var(--neon);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.18s;box-shadow:0 0 28px -6px var(--neon);}
+.be:hover{transform:translateY(-2px);box-shadow:0 0 40px -4px var(--neon);}
+.be.cont{background:linear-gradient(90deg,var(--neon),#0088ff);box-shadow:0 0 28px -6px #0088ff;}
+.be.sec{background:transparent;border:1px solid var(--linea2);color:var(--tx2);box-shadow:none;}.be.sec:hover{color:var(--neon);border-color:var(--neon);}
+
+/* ── QUIZ ── */
+.q-prog-wrap{margin-bottom:28px;}
+.q-prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.q-prog-lbl{font-family:'Chakra Petch';font-size:12px;color:var(--tx2);}
+.q-prog-n{font-family:'Chakra Petch';font-size:13px;font-weight:700;color:var(--neon);}
+.q-pbar{height:6px;background:var(--panel2);border-radius:100px;overflow:hidden;border:1px solid var(--linea);}
+.q-pbar-fill{height:100%;background:linear-gradient(90deg,var(--ent),var(--neon));box-shadow:0 0 10px var(--neon);transition:width .4s cubic-bezier(.4,0,.2,1);}
+.q-live{display:flex;gap:20px;justify-content:center;margin-top:10px;}
+.q-live span{font-family:'Chakra Petch';font-size:13px;display:flex;align-items:center;gap:5px;}
+.q-live .bok{color:var(--ok);}.q-live .ber{color:var(--err);}
+
+.q-card{text-align:center;padding:10px 0 20px;}
+.q-num{font-family:'Chakra Petch';font-size:11px;color:var(--tx3);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;}
+.q-device{font-family:'Chakra Petch';font-size:38px;font-weight:700;color:#fff;margin-bottom:8px;min-height:52px;text-shadow:0 0 24px rgba(0,240,255,.25);line-height:1.2;}
+.q-device-sub{font-size:13px;color:var(--tx3);margin-bottom:34px;min-height:20px;}
+
+.q-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:600px;margin:0 auto;}
+.qb{padding:24px 16px;font-family:'Chakra Petch';font-size:15px;font-weight:700;border-radius:14px;border:2px solid;cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:10px;background:transparent;letter-spacing:.5px;}
+.qb i{font-size:32px;}
+.qb.ent{color:var(--ent);border-color:rgba(0,255,163,.35);}
+.qb.ent:hover:not(:disabled){background:rgba(0,255,163,.1);box-shadow:0 0 28px -6px var(--ent);transform:translateY(-3px);}
+.qb.sal{color:var(--sal);border-color:rgba(255,45,155,.35);}
+.qb.sal:hover:not(:disabled){background:rgba(255,45,155,.1);box-shadow:0 0 28px -6px var(--sal);transform:translateY(-3px);}
+.qb.mix{color:var(--mix);border-color:rgba(255,210,63,.35);}
+.qb.mix:hover:not(:disabled){background:rgba(255,210,63,.1);box-shadow:0 0 28px -6px var(--mix);transform:translateY(-3px);}
+.qb:disabled{cursor:not-allowed;opacity:.6;}
+.qb.flash-ok{background:rgba(0,255,163,.2)!important;border-color:var(--ok)!important;transform:none!important;}
+.qb.flash-err{background:rgba(255,77,109,.2)!important;border-color:var(--err)!important;transform:none!important;}
+
+/* ── RESULTADO ── */
+.res-hero{text-align:center;margin-bottom:28px;}
+.res-emoji{font-size:56px;margin-bottom:10px;}
+.res-nota{font-family:'Chakra Petch';font-size:80px;font-weight:700;line-height:1;margin-bottom:6px;}
+.res-nota.ap{color:var(--ok);text-shadow:0 0 40px rgba(0,255,163,.4);}
+.res-nota.re{color:var(--err);text-shadow:0 0 40px rgba(255,77,109,.4);}
+.res-fb{font-size:16px;color:var(--tx);margin-bottom:4px;}
+.res-fb2{font-size:13px;color:var(--tx2);}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.rc{background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:20px;text-align:center;}
+.rc b{font-family:'Chakra Petch';font-size:32px;display:block;line-height:1;margin-bottom:4px;}
+.rc span{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;}
+.rc.ok b{color:var(--ok);}.rc.er b{color:var(--err);}.rc.pt b{color:var(--neon);}
+.res-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.rcat{text-align:center;padding:14px;border-radius:10px;background:var(--panel2);border:1px solid var(--linea);}
+.rcat .rcat-n{font-family:'Chakra Petch';font-size:22px;font-weight:700;display:block;}
+.rcat .rcat-l{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;}
+.rcat.ent .rcat-n{color:var(--ent);}
+.rcat.sal .rcat-n{color:var(--sal);}
+.rcat.mix .rcat-n{color:var(--mix);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:560px){
+  .box{padding:24px 18px;}
+  .act-title{font-size:24px;}
+  .cat-chips{grid-template-columns:1fr;}
+  .q-btns{grid-template-columns:1fr;max-width:340px;}
+  .qb{padding:18px 16px;flex-direction:row;justify-content:flex-start;}
+  .q-device{font-size:28px;}
+  .res-nota{font-size:64px;}
+  .res-grid{grid-template-columns:1fr 1fr;}
+  .res-cats{grid-template-columns:1fr;}
+}
+</style>
+</head><body><div class="wrap">
+
+<div class="top">
+  <div class="br"><img src="../logo.png"><div><b>Instituto Fermín Naudeau</b><span>TIC · Taller #2</span></div></div>
+  <a class="back" onclick="volverMateria()"><i class="ti ti-arrow-left"></i> Volver</a>
+</div>
+
+<!-- ══ PANTALLA CARGANDO ══ -->
+<div id="scrLoad" class="box" style="text-align:center;padding:60px 32px;">
+  <div style="font-size:40px;margin-bottom:16px">⚙️</div>
+  <p style="color:var(--tx2);font-family:'Chakra Petch'"><span class="spin"></span> Cargando taller…</p>
+</div>
+
+<!-- ══ PANTALLA BLOQUEADA ══ -->
+<div id="scrBloq" class="box hide" style="text-align:center;padding:60px 32px;">
+  <div style="font-size:48px;margin-bottom:16px">🔒</div>
+  <h2 style="margin-bottom:10px">Actividad cerrada</h2>
+  <p id="msgBloq" style="color:var(--tx2);font-size:14px;margin-bottom:24px"></p>
+  <a class="back" style="display:inline-flex;justify-content:center" onclick="volverMateria()"><i class="ti ti-arrow-left"></i> Volver a TIC</a>
+</div>
+
+<!-- ══ PANTALLA INICIO / INSTRUCCIONES ══ -->
+<div id="scrInst" class="box hide">
+  <div class="ico-act"><i class="ti ti-devices"></i></div>
+  <div class="act-tag">TIC · Taller #2</div>
+  <div class="act-title">Dispositivos de E/S</div>
+  <p class="act-sub">Identifica si el dispositivo es de <b style="color:var(--ent)">Entrada</b>, <b style="color:var(--sal)">Salida</b> o <b style="color:var(--mix)">Mixto</b></p>
+
+  <div class="who-box" id="whoBox">
+    <div class="who-av" id="whoAv">?</div>
+    <div class="who-info"><b id="whoNom">—</b><span id="whoGrado">—</span></div>
+  </div>
+
+  <div class="cat-chips">
+    <div class="cat-chip ent"><i class="ti ti-arrow-into-box"></i><b>Entrada</b><span>Envía datos al PC</span></div>
+    <div class="cat-chip sal"><i class="ti ti-arrow-up-from-arc"></i><b>Salida</b><span>Muestra resultados</span></div>
+    <div class="cat-chip mix"><i class="ti ti-arrows-exchange"></i><b>Mixto</b><span>Entrada Y Salida</span></div>
+  </div>
+
+  <div class="inst-box">
+    <h3><i class="ti ti-info-circle"></i> Instrucciones</h3>
+    <ul>
+      <li>Se mostrarán <b>45 dispositivos</b> en orden aleatorio único para ti.</li>
+      <li>Selecciona si es de <b style="color:var(--ent)">Entrada</b>, <b style="color:var(--sal)">Salida</b> o <b style="color:var(--mix)">Mixto</b>.</li>
+      <li>Tienes <b>1 intento</b>. Si sales, el progreso se guarda y puedes continuar.</li>
+      <li>La nota se calcula con la fórmula MEDUCA: mínimo 1.0, máximo 5.0.</li>
+    </ul>
+  </div>
+
+  <button class="be" id="btnStart" onclick="empezarQuiz()">
+    <i class="ti ti-player-play"></i> <span id="btnStartTxt">Comenzar Taller</span>
+  </button>
+</div>
+
+<!-- ══ PANTALLA QUIZ ══ -->
+<div id="scrQuiz" class="box hide">
+  <div class="q-prog-wrap">
+    <div class="q-prog-row">
+      <span class="q-prog-lbl">Progreso del Taller</span>
+      <span class="q-prog-n" id="qProgN">0 / 45</span>
+    </div>
+    <div class="q-pbar"><div class="q-pbar-fill" id="qPbar" style="width:0%"></div></div>
+    <div class="q-live">
+      <span class="bok"><i class="ti ti-check"></i> <span id="liveOk">0</span> correctas</span>
+      <span class="ber"><i class="ti ti-x"></i> <span id="liveEr">0</span> incorrectas</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-num" id="qNum">Pregunta 1 de 45</div>
+    <div class="q-device" id="qDevice">—</div>
+    <div class="q-device-sub" id="qDeviceSub"></div>
+    <div class="q-btns">
+      <button class="qb ent" id="bEnt" onclick="responder('E')"><i class="ti ti-arrow-into-box"></i> Entrada</button>
+      <button class="qb sal" id="bSal" onclick="responder('S')"><i class="ti ti-arrow-up-from-arc"></i> Salida</button>
+      <button class="qb mix" id="bMix" onclick="responder('M')"><i class="ti ti-arrows-exchange"></i> Mixto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANTALLA RESULTADO ══ -->
+<div id="scrRes" class="box hide">
+  <div class="res-hero">
+    <div class="res-emoji" id="resEmoji">🏆</div>
+    <div class="res-nota" id="resNota">—</div>
+    <div class="res-fb" id="resFb"></div>
+    <div class="res-fb2" id="resFb2"></div>
+  </div>
+
+  <div class="res-grid">
+    <div class="rc ok"><b id="resOk">0</b><span>Correctas</span></div>
+    <div class="rc er"><b id="resEr">0</b><span>Incorrectas</span></div>
+    <div class="rc pt"><b id="resPt">0/45</b><span>Puntaje</span></div>
+  </div>
+
+  <div class="res-cats">
+    <div class="rcat ent"><span class="rcat-n" id="rcatE">—</span><span class="rcat-l">Entrada ✓</span></div>
+    <div class="rcat sal"><span class="rcat-n" id="rcatS">—</span><span class="rcat-l">Salida ✓</span></div>
+    <div class="rcat mix"><span class="rcat-n" id="rcatM">—</span><span class="rcat-l">Mixto ✓</span></div>
+  </div>
+
+  <div class="msg" id="resGuard"></div>
+  <button class="be sec" style="margin-top:16px" onclick="volverMateria()"><i class="ti ti-arrow-left"></i> Volver a TIC</button>
+</div>
+
+</div>
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const $   = id => document.getElementById(id);
+
+// ── Identidad de esta actividad ──
+const ACT_ID     = 'tec-dispositivos-eso';
+const ACT_NOMBRE = 'Dispositivos E/S/M';
+const SAVE_KEY   = 'ifn_prog_'+ACT_ID; // clave localStorage para progreso parcial
+
+// ── Banco de preguntas ──
+// r: 'E'=Entrada, 'S'=Salida, 'M'=Mixto
+const PREGUNTAS = [
+  // ENTRADA
+  {t:'Teclado',                    s:'Periférico de entrada',           r:'E'},
+  {t:'Mouse / Ratón',              s:'Periférico de entrada',           r:'E'},
+  {t:'Micrófono',                  s:'Captura audio para el sistema',   r:'E'},
+  {t:'Cámara web / Webcam',        s:'Captura video e imagen',          r:'E'},
+  {t:'Escáner',                    s:'Digitaliza documentos físicos',   r:'E'},
+  {t:'Lápiz óptico / Stylus',      s:'Entrada precisa en pantallas',    r:'E'},
+  {t:'Tableta gráfica (Wacom)',     s:'Entrada de dibujo digital',       r:'E'},
+  {t:'Joystick / Control de juegos',s:'Entrada para videojuegos',       r:'E'},
+  {t:'Lector de huella digital',   s:'Entrada biométrica',              r:'E'},
+  {t:'Lector de código de barras', s:'Entrada de datos por barras',     r:'E'},
+  {t:'Sensor de movimiento (Kinect)',s:'Captura movimiento corporal',   r:'E'},
+  {t:'Micrófono de diadema',       s:'Captura voz del usuario',         r:'E'},
+  {t:'Lector de iris',             s:'Entrada biométrica ocular',       r:'E'},
+  // SALIDA
+  {t:'Monitor / Pantalla',         s:'Muestra información visual',      r:'S'},
+  {t:'Impresora de tinta',         s:'Genera documentos físicos',       r:'S'},
+  {t:'Impresora láser',            s:'Impresión de alta velocidad',     r:'S'},
+  {t:'Bocinas / Parlantes',        s:'Reproduce audio al usuario',      r:'S'},
+  {t:'Audífonos / Auriculares',    s:'Salida de audio personal',        r:'S'},
+  {t:'Proyector',                  s:'Proyecta imagen en pantalla grande',r:'S'},
+  {t:'Impresora 3D',               s:'Crea objetos físicos en capas',   r:'S'},
+  {t:'Plotter',                    s:'Impresión de planos y diseños',   r:'S'},
+  {t:'Pantalla Braille',           s:'Salida táctil para no videntes',  r:'S'},
+  {t:'Impresora de etiquetas',     s:'Genera etiquetas adhesivas',      r:'S'},
+  // MIXTO
+  {t:'Pantalla táctil',            s:'Toca para entrar, muestra para salir',r:'M'},
+  {t:'Audífonos con micrófono',    s:'Escucha y habla al mismo tiempo', r:'M'},
+  {t:'Impresora multifuncional',   s:'Imprime, escanea y copia',        r:'M'},
+  {t:'Disco duro externo (HDD/SSD)',s:'Lee y escribe información',      r:'M'},
+  {t:'Memoria USB / Flash drive',  s:'Lee y escribe datos portátiles',  r:'M'},
+  {t:'Tarjeta de memoria (SD)',    s:'Almacenamiento portable R/W',     r:'M'},
+  {t:'Módem / Router',             s:'Envía y recibe datos de red',     r:'M'},
+  {t:'Tarjeta de red (NIC)',       s:'Comunicación bidireccional',      r:'M'},
+  {t:'Smartwatch / Reloj inteligente',s:'Recibe datos y muestra info', r:'M'},
+  {t:'Guante de realidad virtual', s:'Capta movimiento y da retroalimentación',r:'M'},
+  {t:'Consola de videojuegos',     s:'Recibe mandos y proyecta en TV', r:'M'},
+  {t:'Teléfono inteligente',       s:'Toca, habla, escucha, ve',       r:'M'},
+  {t:'Tableta / iPad',             s:'Pantalla táctil + cámara + altavoz',r:'M'},
+  {t:'Laptop',                     s:'Teclado, pantalla, micrófono…',  r:'M'},
+  {t:'Lector de tarjeta NFC',      s:'Lee y escribe chips sin contacto',r:'M'},
+  {t:'Cajero automático (ATM)',     s:'Teclado, lector, pantalla, billetes',r:'M'},
+  {t:'GPS (receptor satelital)',   s:'Recibe señal y muestra mapas',    r:'M'},
+  {t:'Termostato inteligente',     s:'Mide temperatura y controla clima',r:'M'},
+  {t:'Casco de realidad virtual',  s:'Capta movimiento, muestra imagen',r:'M'},
+  {t:'Timbre inteligente (Ring)',   s:'Capta imagen y envía alertas',   r:'M'},
+  {t:'Altavoz inteligente (Alexa)',s:'Escucha voz y reproduce audio',  r:'M'},
+  {t:'Lector de CD/DVD',           s:'Lee y graba discos ópticos',     r:'M'},
+];
+
+// ── Estado global ──
+let EST = null;
+let orden = [], qIdx = 0, ok = 0, er = 0, respuestas = [];
+let actConfig = {}, actAbierta = true;
+const maxIntentos = 1;
+
+// ── Utilidades ──
+function show(s){ ['scrLoad','scrBloq','scrInst','scrQuiz','scrRes'].forEach(x=>$(x).classList.add('hide')); $(s).classList.remove('hide'); window.scrollTo(0,0); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+window.volverMateria = () => { history.back(); };
+
+// ── INICIO ──
+async function init(){
+  // Recuperar sesión del estudiante (guardada por materia.html)
+  try{ EST = JSON.parse(sessionStorage.getItem('ifn_est')); }catch(e){}
+  if(!EST){ location.href='../materia.html?m=tecnologia'; return; }
+
+  // Verificar configuración de la actividad en Firebase
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+    const k = EST.grado ? 'g_'+EST.grado.replace(/[°\s]/g,'') : null;
+    const gc = (k && actConfig[k]) ? actConfig[k] : {};
+    actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+    if(gc.apertura) actConfig._apertura = gc.apertura;
+    if(gc.cierre)   actConfig._cierre   = gc.cierre;
+  }catch(e){ actAbierta = true; }
+
+  // Verificar horario
+  if(!EST.demo){
+    const ahora = new Date();
+    if(actConfig._apertura && new Date(actConfig._apertura)>ahora){
+      $('msgBloq').textContent = '🕐 Esta actividad abre el '+new Date(actConfig._apertura).toLocaleString('es-PA')+'.';
+      show('scrBloq'); return;
+    }
+    if(actConfig._cierre && new Date(actConfig._cierre)<ahora){
+      $('msgBloq').textContent = '🔒 Esta actividad cerró el '+new Date(actConfig._cierre).toLocaleString('es-PA')+'.';
+      show('scrBloq'); return;
+    }
+    if(!actAbierta){
+      $('msgBloq').textContent = '⏳ La actividad está cerrada. Espera a que el docente la abra.';
+      show('scrBloq'); return;
+    }
+    // Verificar si ya agotó el intento
+    try{
+      const prev = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+      if(prev.exists() && (prev.data().intentos||0) >= maxIntentos){
+        const n = prev.data().nota;
+        $('msgBloq').textContent = `Ya completaste este taller. Nota registrada: ${n.toFixed(1)}.`;
+        show('scrBloq'); return;
+      }
+    }catch(e){}
+  }
+
+  // Pintar quién eres
+  $('whoAv').textContent = (EST.nombre[0]||'?').toUpperCase();
+  if(EST.demo) $('whoAv').classList.add('demo');
+  $('whoNom').textContent = EST.nombre;
+  $('whoGrado').textContent = EST.demo ? 'Modo demostración' : 'Grado '+EST.grado;
+
+  // Verificar si hay progreso guardado
+  const progGuardado = cargarProgreso();
+  if(progGuardado && progGuardado.idx < PREGUNTAS.length){
+    $('btnStartTxt').textContent = `Continuar desde pregunta ${progGuardado.idx + 1}`;
+    $('btnStart').innerHTML = `<i class="ti ti-player-play"></i> Continuar donde me quedé`;
+  }
+
+  show('scrInst');
+}
+
+// ── GUARDAR / CARGAR PROGRESO LOCAL ──
+function guardarProgreso(){
+  if(EST.demo) return;
+  const data = { codigo:EST.codigo, idx:qIdx, ok, er, respuestas, orden:orden.map(q=>PREGUNTAS.indexOf(q)) };
+  localStorage.setItem(SAVE_KEY+'_'+EST.codigo, JSON.stringify(data));
+}
+function cargarProgreso(){
+  try{ return JSON.parse(localStorage.getItem(SAVE_KEY+'_'+EST.codigo)); }catch(e){ return null; }
+}
+function limpiarProgreso(){
+  if(EST) localStorage.removeItem(SAVE_KEY+'_'+EST.codigo);
+}
+
+// ── QUIZ ──
+window.empezarQuiz = () => {
+  const prog = cargarProgreso();
+  if(prog && prog.codigo===EST.codigo && prog.idx > 0 && prog.idx < PREGUNTAS.length){
+    // Restaurar progreso
+    orden = prog.orden.map(i=>PREGUNTAS[i]);
+    qIdx = prog.idx; ok = prog.ok; er = prog.er; respuestas = prog.respuestas||[];
+  } else {
+    orden = shuffle(PREGUNTAS);
+    qIdx = 0; ok = 0; er = 0; respuestas = [];
+  }
+  show('scrQuiz');
+  pintarPregunta();
+};
+
+function pintarPregunta(){
+  const q = orden[qIdx];
+  $('qNum').textContent    = `Pregunta ${qIdx+1} de ${orden.length}`;
+  $('qProgN').textContent  = `${qIdx} / ${orden.length}`;
+  $('qPbar').style.width   = `${(qIdx/orden.length)*100}%`;
+  $('qDevice').textContent = q.t;
+  $('qDeviceSub').textContent = q.s;
+  $('liveOk').textContent = ok; $('liveEr').textContent = er;
+  ['bEnt','bSal','bMix'].forEach(id=>{ $(id).classList.remove('flash-ok','flash-err'); $(id).disabled=false; });
+}
+
+window.responder = (resp) => {
+  const q = orden[qIdx];
+  const correcto = resp === q.r;
+  if(correcto) ok++; else er++;
+  respuestas.push({t:q.t, correcta:q.r, dada:resp, ok:correcto});
+  $('liveOk').textContent = ok; $('liveEr').textContent = er;
+
+  ['bEnt','bSal','bMix'].forEach(id=>$(id).disabled=true);
+  const btnMap = {'E':'bEnt','S':'bSal','M':'bMix'};
+  $(btnMap[resp]).classList.add(correcto?'flash-ok':'flash-err');
+  if(!correcto) $(btnMap[q.r]).classList.add('flash-ok');
+
+  qIdx++;
+  guardarProgreso();
+
+  setTimeout(()=>{
+    if(qIdx>=orden.length) finalizar();
+    else pintarPregunta();
+  }, 500);
+};
+
+// ── FINALIZAR ──
+async function finalizar(){
+  const total = orden.length;
+  const nota  = notaMeduca(ok, total);
+
+  // Estadísticas por categoría (solo respuestas correctas por tipo)
+  const corPorTipo = {E:0, S:0, M:0};
+  respuestas.filter(r=>r.ok).forEach(r=>corPorTipo[r.correcta]++);
+  $('rcatE').textContent = corPorTipo.E;
+  $('rcatS').textContent = corPorTipo.S;
+  $('rcatM').textContent = corPorTipo.M;
+
+  // Nota y feedback gamificado
+  $('resNota').textContent = nota.toFixed(1);
+  $('resNota').className   = 'res-nota '+(nota>=3.0?'ap':'re');
+  $('resOk').textContent   = ok;
+  $('resEr').textContent   = er;
+  $('resPt').textContent   = ok+'/'+total;
+
+  let emoji='', fb='', fb2='';
+  if(nota>=5.0){  emoji='🏆'; fb='¡Nivel experto desbloqueado!';          fb2='Dominas todos los tipos de dispositivos.';}
+  else if(nota>=4.5){emoji='🥇'; fb='¡Excelente rendimiento!';            fb2='Muy pocas fallas, sigue así.';}
+  else if(nota>=4.0){emoji='😎'; fb='Muy buen trabajo.';                  fb2='Casi en el nivel experto.';}
+  else if(nota>=3.5){emoji='👍'; fb='Buen resultado.';                    fb2='Con un poco más de práctica llegas a 5.';}
+  else if(nota>=3.0){emoji='✅'; fb='Aprobado.';                          fb2='Vas por buen camino, repasa los mixtos.';}
+  else if(nota>=2.0){emoji='📚'; fb='Por debajo del mínimo.';             fb2='Repasa los dispositivos mixtos e inténtalo de nuevo.';}
+  else{               emoji='⚡'; fb='No te rindas.';                      fb2='Cada error es una lección. Repasa y vuelve.';}
+
+  $('resEmoji').textContent = emoji;
+  $('resFb').textContent    = fb;
+  $('resFb2').textContent   = fb2;
+  show('scrRes');
+  limpiarProgreso();
+
+  if(EST.demo){
+    $('resGuard').className='msg warn';
+    $('resGuard').textContent='✓ Modo demo — este resultado NO se guarda.';
+    return;
+  }
+
+  const m = $('resGuard');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando resultado…';
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado,
+      correctas:ok, incorrectas:er, total,
+      puntaje: ok+'/'+total, nota,
+      intentos: 1,
+      fecha: new Date().toISOString(),
+      respuestas
+    });
+
+    // Auto-propagar a Notas del Aula si la actividad está sincronizada
+    const sync = actConfig.sync;
+    if(sync?.activo){
+      try{
+        const ref = doc(db,'notasAula',EST.grado.replace('°',''));
+        const snap = await getDoc(ref); const data = snap.exists()?snap.data():{};
+        const tKey = 'T'+sync.trimestre;
+        if(!data[tKey]) data[tKey]={cols:[sync.columna],valores:{}};
+        if(!data[tKey].cols.includes(sync.columna)) data[tKey].cols.push(sync.columna);
+        const ci = data[tKey].cols.indexOf(sync.columna);
+        if(!data[tKey].valores) data[tKey].valores={};
+        const arr = data[tKey].valores[EST.codigo]||[];
+        while(arr.length<data[tKey].cols.length) arr.push(0.0);
+        arr[ci]=nota; data[tKey].valores[EST.codigo]=arr;
+        await setDoc(ref,data,{merge:true});
+      }catch(ep){}
+    }
+
+    m.className='msg ok'; m.textContent='✓ Tu nota ha sido registrada correctamente.';
+  }catch(e){
+    m.className='msg err'; m.textContent='⚠️ No se pudo guardar. Avisa al docente. (Nota: '+nota.toFixed(1)+')';
+  }
+}
+
+init();
+</script>
+</body></html>
