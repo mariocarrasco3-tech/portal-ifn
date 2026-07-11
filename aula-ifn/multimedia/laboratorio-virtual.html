@@ -446,14 +446,32 @@ window.login = async () => {
   const m = $('msgLogin'), btn = $('btnLogin');
   if(!cod){ m.className='msg err'; m.textContent='Escribe tu código.'; return; }
   m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; btn.disabled=true;
+
+  // Lógica Demo restaurada (Lee desde tu config.js)
+  if(typeof CODIGO_DEMO !== 'undefined' && cod === CODIGO_DEMO){
+    EST = { codigo:cod, ...ESTUDIANTE_DEMO, demo:true };
+    btn.disabled=false; 
+    await despuesLogin(); 
+    return;
+  }
   
+  // Respaldo por si falla la lectura del archivo config
+  if(cod === 'DEMO-2026'){
+    EST = { codigo:cod, nombre:'Profesor (Demo)', grado:'Admin', demo:true };
+    btn.disabled=false; 
+    await despuesLogin(); 
+    return;
+  }
+
   try{
     const snap = await getDoc(doc(db,'estudiantes',cod));
     if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
     const d = snap.data();
     EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
     btn.disabled=false; await despuesLogin();
-  }catch(e){ m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false; }
+  }catch(e){ 
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false; 
+  }
 };
 
 async function despuesLogin(){
