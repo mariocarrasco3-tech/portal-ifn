@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Laboratorio Virtual — Multimedia — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #21262d; 
+  --linea: #30363d; --linea2: rgba(88, 166, 255, 0.3);
+  --tx: #c9d1d9; --tx2: #8b949e; --tx3: #6e7681;
+  --neon: #58a6ff; --ok: #238636; --ok-tx: #3fb950;
+  --err: #da3633; --err-bg: rgba(218, 54, 51, 0.1);
+  --oro: #d29922;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; color:var(--tx); background:var(--bg); min-height:100vh; line-height:1.5; }
+h1,h2,h3 { font-family:'Chakra Petch',sans-serif; }
+.wrap { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:24px 20px 60px; }
+.wrap.wide { max-width:1400px; }
+.hide { display:none!important; }
+
+/* TOP BAR */
+.top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap; background: var(--panel); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--linea); }
+.br { display:flex; align-items:center; gap:12px; }
+.br img { height:42px; width:42px; object-fit:contain; border-radius:9px; background:#fff; padding:3px; }
+.br b { font-family:'Chakra Petch'; font-weight:700; font-size:15px; color:#fff; display:block; line-height:1.1; }
+.br span { font-size:10px; color:var(--neon); letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+.back { font-size:13px; color:var(--tx2); text-decoration:none; padding:8px 14px; border:1px solid var(--linea); border-radius:7px; display:flex; align-items:center; gap:6px; cursor:pointer; background:var(--panel2); transition: 0.2s; }
+.back:hover { color:var(--neon); border-color:var(--neon); }
+.spin { display:inline-block; width:14px; height:14px; border:2px solid var(--linea2); border-top-color:var(--neon); border-radius:50%; animation:sp .7s linear infinite; vertical-align:middle; }
+@keyframes sp { to { transform:rotate(360deg); } }
+.msg { font-size:13px; margin-top:10px; min-height:16px; }
+.msg.err { color:var(--err); } .msg.ok { color:var(--ok-tx); } .msg.warn { color:var(--oro); }
+
+/* CARDS GENERALES */
+.card { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:32px; margin-bottom:20px; position:relative; overflow:hidden; }
+.card::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--neon); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:'Chakra Petch'; font-size:11px; font-weight:600; padding:6px 14px; border-radius:100px; letter-spacing:.5px; background:rgba(88,166,255,.1); color:var(--neon); border:1px solid var(--linea2); margin-bottom:16px; }
+h1.tt { font-size:26px; color:#fff; margin-bottom:8px; }
+.sub { font-size:14px; color:var(--tx2); margin-bottom:20px; }
+
+/* FORMULARIOS Y BOTONES */
+.fl { margin-bottom:20px; }
+.fl label { display:block; font-size:12px; color:var(--tx2); margin-bottom:8px; font-family:'Chakra Petch'; letter-spacing:.5px; text-transform:uppercase; }
+.fl input { width:100%; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:14px; color:#fff; font-size:15px; outline:none; transition:0.2s; }
+.fl input:focus { border-color:var(--neon); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+.btn { font-family:'Chakra Petch'; font-weight:600; font-size:14px; letter-spacing:.5px; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.2s; }
+.btn.primary { background:var(--ok); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.primary:hover { background: #2ea043; }
+.btn.primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn.ghost { background:var(--panel2); border:1px solid var(--linea); color:var(--tx); }
+.btn.ghost:hover { border-color:var(--tx); color:#fff; }
+.btn.danger { background:var(--err); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.danger:hover { background: #f85149; }
+.btn.action { background: var(--neon); color: #0d1117; }
+.btn.action:hover { background: #79c0ff; }
+.btn.block { width:100%; justify-content:center; }
+
+/* INSTRUCCIONES Y MATERIAL */
+.material-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+@media(max-width: 768px) { .material-grid { grid-template-columns: 1fr; } }
+.mat-item { background: var(--panel2); border: 1px solid var(--linea); padding: 12px; border-radius: 8px; font-size: 13px; }
+.mat-item code { color: var(--neon); font-family: 'JetBrains Mono', monospace; font-weight: bold; background: rgba(88,166,255,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+
+ul.lst { list-style:none; margin:10px 0 0; }
+ul.lst li { padding:8px 0 8px 24px; position:relative; font-size:14px; color:var(--tx); border-bottom:1px solid var(--linea); }
+ul.lst li:last-child { border-bottom:none; }
+ul.lst li::before { content:"▹"; position:absolute; left:0; color:var(--neon); font-weight:700; }
+.sec-h { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#fff; font-family:'Chakra Petch'; font-weight:600; margin:32px 0 12px; display:flex; align-items:center; gap:8px; border-bottom: 1px solid var(--linea); padding-bottom: 8px; }
+.sec-h i { color:var(--neon); font-size:18px; }
+.instr { font-size:14px; color:var(--tx); white-space:pre-line; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:20px; margin-top:8px; line-height: 1.7; }
+
+/* AVISO OBLIGATORIO */
+.aviso { background:var(--err-bg); border:1px solid var(--err); border-radius:8px; padding:24px; margin-bottom:20px; }
+.aviso h3 { color:#ff7b72; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.aviso h4 { color:#ff7b72; font-size:14px; margin:12px 0 4px; }
+.aviso p { font-size:14px; color:var(--tx); margin-bottom:10px; }
+.aviso ul { margin:10px 0 10px 24px; font-size:14px; color:var(--tx); }
+.chk { display:flex; align-items:flex-start; gap:10px; margin-top:20px; font-size:14px; color:#fff; cursor:pointer; background: var(--panel2); padding: 16px; border-radius: 8px; border: 1px solid var(--linea); }
+.chk input { margin-top:2px; accent-color:var(--err); width:18px; height:18px; cursor:pointer;}
+
+/* FORMATIVA */
+.qbar { height:6px; background:var(--linea); border-radius:100px; overflow:hidden; margin-bottom:20px; }
+.qbar i { display:block; height:100%; background:var(--neon); transition:.3s; }
+.qtxt { font-size:18px; font-weight:600; color:#fff; margin-bottom:20px; font-family:'Chakra Petch'; }
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt { background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:16px; font-size:14px; color:var(--tx); cursor:pointer; text-align:left; transition:.15s; font-family: 'Inter', sans-serif; }
+.opt:hover { border-color:var(--tx2); background:var(--panel2); }
+.opt.flash-ok { border-color:var(--ok); background:rgba(35, 134, 54, 0.15); color:var(--ok-tx); }
+.opt.flash-err { border-color:var(--err); background:var(--err-bg); color:#ff7b72; }
+.opt:disabled { cursor:default; }
+.qmeta { display:flex; justify-content:space-between; font-size:13px; color:var(--tx2); margin-bottom:10px; }
+
+/* DASHBOARD Y LAYOUT DEL LABORATORIO */
+.lab-layout { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+@media(max-width: 992px) { .lab-layout { grid-template-columns: 1fr; } }
+.dash-panel { background: var(--panel); border: 1px solid var(--linea); border-radius: 12px; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 1px; overflow: hidden; }
+.dash-box { background: var(--panel); padding: 16px 20px; }
+.dash-box.header { border-bottom: 1px solid var(--neon); }
+.dash-box h2 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+.dash-box p { font-size: 13px; color: var(--tx2); }
+
+/* Progress Bars */
+.prog-container { margin-top: 12px; }
+.prog-item { margin-bottom: 12px; }
+.prog-item:last-child { margin-bottom: 0; }
+.prog-label { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; color: var(--tx2); margin-bottom: 6px; font-family: 'Chakra Petch'; font-weight: 600; }
+.prog-bar-bg { height: 6px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 4px; }
+.pb-curso { background: var(--tx3); width: 68%; }
+.pb-lab { background: var(--neon); width: 0%; transition: width 1s linear; }
+.pb-proy { background: var(--oro); width: 0%; }
+
+/* Info Grid */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.info-item { background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--linea); text-align: center; }
+.info-item span { display: block; font-size: 10px; text-transform: uppercase; color: var(--tx3); margin-bottom: 4px; font-family: 'Chakra Petch'; }
+.info-item b { font-size: 16px; color: #fff; font-family: 'JetBrains Mono', monospace; }
+.info-item b.timer { color: var(--neon); }
+.info-item b.timer.rojo { color: var(--err); animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+/* EDITOR HTML CON NÚMEROS DE LÍNEA */
+.editorwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; height: 60vh; min-height: 450px; margin-bottom: 20px; transition: 0.3s; }
+@media(max-width: 760px) { .editorwrap { grid-template-columns: 1fr; height: auto; } .editorwrap > div { height: 350px; } }
+.epane { background: var(--panel2); border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.ehdr { padding: 10px 16px; font-family: 'Chakra Petch'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--tx); background: var(--panel); border-bottom: 1px solid var(--linea); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+
+.code-container { display: flex; flex: 1; overflow: hidden; background: #0d1117; position: relative; }
+.line-numbers { padding: 14px 8px; background: #161b22; color: #484f58; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; text-align: right; border-right: 1px solid var(--linea); user-select: none; overflow: hidden; min-width: 40px; }
+.epane textarea { flex: 1; width: 100%; background: transparent; color: #c9d1d9; border: none; outline: none; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 14px; line-height: 1.6; white-space: pre; overflow: auto; }
+.epane iframe { flex: 1; width: 100%; border: none; background: #fff; }
+
+.labfoot { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--panel); border: 1px solid var(--linea); border-radius: 8px; flex-wrap: wrap; gap: 12px; }
+
+/* MENSAJE ÉXITO & PROYECTO */
+.success-msg { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--ok); border-radius: 8px; padding: 32px; margin-bottom: 24px; text-align: center; }
+.success-msg i.big { font-size: 48px; color: var(--ok-tx); margin-bottom: 16px; display: block; }
+.success-msg h3 { color: #fff; font-size: 24px; margin-bottom: 12px; }
+.success-msg p { color: var(--tx); font-size: 15px; margin-bottom: 24px; }
+.success-msg .btn-wrap { background: var(--panel); border: 1px solid var(--linea); padding: 24px; border-radius: 8px; display: inline-block; }
+
+/* TOAST ADVERTENCIA */
+.toastov { position:fixed; inset:0; background:rgba(13, 17, 23, 0.85); backdrop-filter: blur(4px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
+.toastov.on { display:flex; }
+.toastbox { background:var(--panel); border:1px solid var(--err); border-radius:12px; padding:32px; max-width:450px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.toastbox i.warnic { font-size:48px; color:#ff7b72; margin-bottom:16px; display:block; }
+.toastbox h3 { color:#fff; font-size:20px; margin-bottom:16px; font-family: 'Chakra Petch'; text-transform: uppercase; }
+.toastbox p { font-size:15px; color:var(--tx); margin-bottom:24px; line-height: 1.6; }
+
+footer { text-align:center; padding-top:40px; font-size:12px; color:var(--tx3); }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapMain">
+  <div class="top">
+    <div class="br"><img src="../logo.png" onerror="this.style.display='none'"><div><b>Instituto Fermín Naudeau</b><span>Laboratorio Virtual · HTML</span></div></div>
+    <a class="back" href="materia.html?m=multimedia"><i class="ti ti-arrow-left"></i> Volver al Aula</a>
+  </div>
+
+  <div id="scrLogin" class="card">
+    <div class="badge"><i class="ti ti-terminal-2"></i> Acceso Seguro</div>
+    <h1 class="tt">Entrar al laboratorio</h1>
+    <p class="sub">Ingresa tu código estudiantil para continuar.</p>
+    <div class="fl"><label>Código estudiantil</label><input id="inCod" placeholder="MUL-2026-001" autocomplete="off"></div>
+    <button class="btn action block" id="btnLogin" onclick="login()"><i class="ti ti-login"></i> Iniciar Sesión</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <div id="scrInst" class="card hide">
+    <div class="badge" id="bLabNum"><i class="ti ti-flask"></i> Laboratorio</div>
+    <h1 class="tt" id="iTema">—</h1>
+    <p class="sub" id="iProyecto" style="color:var(--neon)">—</p>
+    
+    <div class="sec-h"><i class="ti ti-target-arrow"></i> 1. Objetivos del Laboratorio</div>
+    <ul class="lst" id="iObjetivos"></ul>
+    
+    <div class="sec-h"><i class="ti ti-book-2"></i> 2. Material de Apoyo (Repasa esto)</div>
+    <p style="font-size:13px; color:var(--tx2); margin-bottom:12px;">Aquí tienes para qué sirve cada etiqueta que usarás hoy:</p>
+    <div class="material-grid" id="iMaterial"></div>
+    
+    <div class="sec-h"><i class="ti ti-list-check"></i> 3. Instrucciones Concretas</div>
+    <div class="instr" id="iInstrucciones"></div>
+    
+    <button class="btn action block" style="margin-top:32px; padding:16px;" onclick="irFormativa()">
+      <i class="ti ti-pencil-check" style="font-size:20px;"></i> Ir a la Práctica Formativa
+    </button>
+  </div>
+
+  <div id="scrSoon" class="card hide">
+    <div style="text-align:center; padding:40px 20px;">
+      <i class="ti ti-clock-hour-4" style="font-size:48px; color:var(--tx3); margin-bottom:16px; display:block;"></i>
+      <h3 id="soonTema" style="color:#fff; font-size:18px; margin-bottom:8px;">—</h3>
+      <p style="color:var(--tx2); font-size:14px;">Este laboratorio estará disponible próximamente.</p>
+    </div>
+  </div>
+
+  <div id="scrFormativa" class="card hide">
+    <div class="badge"><i class="ti ti-pencil-check"></i> Práctica Teórico-Práctica Obligatoria</div>
+    <p style="font-size:13px; color:var(--tx2); margin-bottom:16px;">Demuestra que leíste el material de apoyo. Debes responder correctamente para entrar al editor.</p>
+    
+    <div class="qbar"><i id="qbarFill" style="width:0%"></i></div>
+    <div class="qmeta"><span id="qNum">Pregunta 1</span><span id="qRacha" style="color:var(--neon)">0 correctas seguidas</span></div>
+    
+    <div class="qtxt" id="qTexto">—</div>
+    <div class="opts" id="qOpts"></div>
+    <p class="msg" id="msgFormativa"></p>
+  </div>
+
+  <div id="scrAviso" class="card hide">
+    <div class="aviso">
+      <h3><i class="ti ti-alert-triangle"></i> IMPORTANTE</h3>
+      <p>Este laboratorio debe desarrollarse <b>únicamente dentro del Portal IFN</b>.</p>
+      <p>Mientras el laboratorio esté activo:</p>
+      <ul>
+        <li>No cambies de pestaña.</li>
+        <li>No minimices el navegador.</li>
+        <li>No abandones el laboratorio.</li>
+      </ul>
+      <p>Todas las acciones serán registradas automáticamente.</p>
+      
+      <h4>Sistema de advertencias</h4>
+      <ul>
+        <li><b>Primera advertencia</b> — Penalización: -2 puntos.</li>
+        <li><b>Segunda advertencia</b> — Penalización: -5 puntos.</li>
+        <li><b>Tercera advertencia</b> — Penalización: -10 puntos.</li>
+      </ul>
+      <p style="margin-top:12px; color: #ff7b72;">Podrás salir únicamente después de presionar "Entregar laboratorio".</p>
+      
+      <label class="chk"><input type="checkbox" id="chkAviso" onchange="document.getElementById('btnIniciarLab').disabled=!this.checked"> He leído y acepto las condiciones.</label>
+    </div>
+    <button class="btn action block" id="btnIniciarLab" disabled onclick="iniciarLaboratorio()"><i class="ti ti-player-play"></i> Ingresar al Editor HTML</button>
+  </div>
+</div>
+
+<div class="wrap wide hide" id="wrapWorkspace">
+  <div class="lab-layout">
+    
+    <aside class="dash-panel">
+      <div class="dash-box header">
+        <h2 id="dashName">Estudiante</h2>
+        <p>Curso HTML - Grupo Base</p>
+      </div>
+      <div class="dash-box">
+        <p style="color:#fff; font-family:'Chakra Petch'; margin-bottom:4px;" id="dashLabTitle">Laboratorio</p>
+        
+        <div class="prog-container">
+          <div class="prog-item">
+            <div class="prog-label"><span>Laboratorio actual</span><span id="lblProgLab">0%</span></div>
+            <div class="prog-bar-bg"><div class="prog-bar-fill pb-lab" id="barProgLab"></div></div>
+          </div>
+          <div class="prog-item" id="boxProgProy" style="opacity: 0.3;">
+            <div class="prog-label"><span>Proyecto Web Libre</span><span>Bloqueado</span></div>
+            <div class="prog-bar-bg"><div class="prog-bar-fill pb-proy" id="barProgProy"></div></div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span>Estado</span>
+            <b id="wStatus" style="font-size: 13px; color: var(--oro);">🟡 En progreso</b>
+          </div>
+          <div class="info-item">
+            <span>Advertencias</span>
+            <b id="wWarns">0 / 3</b>
+          </div>
+          <div class="info-item" style="grid-column: 1 / -1;">
+            <span>Tiempo restante</span>
+            <b class="timer" id="clockTxt">--:--:--</b>
+          </div>
+          <div class="info-item" style="grid-column: 1 / -1; background: transparent; border: none; padding: 0;">
+            <span style="display:flex; justify-content:center; align-items:center; gap:6px; margin:0;">
+              <i class="ti ti-cloud-check" style="color:var(--ok-tx); font-size:14px;"></i> <span id="saveTxt" style="margin:0;">Autoguardado...</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      
+      <div id="msgSuccess" class="success-msg hide">
+        <i class="ti ti-circle-check-filled big"></i>
+        <h3>¡Excelente trabajo!</h3>
+        <p>Has entregado correctamente tu laboratorio. El código ha sido guardado para la revisión del docente mediante rúbrica.</p>
+        
+        <div class="btn-wrap">
+          <p style="font-size: 14px; margin-bottom: 12px; color: #fff;">Aún dispones de tiempo en el reloj. Aprovecha este tiempo para avanzar en tu Proyecto Web de fin de curso.</p>
+          <button class="btn action block" onclick="activarEntornoProyecto()"><i class="ti ti-world-code"></i> Ir al Proyecto Web Libre</button>
+        </div>
+      </div>
+
+      <div id="editorSeccion">
+        <div style="background: var(--panel); border: 1px solid var(--linea); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;" id="boxInstCortas">
+          <p style="font-family:'Chakra Petch'; color:#fff; font-size:14px; margin-bottom:8px;"><i class="ti ti-list"></i> Pasos rápidos:</p>
+          <p id="instCortasTxt" style="font-size:13px; color:var(--tx); white-space:pre-line;"></p>
+        </div>
+
+        <div class="editorwrap">
+          <div class="epane">
+            <div class="ehdr">
+              <span><i class="ti ti-code"></i> Editor HTML <span id="modoTxt" style="color:var(--neon); margin-left:8px;">[Laboratorio]</span></span>
+              <button class="btn ghost" style="padding: 4px 8px; font-size: 11px;" onclick="actualizarPreview()"><i class="ti ti-player-play"></i> Ejecutar</button>
+            </div>
+            <div class="code-container">
+              <div class="line-numbers" id="lineNumbers">1</div>
+              <textarea id="codeIn" spellcheck="false" wrap="off"></textarea>
+            </div>
+          </div>
+          <div class="epane">
+            <div class="ehdr"><span><i class="ti ti-device-desktop"></i> Vista previa en tiempo real</span></div>
+            <iframe id="preview" sandbox="allow-same-origin"></iframe>
+          </div>
+        </div>
+
+        <div class="labfoot">
+          <span class="msg" id="msgLab" style="margin:0;"></span>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn ghost" onclick="autoguardar()"><i class="ti ti-device-floppy"></i> Guardar manual</button>
+            <button class="btn primary" id="btnEntregar" onclick="finalizarLaboratorio(false)"><i class="ti ti-send"></i> Entregar laboratorio</button>
+            <button class="btn action hide" id="btnProyExit" onclick="terminarSesion()"><i class="ti ti-logout"></i> Guardar y Salir del Portal</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toastov" id="toastAdv">
+  <div class="toastbox">
+    <i class="ti ti-alert-triangle warnic"></i>
+    <h3 id="toastTit">Advertencia</h3>
+    <p id="toastTxt">—</p>
+    <button class="btn danger block" onclick="cerrarToast()">Entendido</button>
+  </div>
+</div>
+
+<footer><div><i class="ti ti-code"></i> Aula Virtual IFN — <b>Prof. Mario Carrasco</b></div></footer>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+
+// VARIACIONES DEL LAB 1 (5 Temas Aleatorios para evitar copia)
+const LAB1_VARIACIONES = [
+  {
+    tema: "Estructura Base: Blog de Tecnología", 
+    proyecto: "Crear un artículo tecnológico",
+    instrucciones: "1. Crea la estructura básica HTML5.\n2. Inserta un <h1> con el título 'Avances en Tecnología'.\n3. Añade un subtítulo <h2> con 'Inteligencia Artificial'.\n4. Escribe dos párrafos descriptivos (<p>).\n5. Resalta la palabra 'Innovación' usando <strong>.\n6. Pon un enfatizado usando <em>.\n7. Cierra la sección con una línea <hr>.",
+    starter: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Blog Tech</title>\n</head>\n<body>\n\n  \n\n</body>\n</html>"
+  },
+  {
+    tema: "Estructura Base: Catálogo Comercial", 
+    proyecto: "Crear landing page de un producto",
+    instrucciones: "1. Crea la estructura básica HTML5.\n2. Inserta un <h1> con el nombre 'Zapatillas Urbanas'.\n3. Añade un subtítulo <h2> que diga 'Características'.\n4. Escribe dos párrafos (<p>) vendiendo el producto.\n5. Resalta el precio usando <strong>.\n6. Usa <em> para la frase 'Oferta por tiempo limitado'.\n7. Cierra con una línea divisoria <hr>.",
+    starter: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Tienda Online</title>\n</head>\n<body>\n\n  \n\n</body>\n</html>"
+  },
+  {
+    tema: "Estructura Base: Portal Académico", 
+    proyecto: "Crear vista de calificaciones",
+    instrucciones: "1. Crea la estructura básica HTML5.\n2. Inserta un <h1> que diga 'Monitor de Progreso Académico'.\n3. Añade un <h2> con tu materia (ej. Comercio o Informática).\n4. Escribe dos párrafos (<p>) explicando el propósito del portal.\n5. Resalta la palabra 'Aprobado' usando <strong>.\n6. Usa <em> para 'Semestre en curso'.\n7. Termina con una línea horizontal <hr>.",
+    starter: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Portal IFN</title>\n</head>\n<body>\n\n  \n\n</body>\n</html>"
+  },
+  {
+    tema: "Estructura Base: Resumen Deportivo", 
+    proyecto: "Crear artículo de fútbol",
+    instrucciones: "1. Crea la estructura básica HTML5.\n2. Inserta un <h1> titulado 'Resumen del Mundial'.\n3. Añade un <h2> con el nombre de tu equipo favorito (ej. FC Barcelona).\n4. Redacta dos párrafos (<p>) sobre un partido importante.\n5. Resalta el resultado final con <strong>.\n6. Usa <em> para el nombre del mejor jugador.\n7. Agrega una línea separadora <hr>.",
+    starter: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Deportes</title>\n</head>\n<body>\n\n  \n\n</body>\n</html>"
+  },
+  {
+    tema: "Estructura Base: Lanzamiento Musical", 
+    proyecto: "Página promocional de artista",
+    instrucciones: "1. Crea la estructura básica HTML5.\n2. Inserta un <h1> con el título 'Nuevo Álbum de Reggaetón'.\n3. Añade un <h2> con el nombre del artista.\n4. Escribe dos párrafos (<p>) sobre las canciones del álbum.\n5. Pon en negrita <strong> la fecha de lanzamiento.\n6. Usa <em> para la frase 'Disponible en todas las plataformas'.\n7. Cierra la sección con <hr>.",
+    starter: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Música Nueva</title>\n</head>\n<body>\n\n  \n\n</body>\n</html>"
+  }
+];
+
+// ESTRUCTURA MAESTRA DE LABORATORIOS
+const LABS_DATA = [
+  { num: 1, disponible: true,
+    // FECHA DE CIERRE PROGRAMADA POR EL DOCENTE (Formato ISO)
+    // Si la fecha ya pasó o no hay, usa 2 horas base.
+    fechaCierre: "2026-12-14T23:59:59", 
+    
+    objetivos: [
+      "Estructurar un documento web correctamente.",
+      "Entender la diferencia entre cabeza (head) y cuerpo (body).",
+      "Aplicar jerarquía usando títulos.",
+      "Formatear texto básico en la pantalla."
+    ],
+    // MATERIAL DIRECTO TIPO DICCIONARIO
+    material: [
+      { etiqueta: "<html>", desc: "El contenedor principal. Envuelve toda la página." },
+      { etiqueta: "<head>", desc: "La cabeza. Aquí van configuraciones ocultas (como el título de la pestaña)." },
+      { etiqueta: "<title>", desc: "Va dentro del head. Es el nombre que sale en la pestaña del navegador." },
+      { etiqueta: "<body>", desc: "El cuerpo. TODO lo que el usuario ve va aquí dentro." },
+      { etiqueta: "<h1> a <h6>", desc: "Títulos y subtítulos. <h1> es el más grande/importante, <h6> el más pequeño." },
+      { etiqueta: "<p>", desc: "Párrafo. Se usa para escribir bloques de texto normal." },
+      { etiqueta: "<strong>", desc: "Negrita. Le dice al navegador que esa palabra es muy importante." },
+      { etiqueta: "<em>", desc: "Cursiva (Enfático). Le da un tono de voz diferente al texto." },
+      { etiqueta: "<hr>", desc: "Inserta una línea horizontal decorativa para separar secciones." }
+    ],
+    // FORMATIVA TEÓRICO-PRÁCTICA (Ligada al material)
+    formativa: [
+      { p: "Revisando el material: ¿Qué etiqueta engloba absolutamente TODO lo que el usuario va a ver en la pantalla?", o: ["<head>", "<html>", "<body>", "<title>"], r: 2 },
+      { p: "Si quieres poner el título principal de tu artículo (el más importante), ¿cuál usas?", o: ["<title>", "<p>", "<h6>", "<h1>"], r: 3 },
+      { p: "¿Para qué sirve exactamente la etiqueta <strong> según el material de apoyo?", o: ["Para hacer la letra roja", "Para indicar que una palabra es muy importante (negrita)", "Para saltar de línea", "Para insertar una línea"], r: 1 },
+      { p: "Si escribo algo dentro de <head>, ¿se mostrará en el centro de la página blanca?", o: ["Sí, siempre", "No, el head es para configuraciones ocultas"], r: 1 },
+      { p: "¿Qué etiqueta usarías para escribir 3 líneas de texto descriptivo normal?", o: ["<h1>", "<em>", "<p>", "<text>"], r: 2 }
+    ]
+  },
+  { num:2, tema:"Listas y organización del contenido", proyecto:"Página \"Acerca de\"", disponible:true,
+    objetivos:[
+      "Diferenciar listas ordenadas (<ol>) de desordenadas (<ul>).",
+      "Usar correctamente elementos <li> dentro de una lista.",
+      "Agrupar contenido con <div> y <span> cuando no hay una etiqueta más específica."
+    ],
+    material:[
+      { etiqueta:"<ul>", desc:"Lista desordenada (con viñetas). Se usa cuando el orden de los elementos no importa." },
+      { etiqueta:"<ol>", desc:"Lista ordenada (numerada). Se usa cuando el orden sí importa, como pasos o rankings." },
+      { etiqueta:"<li>", desc:"Elemento de lista. Va siempre dentro de un <ul> o un <ol>, nunca solo." },
+      { etiqueta:"<div> / <span>", desc:"Contenedores genéricos: <div> agrupa bloques, <span> agrupa texto dentro de una misma línea." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta usarías para mostrar los pasos de una receta en orden?", o:["<ul>","<ol>","<li> solo","<div>"], r:1 },
+      { p:"¿Dentro de qué etiquetas debe ir siempre un <li>?", o:["<div> o <span>","<ul> u <ol>","<body> directamente","<head>"], r:1 },
+      { p:"¿Cuál es la diferencia principal entre <div> y <span>?", o:["No hay diferencia","<div> es de bloque y <span> es en línea","<span> es más grande","<div> solo sirve para listas"], r:1 },
+      { p:"¿Qué etiqueta usarías para una lista de ingredientes donde el orden no importa?", o:["<ol>","<ul>","<li>","<ol type=\"a\">"], r:1 },
+      { p:"Verdadero o falso: puedes anidar una lista dentro de otro <li>.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base.\n2. Agrega un <h1> con tu nombre o el nombre de tu sitio.\n3. Escribe un párrafo de presentación.\n4. Crea una lista <ul> con al menos 3 intereses o habilidades.\n5. Crea una lista <ol> con 3 pasos de cómo llegaste a este proyecto o tus metas a futuro.\n6. Usa un <div> para agrupar la sección de contacto (nombre, correo).",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Acerca de mí</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:3, tema:"Enlaces y navegación", proyecto:"Crear menú del sitio", disponible:true,
+    objetivos:[
+      "Crear hipervínculos usando la etiqueta <a>.",
+      "Diferenciar enlaces internos de enlaces externos.",
+      "Construir una barra de navegación básica con <nav>."
+    ],
+    material:[
+      { etiqueta:"<a>", desc:"Ancla / enlace. Crea un hipervínculo a otra página o sección. Necesita el atributo href." },
+      { etiqueta:"href", desc:"Atributo de <a>. Define hacia dónde apunta el enlace (una URL o un archivo)." },
+      { etiqueta:"target=\"_blank\"", desc:"Atributo opcional de <a>. Abre el enlace en una pestaña nueva." },
+      { etiqueta:"<nav>", desc:"Contenedor de navegación. Agrupa los enlaces principales del sitio." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta se usa para crear un enlace?", o:["<link>","<a>","<href>","<nav>"], r:1 },
+      { p:"¿En qué atributo se escribe la URL de destino de un enlace?", o:["src","href","url","link"], r:1 },
+      { p:"¿Qué hace target=\"_blank\"?", o:["Cierra la página","Abre el enlace en una pestaña nueva","Hace el enlace más grande","No existe ese atributo"], r:1 },
+      { p:"¿Qué etiqueta se usa para agrupar los enlaces de navegación del sitio?", o:["<links>","<menu-bar>","<nav>","<header-links>"], r:2 },
+      { p:"Verdadero o falso: un enlace <a> siempre necesita el atributo href para funcionar.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base.\n2. Agrega un <nav> con al menos 4 enlaces (<a>) simulando las páginas del sitio: Inicio, Acerca de, Galería, Contacto.\n3. Cada enlace debe tener un href (usa \"#\" si aún no tienes el archivo real).\n4. Agrega un enlace externo que se abra en una pestaña nueva usando target=\"_blank\".\n5. Debajo del <nav>, agrega un <h1> y un párrafo de bienvenida a tu sitio.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi sitio - Menú</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:4, tema:"Imágenes y rutas", proyecto:"Galería de imágenes", disponible:true,
+    objetivos:[
+      "Insertar imágenes usando <img>.",
+      "Usar correctamente los atributos src y alt.",
+      "Aplicar tamaño a una imagen con width y height."
+    ],
+    material:[
+      { etiqueta:"<img>", desc:"Inserta una imagen. Es una etiqueta que se cierra sola (no lleva </img>)." },
+      { etiqueta:"src", desc:"Atributo de <img>. Indica la ruta o URL de la imagen a mostrar." },
+      { etiqueta:"alt", desc:"Atributo de <img>. Texto alternativo que describe la imagen (accesibilidad y respaldo si no carga)." },
+      { etiqueta:"width / height", desc:"Atributos de <img>. Definen el tamaño en píxeles de la imagen mostrada." }
+    ],
+    formativa:[
+      { p:"¿Qué atributo de <img> indica de dónde se carga la imagen?", o:["href","alt","src","link"], r:2 },
+      { p:"¿Para qué sirve el atributo alt?", o:["Para poner el título de la página","Para describir la imagen (accesibilidad y respaldo)","Para cambiar el color","No sirve para nada"], r:1 },
+      { p:"¿La etiqueta <img> necesita una etiqueta de cierre </img>?", o:["Sí, siempre","No, se cierra sola"], r:1 },
+      { p:"¿Qué atributos controlan el tamaño de una imagen?", o:["src y alt","width y height","top y left","big y small"], r:1 },
+      { p:"Verdadero o falso: puedes usar una URL de internet como valor de src.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base con un <h1> \"Mi Galería\".\n2. Inserta al menos 3 imágenes usando <img> (pueden ser URLs de internet mientras no subes tus propias imágenes).\n3. Cada imagen debe tener su atributo alt describiendo lo que muestra.\n4. Ajusta el tamaño de al menos una imagen con width y height.\n5. Agrega un párrafo <p> debajo de cada imagen describiéndola brevemente.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi Galería</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:5, tema:"Tablas", proyecto:"Página de horarios o productos", disponible:true,
+    objetivos:[
+      "Construir una tabla con <table>, <tr>, <td> y <th>.",
+      "Diferenciar celdas de encabezado de celdas de datos.",
+      "Mantener el mismo número de columnas en todas las filas."
+    ],
+    material:[
+      { etiqueta:"<table>", desc:"Contenedor de toda la tabla." },
+      { etiqueta:"<tr>", desc:"Fila de la tabla (table row)." },
+      { etiqueta:"<th>", desc:"Celda de encabezado (table header). Título de columna, normalmente en negrita." },
+      { etiqueta:"<td>", desc:"Celda de datos (table data). Contiene la información normal de la tabla." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta representa una fila de tabla?", o:["<td>","<tr>","<th>","<row>"], r:1 },
+      { p:"¿Cuál etiqueta se usa para el título de una columna?", o:["<td>","<title>","<th>","<head>"], r:2 },
+      { p:"¿Dónde deben ir las etiquetas <tr>?", o:["Sueltas en el body","Dentro de <table>","Dentro de <td>","No existen"], r:1 },
+      { p:"¿Qué diferencia hay entre <th> y <td>?", o:["Ninguna","<th> es para encabezados, <td> para datos normales","<td> es más grande","<th> solo va al final"], r:1 },
+      { p:"Verdadero o falso: una tabla puede tener varias filas <tr>, cada una con varias celdas <td>.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base con un <h1> (ej. \"Horario de clases\" o \"Catálogo de productos\").\n2. Crea una <table> con una primera fila de encabezados (<th>) con al menos 3 columnas.\n3. Agrega al menos 4 filas de datos (<tr> con <td>) debajo del encabezado.\n4. Asegúrate de que cada fila tenga el mismo número de celdas que el encabezado.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Horario / Productos</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:6, tema:"Formularios I", proyecto:"Página de contacto", disponible:true,
+    objetivos:[
+      "Crear un formulario básico con <form>.",
+      "Usar <input> con distintos tipos (text, email).",
+      "Asociar correctamente cada <label> con su campo."
+    ],
+    material:[
+      { etiqueta:"<form>", desc:"Contenedor del formulario. Agrupa todos los campos que el usuario va a llenar." },
+      { etiqueta:"<label>", desc:"Etiqueta de texto asociada a un campo. Ayuda a saber qué debe escribirse." },
+      { etiqueta:"<input type=\"text\">", desc:"Campo de texto de una sola línea." },
+      { etiqueta:"<input type=\"email\">", desc:"Campo de texto que valida que se escriba un correo con formato válido." },
+      { etiqueta:"<button>", desc:"Botón. Puede usarse para enviar el formulario." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta agrupa todos los campos de un formulario?", o:["<input>","<form>","<label>","<field>"], r:1 },
+      { p:"¿Qué tipo de input valida automáticamente el formato de correo?", o:["text","email","number","password"], r:1 },
+      { p:"¿Para qué sirve <label>?", o:["Para decorar la página","Para describir qué debe escribirse en un campo","Para enviar el formulario","No sirve"], r:1 },
+      { p:"¿Qué etiqueta se usa para un campo de texto simple?", o:["<text>","<input type=\"text\">","<field>","<txt>"], r:1 },
+      { p:"Verdadero o falso: un formulario siempre necesita un botón para poder enviarse.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base con un <h1> \"Contáctame\".\n2. Crea un <form> con un <label> + <input type=\"text\"> para el nombre.\n3. Agrega un <label> + <input type=\"email\"> para el correo.\n4. Agrega un <button> para enviar el formulario.\n5. El formulario no necesita funcionar de verdad todavía, solo tener la estructura HTML correcta.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Contacto</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:7, tema:"Formularios II", proyecto:"Formulario completo", disponible:true,
+    objetivos:[
+      "Ampliar el formulario con textarea, select, checkbox y radio.",
+      "Usar los atributos placeholder y required.",
+      "Agrupar correctamente radio buttons relacionados."
+    ],
+    material:[
+      { etiqueta:"<textarea>", desc:"Campo de texto de varias líneas (para mensajes largos)." },
+      { etiqueta:"<select> / <option>", desc:"Lista desplegable. <select> es el contenedor, cada <option> es una opción elegible." },
+      { etiqueta:"<input type=\"checkbox\">", desc:"Casilla de verificación. Permite marcar sí/no o elegir varias opciones." },
+      { etiqueta:"<input type=\"radio\">", desc:"Botón de opción. Permite elegir solo UNA entre varias con el mismo name." },
+      { etiqueta:"placeholder / required", desc:"placeholder muestra un texto de ejemplo; required obliga a llenar el campo." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta usarías para un campo de comentarios largo?", o:["<input type=\"text\">","<textarea>","<select>","<p>"], r:1 },
+      { p:"¿Cómo logras que varios radio buttons sean mutuamente excluyentes?", o:["Poniéndolos en <select>","Dándoles el mismo atributo name","No es posible","Usando <textarea>"], r:1 },
+      { p:"¿Qué hace el atributo required?", o:["Cambia el color del campo","Obliga a llenar el campo antes de enviar","Hace el campo más grande","Nada"], r:1 },
+      { p:"¿Dentro de qué etiqueta van las <option>?", o:["<textarea>","<select>","<label>","<form> directamente"], r:1 },
+      { p:"Verdadero o falso: un checkbox permite seleccionar varias opciones a la vez.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Retoma tu formulario de contacto del Laboratorio 6 (o crea uno nuevo con nombre y correo).\n2. Agrega un <textarea> con placeholder para el mensaje.\n3. Agrega un <select> con al menos 3 <option> (ej. motivo del contacto).\n4. Agrega al menos 2 <input type=\"checkbox\"> (ej. intereses).\n5. Agrega un grupo de 2-3 <input type=\"radio\"> con el mismo name (ej. forma de contacto preferida).\n6. Marca los campos importantes como required.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Formulario completo</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:8, tema:"Multimedia (audio, video, mapas)", proyecto:"Página multimedia", disponible:true,
+    objetivos:[
+      "Insertar audio con <audio> y video con <video>.",
+      "Usar el atributo controls.",
+      "Insertar contenido externo (como un mapa) usando <iframe>."
+    ],
+    material:[
+      { etiqueta:"<audio>", desc:"Inserta un reproductor de audio. Necesita controls para mostrar los botones de play/pausa." },
+      { etiqueta:"<video>", desc:"Inserta un reproductor de video. También usa controls." },
+      { etiqueta:"<source>", desc:"Va dentro de <audio> o <video> para indicar el archivo y su formato." },
+      { etiqueta:"<iframe>", desc:"Inserta contenido de otra página dentro de la tuya (ej. un mapa de Google Maps)." }
+    ],
+    formativa:[
+      { p:"¿Qué atributo muestra los botones de play/pausa en un video?", o:["autoplay","controls","loop","play"], r:1 },
+      { p:"¿Qué etiqueta usarías para insertar un mapa de otra página dentro de la tuya?", o:["<map>","<embed-map>","<iframe>","<img>"], r:2 },
+      { p:"¿Qué etiqueta se usa para insertar un reproductor de audio?", o:["<sound>","<audio>","<music>","<mp3>"], r:1 },
+      { p:"¿Qué va normalmente dentro de <video> para indicar el archivo?", o:["<source>","<file>","<track>","<video-src>"], r:0 },
+      { p:"Verdadero o falso: <iframe> puede mostrar el contenido de otra página web dentro de la tuya.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Crea el documento HTML base con un <h1> \"Mi página multimedia\".\n2. Inserta un <video> con controls (puede ser una URL de video de muestra).\n3. Inserta un <audio> con controls (puede ser una URL de audio de muestra).\n4. Inserta un <iframe> con un mapa (por ejemplo, de tu comunidad o del instituto).\n5. Agrega un párrafo describiendo cada elemento multimedia que insertaste.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Página multimedia</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:9, tema:"HTML semántico", proyecto:"Reorganizar el sitio profesionalmente", disponible:true,
+    objetivos:[
+      "Reemplazar <div> genéricos por etiquetas semánticas.",
+      "Entender el propósito de header, main, section, article y footer.",
+      "Mejorar la accesibilidad y el SEO de una página usando semántica correcta."
+    ],
+    material:[
+      { etiqueta:"<header>", desc:"Encabezado de la página o de una sección (logo, título, navegación principal)." },
+      { etiqueta:"<main>", desc:"Contenido principal y único de la página (solo debe haber uno por página)." },
+      { etiqueta:"<section>", desc:"Agrupa un bloque temático de contenido dentro de la página." },
+      { etiqueta:"<article>", desc:"Contenido independiente y autocontenible (un post de blog, una tarjeta de producto)." },
+      { etiqueta:"<footer>", desc:"Pie de página (créditos, contacto, enlaces legales)." }
+    ],
+    formativa:[
+      { p:"¿Cuántas etiquetas <main> debe tener una página?", o:["Ninguna","Solo una","Tantas como secciones","No importa"], r:1 },
+      { p:"¿Qué etiqueta usarías para un artículo de blog independiente?", o:["<section>","<div>","<article>","<main>"], r:2 },
+      { p:"¿Dónde suele ir el logo y la navegación principal?", o:["<footer>","<header>","<article>","<aside>"], r:1 },
+      { p:"¿Cuál es la ventaja principal de usar etiquetas semánticas en vez de <div> para todo?", o:["Se ven más bonitas por defecto","Mejoran accesibilidad y SEO al dar significado al contenido","Cargan más rápido siempre","No hay ninguna ventaja"], r:1 },
+      { p:"Verdadero o falso: <section> y <div> son exactamente lo mismo.", o:["Verdadero","Falso"], r:1 }
+    ],
+    instrucciones:"1. Retoma tu página del index (Laboratorio 1) o crea una nueva.\n2. Envuelve el título y navegación en un <header> (con tu <h1> y <nav> si lo tienes).\n3. Envuelve el contenido principal en <main>.\n4. Divide el contenido en al menos dos <section> (ej. \"Sobre mí\" y \"Mis proyectos\").\n5. Usa un <article> para un elemento independiente (ej. una publicación o proyecto destacado).\n6. Cierra con un <footer> con tu nombre y el año.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi sitio - semántico</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:10, tema:"Estructura de un sitio web con varias páginas", proyecto:"Conectar todas las páginas", disponible:true,
+    objetivos:[
+      "Enlazar correctamente varias páginas HTML entre sí.",
+      "Usar rutas relativas (nombres de archivo) en vez de URLs completas.",
+      "Mantener una barra de navegación consistente en todas las páginas."
+    ],
+    material:[
+      { etiqueta:"rutas relativas", desc:"Forma de enlazar archivos del mismo proyecto (ej. href=\"contacto.html\") sin escribir la URL completa." },
+      { etiqueta:"nombre de archivo", desc:"El nombre exacto del archivo (incluyendo .html) debe coincidir con el href para que el enlace funcione." },
+      { etiqueta:"<nav> (repaso)", desc:"Se repite igual en todas las páginas para que la navegación sea consistente." },
+      { etiqueta:"index.html", desc:"Convención: el archivo principal de un sitio casi siempre se llama index.html." }
+    ],
+    formativa:[
+      { p:"Si tu archivo se llama 'contacto.html', ¿cómo enlazarías a él desde otra página en la misma carpeta?", o:["href=\"http://contacto.html\"","href=\"contacto.html\"","src=\"contacto.html\"","link=\"contacto\""], r:1 },
+      { p:"¿Cómo se suele llamar el archivo principal de un sitio web?", o:["main.html","home.html","index.html","start.html"], r:2 },
+      { p:"¿Qué pasa si el nombre del archivo en el href no coincide exactamente con el archivo real?", o:["No pasa nada","El enlace no funciona (error 404)","La página carga más rápido","Se abre otra página automáticamente"], r:1 },
+      { p:"Verdadero o falso: es buena práctica repetir el mismo <nav> en todas las páginas del sitio.", o:["Verdadero","Falso"], r:0 }
+    ],
+    instrucciones:"1. Revisa las páginas que ya construiste en labs anteriores (index, acerca de, galería, contacto).\n2. Escribe el <nav> de cada una con enlaces (href) hacia los nombres de archivo correctos de las demás páginas.\n3. Este editor trabaja una página a la vez: concéntrate en dejar el código del <nav> correcto y consistente, que es lo que se evalúa.\n4. Agrega un enlace \"Inicio\" que lleve de vuelta al index.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Sitio conectado</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>"
+  },
+  { num:11, tema:"Buenas prácticas y validación HTML", proyecto:"Corregir errores", disponible:true,
+    objetivos:[
+      "Detectar y corregir errores comunes de HTML (etiquetas sin cerrar, anidación incorrecta).",
+      "Aplicar buenas prácticas de indentación y comentarios.",
+      "Entender por qué validar el código importa para la compatibilidad."
+    ],
+    material:[
+      { etiqueta:"etiquetas sin cerrar", desc:"Error común: abrir una etiqueta (<p>) y olvidar cerrarla (</p>). Puede desordenar toda la página." },
+      { etiqueta:"anidación incorrecta", desc:"Error común: cerrar etiquetas en el orden equivocado, ej. <b><i>texto</b></i>." },
+      { etiqueta:"indentación", desc:"Buena práctica: sangrar (indentar) el código según su nivel, para que sea más fácil de leer." },
+      { etiqueta:"comentarios <!-- -->", desc:"Sirven para dejar notas dentro del código que el navegador ignora al mostrar la página." }
+    ],
+    formativa:[
+      { p:"¿Cuál de estos es un error de anidación?", o:["<p>Texto</p>","<b><i>Texto</i></b>","<b><i>Texto</b></i>","<div><p>Texto</p></div>"], r:2 },
+      { p:"¿Por qué es importante cerrar todas las etiquetas correctamente?", o:["Solo por estética","Para evitar que el navegador interprete mal la estructura de la página","No es importante","Solo importa en CSS"], r:1 },
+      { p:"¿Para qué sirven los comentarios en HTML?", o:["Para que el usuario los vea resaltados","Para dejar notas que el navegador ignora al renderizar","Para hacer la página más rápida","Para validar automáticamente el código"], r:1 },
+      { p:"Verdadero o falso: la indentación afecta cómo se ve la página en el navegador.", o:["Verdadero","Falso"], r:1 }
+    ],
+    instrucciones:"1. Revisa el código de tus laboratorios anteriores (o el que te comparta el docente con errores intencionales).\n2. Identifica al menos 3 errores: etiquetas sin cerrar, anidación incorrecta o atributos mal escritos.\n3. Corrige cada error directamente en el editor.\n4. Aplica una indentación clara y ordenada a todo el documento.\n5. Agrega al menos 2 comentarios explicando secciones importantes del código.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n<title>Corrección</title>\n</head>\n<body>\n<h1>Mi sitio<h1>\n<p>Este párrafo tiene <b>un error de anidación</i></b>\n<img src=\"foto.jpg\">\n</body>\n</html>"
+  },
+  { num:12, tema:"Proyecto guiado I", proyecto:"Continuar el proyecto", disponible:true,
+    objetivos:[
+      "Integrar en un solo sitio lo aprendido en los laboratorios anteriores.",
+      "Aplicar estructura, listas, enlaces, imágenes, tablas y formularios de forma coherente.",
+      "Mantener consistencia visual y de navegación entre páginas."
+    ],
+    material:[
+      { etiqueta:"Checklist de repaso", desc:"Estructura HTML5, encabezados y párrafos, listas, enlaces y nav, imágenes con alt, tablas, formularios." },
+      { etiqueta:"Consistencia", desc:"Todas las páginas del sitio deben compartir el mismo header/nav y estilo de contenido." }
+    ],
+    formativa:[
+      { p:"¿Qué etiqueta agrupa el contenido principal y único de una página?", o:["<div>","<main>","<section>","<header>"], r:1 },
+      { p:"¿Qué atributo es obligatorio por buena práctica en toda <img>?", o:["width","alt","height","target"], r:1 },
+      { p:"¿Qué etiqueta se usa para un menú de navegación?", o:["<menu-bar>","<nav>","<links>","<navigation>"], r:1 },
+      { p:"¿Qué etiqueta agrupa los campos de un formulario?", o:["<input>","<form>","<field-group>","<data>"], r:1 },
+      { p:"¿Cuál es la etiqueta de fila en una tabla?", o:["<td>","<tr>","<th>","<row>"], r:1 }
+    ],
+    instrucciones:"1. Revisa todas las páginas que has construido hasta ahora (index, acerca de, galería, contacto, etc.).\n2. Elige 2-3 páginas de tu sitio y continúa desarrollándolas con contenido real (no solo de ejemplo).\n3. Asegúrate de que el <nav> esté presente y sea igual en todas.\n4. Verifica que todas las imágenes tengan alt y que los formularios tengan label.\n5. Este laboratorio es de integración: no introduce etiquetas nuevas.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi proyecto - avance</title>\n</head>\n<body>\n\n  <!-- Continúa tu proyecto aquí -->\n\n</body>\n</html>"
+  },
+  { num:13, tema:"Proyecto guiado II", proyecto:"Agregar nuevas secciones", disponible:true,
+    objetivos:[
+      "Ampliar el sitio con nuevas secciones de contenido.",
+      "Aplicar HTML semántico de forma consistente en todo el sitio.",
+      "Cuidar la jerarquía de encabezados en toda la página."
+    ],
+    material:[
+      { etiqueta:"Semántica aplicada", desc:"header, main, section, article, footer usados de forma coherente en todas las páginas." },
+      { etiqueta:"Jerarquía de encabezados", desc:"Un solo <h1> por página, y <h2>/<h3> organizados en orden lógico (sin saltarse niveles)." }
+    ],
+    formativa:[
+      { p:"¿Cuántos <h1> debe tener idealmente una página?", o:["Ninguno","Uno","Tres","Tantos como secciones"], r:1 },
+      { p:"¿Qué etiqueta usarías para una sección de \"Testimonios\" en tu sitio?", o:["<article>","<section>","<div> únicamente","<aside> obligatoriamente"], r:1 },
+      { p:"¿Qué evitas al no saltarte niveles de encabezado (ej. de <h1> a <h4> directo)?", o:["Nada en particular","Confundir la jerarquía de contenido para lectores de pantalla y buscadores","Que la página cargue más lento","Que se vea diferente en móvil"], r:1 }
+    ],
+    instrucciones:"1. Agrega al menos una sección nueva a tu sitio (ej. \"Proyectos destacados\", \"Testimonios\", \"Servicios\").\n2. Usa las etiquetas semánticas correctas para esa sección.\n3. Revisa la jerarquía de encabezados de toda la página (un <h1>, luego <h2>, etc., sin saltos).\n4. Actualiza el <nav> si agregaste una nueva página o sección importante.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi proyecto - nuevas secciones</title>\n</head>\n<body>\n\n  <!-- Continúa tu proyecto aquí -->\n\n</body>\n</html>"
+  },
+  { num:14, tema:"Optimización y revisión final", proyecto:"Preparar la entrega", disponible:true,
+    objetivos:[
+      "Revisar y limpiar el código de todo el sitio.",
+      "Verificar que imágenes, enlaces y formularios estén correctos.",
+      "Aplicar una última pasada de buenas prácticas antes de la entrega final."
+    ],
+    material:[
+      { etiqueta:"Checklist final", desc:"Etiquetas cerradas, indentación limpia, alt en imágenes, enlaces con href correcto, formularios con label." },
+      { etiqueta:"Revisión cruzada", desc:"Revisar tu propio sitio como si fueras un visitante nuevo: ¿todo tiene sentido y se ve ordenado?" }
+    ],
+    formativa:[
+      { p:"Antes de entregar, ¿qué deberías revisar en todas tus imágenes?", o:["Que tengan alt descriptivo","Que sean muy grandes","Que no tengan src","Nada en particular"], r:0 },
+      { p:"¿Qué es una \"revisión cruzada\" del sitio?", o:["Pedirle a otra persona que revise tu código","Revisar tu propio sitio como si fueras un visitante nuevo","Borrar todo y empezar de nuevo","No es necesaria"], r:1 },
+      { p:"Verdadero o falso: es buena práctica dejar etiquetas sin cerrar si el navegador igual muestra la página.", o:["Verdadero","Falso"], r:1 }
+    ],
+    instrucciones:"1. Revisa cada página de tu proyecto una por una.\n2. Verifica que no queden etiquetas sin cerrar ni anidación incorrecta.\n3. Confirma que todos los enlaces del <nav> apunten a nombres de archivo correctos.\n4. Confirma que todas las imágenes tengan alt.\n5. Deja el código bien indentado y con comentarios donde ayude a entenderlo.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Revisión final</title>\n</head>\n<body>\n\n  <!-- Continúa tu proyecto aquí -->\n\n</body>\n</html>"
+  },
+  { num:15, tema:"Presentación y evaluación del proyecto final", proyecto:"Sitio web completo", disponible:true,
+    objetivos:[
+      "Presentar el sitio web completo construido a lo largo del curso.",
+      "Explicar las decisiones de estructura y etiquetas usadas.",
+      "Recibir la evaluación final del proyecto según la rúbrica del curso."
+    ],
+    material:[
+      { etiqueta:"Rúbrica final", desc:"El docente evaluará estructura, semántica, funcionalidad y presentación general del sitio completo." },
+      { etiqueta:"Presentación oral", desc:"Debes poder explicar por qué usaste cada etiqueta principal en tu sitio." }
+    ],
+    formativa:[
+      { p:"¿Qué se evalúa en la entrega final del proyecto?", o:["Solo la ortografía","Estructura, semántica, funcionalidad y presentación","Solo el diseño visual","El tiempo que tardaste"], r:1 },
+      { p:"¿Por qué es importante poder explicar tus decisiones de código?", o:["No es importante","Demuestra que entendiste el porqué de cada etiqueta, no solo copiaste código","Para tardar más tiempo","Para complicar el proyecto"], r:1 }
+    ],
+    instrucciones:"1. Revisa por última vez todo tu sitio web (todas las páginas construidas durante el curso).\n2. Prepara una breve explicación (2-3 minutos) de la estructura de tu sitio para presentar a tu docente.\n3. Entrega el código final de tu página principal (index) en este laboratorio.\n4. Esta entrega se evalúa con la rúbrica final del proyecto completo, no solo con la rúbrica de 20 pts de un laboratorio individual.",
+    starter:"<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Proyecto final</title>\n</head>\n<body>\n\n  <!-- Continúa tu proyecto aquí -->\n\n</body>\n</html>"
+  }
+];
+
+const LAB_NUM = Math.min(15, Math.max(1, parseInt(new URLSearchParams(location.search).get('lab')) || 1));
+let LAB = LABS_DATA[LAB_NUM-1];
+const ACT_ID = 'lab-' + String(LAB_NUM).padStart(2,'0');
+
+let EST = null;
+let advertencias = 0, bitacora = [], guardados = 0;
+let timerInterval = null, currentMode = 'LAB';
+let dirty = false;
+let targetTime = null; // Para el cronómetro por fecha
+let actAbierta = true, actConfig = {}; // candado por grupo (Control del panel)
+
+function show(id) {
+  ['scrLogin','scrInst','scrSoon','scrFormativa','scrAviso','wrapWorkspace'].forEach(s => $(s).classList.add('hide'));
+  $('wrapMain').classList.toggle('hide', id === 'wrapWorkspace');
+  $(id).classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+// CANDADO POR GRUPO (mismo patrón que tus otras actividades — lo controla la pestaña Control del panel)
+async function verificarEstado(){
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+    const k = EST.grado ? 'g_'+EST.grado.replace(/[°\s]/g,'') : null;
+    const gc = (k && actConfig[k]) ? actConfig[k] : {};
+    actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+    if(gc.apertura) actConfig._apertura = gc.apertura;
+    if(gc.cierre) actConfig._cierre = gc.cierre;
+  }catch(e){ actConfig={}; actAbierta=true; }
+}
+function actividadDisponible(){
+  if(!actAbierta) return {ok:false, msg:'⏳ Este laboratorio está cerrado. Espera a que el docente lo abra.'};
+  const ahora = new Date();
+  const apertura = actConfig._apertura || actConfig.apertura;
+  const cierre = actConfig._cierre || actConfig.cierre;
+  if(apertura){ const ini=new Date(apertura); if(ahora<ini) return {ok:false,msg:'🕐 Este laboratorio abre el '+ini.toLocaleString('es-PA')+'.'}; }
+  if(cierre){ const fin=new Date(cierre); if(ahora>fin) return {ok:false,msg:'🔒 Este laboratorio cerró el '+fin.toLocaleString('es-PA')+'.'}; }
+  return {ok:true};
+}
+
+// LOGIN
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin'), btn = $('btnLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Escribe tu código.'; return; }
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; btn.disabled=true;
+
+  // Lógica Demo restaurada (Lee desde tu config.js)
+  if(typeof CODIGO_DEMO !== 'undefined' && cod === CODIGO_DEMO){
+    EST = { codigo:cod, ...ESTUDIANTE_DEMO, demo:true };
+    await verificarEstado(); // solo para previsualizar el cronómetro real; el demo nunca queda bloqueado por el candado
+    btn.disabled=false; 
+    await despuesLogin(); 
+    return;
+  }
+  
+  // Respaldo por si falla la lectura del archivo config
+  if(cod === 'DEMO-2026'){
+    EST = { codigo:cod, nombre:'Profesor (Demo)', grado:'Admin', demo:true };
+    await verificarEstado();
+    btn.disabled=false; 
+    await despuesLogin(); 
+    return;
+  }
+
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    await verificarEstado();
+    const dispo = actividadDisponible();
+    if(!dispo.ok){ m.className='msg warn'; m.textContent=dispo.msg; btn.disabled=false; return; }
+    btn.disabled=false; await despuesLogin();
+  }catch(e){ 
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false; 
+  }
+};
+
+async function despuesLogin(){
+  if(!LAB || !LAB.disponible){
+    $('soonTema').textContent = 'Laboratorio '+LAB_NUM;
+    show('scrSoon'); return;
+  }
+  
+  // ASIGNAR VARIACIÓN ALEATORIA PARA LAB 1 BASADA EN CÓDIGO DE ESTUDIANTE
+  if(LAB.num === 1) {
+    let hash = 0;
+    for (let i = 0; i < EST.codigo.length; i++) hash = EST.codigo.charCodeAt(i) + ((hash << 5) - hash);
+    const varIdx = Math.abs(hash) % LAB1_VARIACIONES.length;
+    // Fusionar la variación con la base del Lab 1
+    LAB = { ...LAB, ...LAB1_VARIACIONES[varIdx] };
+  }
+
+  // REPASO ESPACIADO PARA LAB > 1
+  if(LAB.num > 1 && LABS_DATA[0].formativa) {
+    // Añadir 2 preguntas aleatorias del lab anterior
+    const prevQ = LABS_DATA[0].formativa.sort(() => 0.5 - Math.random()).slice(0, 2);
+    LAB.formativa = [...prevQ, ...(LAB.formativa || [])];
+  }
+
+  // Calcular Tiempo Meta del cronómetro visible.
+  // Prioridad: 1) cierre configurado en el panel Control (por grupo) 2) fechaCierre fija en el código 3) resguardo de 2 horas
+  const cierrePanel = actConfig._cierre || actConfig.cierre;
+  if(cierrePanel && new Date(cierrePanel) > new Date()) {
+    targetTime = new Date(cierrePanel).getTime();
+  } else if(LAB.fechaCierre && new Date(LAB.fechaCierre) > new Date()) {
+    targetTime = new Date(LAB.fechaCierre).getTime();
+  } else {
+    // Fallback: 2 horas desde el login si no hay ninguna fecha configurada
+    targetTime = Date.now() + (2 * 60 * 60 * 1000); 
+  }
+
+  try {
+    const snap = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+    if(snap.exists()){
+      const d = snap.data();
+      advertencias = d.advertencias||0; bitacora = d.bitacora||[]; guardados = d.guardados||0;
+      if(d.horaInicio && targetTime > Date.now()) {
+        if(d.entregado) {
+          await setupWorkspace(d.codigoProyecto || d.codigoFinalLab, 'PROY_RESUMED');
+        } else {
+          await setupWorkspace(d.codigoActual || LAB.starter, 'LAB');
+        }
+        return;
+      }
+    }
+  } catch(e){}
+  
+  pintarInstrucciones();
+  show('scrInst');
+}
+
+function pintarInstrucciones(){
+  $('bLabNum').innerHTML = '<i class="ti ti-flask"></i> Laboratorio '+LAB.num+' / 15';
+  $('iTema').textContent = LAB.tema;
+  $('iProyecto').textContent = 'Proyecto a evaluar: ' + LAB.proyecto;
+  
+  $('iObjetivos').innerHTML = LAB.objetivos.map(o=>`<li>${o}</li>`).join('');
+  
+  // Renderizar Material de Apoyo Directo
+  $('iMaterial').innerHTML = LAB.material.map(m=>`
+    <div class="mat-item">
+      <code>${m.etiqueta.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code><br>
+      ${m.desc}
+    </div>
+  `).join('');
+  
+  $('iInstrucciones').textContent = LAB.instrucciones;
+}
+
+// FORMATIVA TEÓRICO-PRÁCTICA
+let fPendientes = [], fIdx = 0, fRacha = 0;
+window.irFormativa = () => {
+  fPendientes = LAB.formativa.map((q,i)=>i); fRacha = 0;
+  show('scrFormativa'); siguienteFormativa();
+};
+
+function siguienteFormativa(){
+  if(!fPendientes.length){ show('scrAviso'); return; }
+  fIdx = fPendientes[0];
+  const q = LAB.formativa[fIdx];
+  $('qNum').textContent = `Pregunta práctica ${LAB.formativa.length - fPendientes.length + 1} de ${LAB.formativa.length}`;
+  $('qRacha').textContent = fRacha + ' correctas seguidas';
+  $('qbarFill').style.width = (100 - (fPendientes.length/LAB.formativa.length*100)) + '%';
+  $('qTexto').textContent = q.p;
+  
+  const optsContainer = $('qOpts');
+  optsContainer.innerHTML = ''; 
+  q.o.forEach((op, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = op; 
+    btn.onclick = () => responderFormativa(i, btn);
+    optsContainer.appendChild(btn);
+  });
+  $('msgFormativa').textContent = '';
+}
+
+window.responderFormativa = (i, btnElement) => {
+  const q = LAB.formativa[fIdx];
+  const btns = $('qOpts').querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  
+  if(i === q.r){
+    btnElement.classList.add('flash-ok'); fRacha++; fPendientes.shift();
+    $('msgFormativa').className='msg ok'; $('msgFormativa').textContent='¡Correcto! Excelente análisis.';
+  } else {
+    btnElement.classList.add('flash-err'); btns[q.r].classList.add('flash-ok'); fRacha=0;
+    $('msgFormativa').className='msg err'; $('msgFormativa').textContent='Incorrecto. Repasa bien la respuesta correcta, volverá a aparecer.';
+    fPendientes.push(fPendientes.shift());
+  }
+  setTimeout(siguienteFormativa, 1500);
+};
+
+// LABORATORIO
+window.iniciarLaboratorio = async () => {
+  try{ 
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado, labNum:LAB.num, tema: LAB.tema,
+      horaInicio: new Date().toISOString(), codigoActual: LAB.starter, guardados:0, advertencias:0, bitacora:[], entregado:false
+    }); 
+  } catch(e){}
+  setupWorkspace(LAB.starter, 'LAB');
+};
+
+function setupWorkspace(codigoInicial, modo) {
+  $('dashName').textContent = EST.nombre;
+  $('dashLabTitle').textContent = `Lab ${LAB.num}: ${LAB.tema}`;
+  $('wWarns').textContent = `${advertencias} / 3`;
+  $('instCortasTxt').textContent = LAB.instrucciones;
+  
+  $('codeIn').value = codigoInicial;
+  actualizarLineas();
+  window.actualizarPreview();
+  
+  if(modo.startsWith('PROY')) {
+    activarMenuProyecto(true);
+  } else {
+    currentMode = 'LAB';
+    $('wStatus').textContent = '🟡 En progreso';
+    $('wStatus').style.color = 'var(--oro)';
+  }
+
+  show('wrapWorkspace');
+  iniciarReloj();
+  document.addEventListener('visibilitychange', onVisChange);
+  setInterval(() => { if(dirty) window.autoguardar(); }, 20000);
+}
+
+// EDITOR
+const codeIn = $('codeIn');
+const lineNumbers = $('lineNumbers');
+
+codeIn.addEventListener('input', () => { 
+  dirty = true; actualizarLineas();
+  clearTimeout(window._pvTO);
+  window._pvTO = setTimeout(window.actualizarPreview, 500);
+});
+codeIn.addEventListener('scroll', () => { lineNumbers.scrollTop = codeIn.scrollTop; });
+
+function actualizarLineas() {
+  const lines = codeIn.value.split('\n').length;
+  lineNumbers.innerHTML = Array(lines).fill(0).map((_, i) => i + 1).join('<br>');
+  
+  if(currentMode === 'LAB') {
+    const p = Math.min(100, Math.floor((codeIn.value.length / 400) * 100));
+    $('barProgLab').style.width = p + '%';
+    $('lblProgLab').textContent = p + '%';
+  }
+}
+
+window.actualizarPreview = () => { $('preview').srcdoc = codeIn.value; };
+
+// GUARDADO
+window.autoguardar = async () => {
+  dirty = false; guardados++;
+  const t = new Date();
+  $('saveTxt').textContent = `Guardado: ${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')}`;
+  
+  const updateData = currentMode === 'LAB' ? { codigoActual: codeIn.value, guardados, advertencias, bitacora } : { codigoProyecto: codeIn.value, guardados };
+  try { await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo), updateData, {merge:true}); } catch(e){}
+};
+
+// ADVERTENCIAS DIRECTAS
+function onVisChange(){
+  if(document.hidden && currentMode === 'LAB' && targetTime > Date.now()){
+    advertencias++;
+    const pts = advertencias === 1 ? 2 : (advertencias === 2 ? 5 : 10);
+    bitacora.push({ tipo:'abandono_pestaña', advertencia:advertencias, fecha:new Date().toISOString() });
+    
+    $('wWarns').textContent = `${advertencias} / 3`;
+    $('wWarns').style.color = 'var(--err)';
+
+    if (advertencias === 1) {
+      $('toastTit').textContent = '⚠ ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has salido del laboratorio.<br><br>Penalización: <b>-2 puntos</b>.<br><br>Regresa para continuar con tu actividad.';
+    } else if (advertencias === 2) {
+      $('toastTit').textContent = '⚠ SEGUNDA ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has vuelto a salir del laboratorio.<br><br>Penalización: <b>-5 puntos</b>.<br><br>Continúa trabajando dentro del Portal IFN.';
+    } else {
+      $('toastTit').textContent = '❌ TERCERA ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has abandonado nuevamente el laboratorio.<br><br>Penalización: <b>-10 puntos</b>.<br><br>Continúa trabajando hasta entregar el laboratorio.';
+    }
+    $('toastAdv').classList.add('on'); window.autoguardar();
+  }
+}
+window.cerrarToast = () => $('toastAdv').classList.remove('on');
+
+// CRONÓMETRO PROGRAMADO (targetTime)
+function iniciarReloj(){
+  clearInterval(timerInterval);
+  function tick(){
+    const rest = Math.max(0, Math.floor((targetTime - Date.now())/1000));
+    if(rest <= 0){ 
+      $('clockTxt').textContent = '00:00:00'; $('clockTxt').classList.add('rojo'); 
+      clearInterval(timerInterval); forzarCierre(); return; 
+    }
+    const h = String(Math.floor(rest/3600)).padStart(2,'0');
+    const m = String(Math.floor((rest%3600)/60)).padStart(2,'0');
+    const s = String(rest%60).padStart(2,'0');
+    $('clockTxt').textContent = `${h}:${m}:${s}`;
+    if(rest < 300) $('clockTxt').classList.add('rojo'); // Últimos 5 mins
+  }
+  tick(); timerInterval = setInterval(tick, 1000);
+}
+
+// ENTREGAR LABORATORIO
+window.finalizarLaboratorio = async () => {
+  if(currentMode === 'PROY') return;
+  await window.autoguardar();
+  try {
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      entregado: true, horaEntrega: new Date().toISOString(), codigoFinalLab: codeIn.value
+    }, {merge:true});
+  } catch(e){}
+  
+  activarMenuProyecto(false);
+};
+
+// TRANSICIÓN AL PROYECTO
+function activarMenuProyecto(isResumed) {
+  currentMode = 'PROY_MENU'; // Estado intermedio
+  
+  $('wStatus').textContent = '🟢 Lab Entregado';
+  $('wStatus').style.color = 'var(--ok-tx)';
+  $('barProgLab').style.width = '100%'; $('lblProgLab').textContent = '100%';
+  
+  $('editorSeccion').classList.add('hide'); // Ocultar editor de lab
+  $('msgSuccess').classList.remove('hide'); // Mostrar mensaje con botón "Ir al proyecto"
+  
+  // Si ya estaba en el proyecto en una sesión anterior, salta directo
+  if(isResumed) window.activarEntornoProyecto();
+}
+
+window.activarEntornoProyecto = () => {
+  currentMode = 'PROY';
+  $('msgSuccess').classList.add('hide');
+  $('editorSeccion').classList.remove('hide');
+  
+  $('boxInstCortas').classList.add('hide'); // Ocultar instrucciones del lab
+  $('modoTxt').textContent = "[Proyecto Web Libre]";
+  $('modoTxt').style.color = "var(--oro)";
+  
+  $('boxProgProy').style.opacity = '1';
+  $('barProgProy').style.width = '20%'; 
+  $('barProgProy').parentElement.previousElementSibling.querySelector('span:last-child').textContent = 'Activo';
+
+  $('btnEntregar').classList.add('hide');
+  $('btnProyExit').classList.remove('hide');
+  
+  // Limpiar comentario de inicio si está presente
+  if(codeIn.value.includes('<!-- Escribe tu código aquí -->') || codeIn.value.includes('<!-- Continúa tu proyecto web aquí -->')){
+      codeIn.value = codeIn.value.replace('<!-- Escribe tu código aquí -->','<!-- Continúa tu proyecto web aquí -->');
+      actualizarLineas(); window.actualizarPreview();
+  }
+}
+
+// CIERRE Y SALIDA
+window.terminarSesion = async () => {
+  await window.autoguardar();
+  window.location.href = "materia.html?m=multimedia";
+};
+
+function forzarCierre() {
+  clearInterval(timerInterval);
+  codeIn.disabled = true;
+  $('btnProyExit').disabled = true;
+  $('btnEntregar').disabled = true;
+  $('wStatus').textContent = '🔴 Tiempo Agotado';
+  $('wStatus').style.color = 'var(--tx3)';
+  $('msgLab').textContent = 'El cronómetro ha llegado a cero. Código guardado.';
+}
+</script>
+</body>
+</html>
