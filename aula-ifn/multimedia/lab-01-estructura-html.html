@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Laboratorio 1 — Estructura básica de HTML5 — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #21262d;
+  --linea: #30363d; --linea2: rgba(88, 166, 255, 0.3);
+  --tx: #c9d1d9; --tx2: #8b949e; --tx3: #6e7681;
+  --neon: #58a6ff; --ok: #238636; --ok-tx: #3fb950;
+  --err: #da3633; --err-bg: rgba(218, 54, 51, 0.1);
+  --oro: #d29922;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; color:var(--tx); background:var(--bg); min-height:100vh; line-height:1.5; }
+h1,h2,h3 { font-family:'Chakra Petch',sans-serif; }
+.wrap { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:24px 20px 60px; }
+.wrap.wide { max-width:1400px; }
+.hide { display:none!important; }
+
+/* TOP BAR */
+.top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap; background: var(--panel); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--linea); }
+.br { display:flex; align-items:center; gap:12px; }
+.br img { height:42px; width:42px; object-fit:contain; border-radius:9px; background:#fff; padding:3px; }
+.br b { font-family:'Chakra Petch'; font-weight:700; font-size:15px; color:#fff; display:block; line-height:1.1; }
+.br span { font-size:10px; color:var(--neon); letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+.back { font-size:13px; color:var(--tx2); text-decoration:none; padding:8px 14px; border:1px solid var(--linea); border-radius:7px; display:flex; align-items:center; gap:6px; cursor:pointer; background:var(--panel2); transition: 0.2s; }
+.back:hover { color:var(--neon); border-color:var(--neon); }
+.spin { display:inline-block; width:14px; height:14px; border:2px solid var(--linea2); border-top-color:var(--neon); border-radius:50%; animation:sp .7s linear infinite; vertical-align:middle; }
+@keyframes sp { to { transform:rotate(360deg); } }
+.msg { font-size:13px; margin-top:10px; min-height:16px; }
+.msg.err { color:var(--err); } .msg.ok { color:var(--ok-tx); } .msg.warn { color:var(--oro); }
+
+/* PROGRESO DE FASES DEL LABORATORIO */
+.fases { display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+.fase { flex:1; min-width:90px; text-align:center; font-size:10px; font-family:'Chakra Petch'; letter-spacing:.5px; text-transform:uppercase; color:var(--tx3); padding:8px 6px; border-radius:8px; background:var(--panel); border:1px solid var(--linea); }
+.fase.act { color:#fff; border-color:var(--neon); background:rgba(88,166,255,.1); }
+.fase.done { color:var(--ok-tx); border-color:var(--ok); }
+
+/* CARDS GENERALES */
+.card { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:32px; margin-bottom:20px; position:relative; overflow:hidden; }
+.card::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--neon); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:'Chakra Petch'; font-size:11px; font-weight:600; padding:6px 14px; border-radius:100px; letter-spacing:.5px; background:rgba(88,166,255,.1); color:var(--neon); border:1px solid var(--linea2); margin-bottom:16px; }
+h1.tt { font-size:26px; color:#fff; margin-bottom:8px; }
+.sub { font-size:14px; color:var(--tx2); margin-bottom:20px; }
+
+/* FORMULARIOS Y BOTONES */
+.fl { margin-bottom:20px; }
+.fl label { display:block; font-size:12px; color:var(--tx2); margin-bottom:8px; font-family:'Chakra Petch'; letter-spacing:.5px; text-transform:uppercase; }
+.fl input { width:100%; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:14px; color:#fff; font-size:15px; outline:none; transition:0.2s; }
+.fl input:focus { border-color:var(--neon); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+.btn { font-family:'Chakra Petch'; font-weight:600; font-size:14px; letter-spacing:.5px; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.2s; }
+.btn.primary { background:var(--ok); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.primary:hover { background: #2ea043; }
+.btn.primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn.ghost { background:var(--panel2); border:1px solid var(--linea); color:var(--tx); }
+.btn.ghost:hover { border-color:var(--tx); color:#fff; }
+.btn.ghost:disabled { opacity:.4; cursor:not-allowed; }
+.btn.danger { background:var(--err); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.danger:hover { background: #f85149; }
+.btn.action { background: var(--neon); color: #0d1117; }
+.btn.action:hover { background: #79c0ff; }
+.btn.action:disabled { opacity:.4; cursor:not-allowed; }
+.btn.block { width:100%; justify-content:center; }
+
+/* INSTRUCCIONES Y MATERIAL */
+.material-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+@media(max-width: 768px) { .material-grid { grid-template-columns: 1fr; } }
+.mat-item { background: var(--panel2); border: 1px solid var(--linea); padding: 12px; border-radius: 8px; font-size: 13px; }
+.mat-item code { color: var(--neon); font-family: 'JetBrains Mono', monospace; font-weight: bold; background: rgba(88,166,255,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+
+ul.lst { list-style:none; margin:10px 0 0; }
+ul.lst li { padding:8px 0 8px 24px; position:relative; font-size:14px; color:var(--tx); border-bottom:1px solid var(--linea); }
+ul.lst li:last-child { border-bottom:none; }
+ul.lst li::before { content:"▹"; position:absolute; left:0; color:var(--neon); font-weight:700; }
+.sec-h { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#fff; font-family:'Chakra Petch'; font-weight:600; margin:32px 0 12px; display:flex; align-items:center; gap:8px; border-bottom: 1px solid var(--linea); padding-bottom: 8px; }
+.sec-h i { color:var(--neon); font-size:18px; }
+.sec-h:first-child { margin-top:0; }
+.instr { font-size:14px; color:var(--tx); white-space:pre-line; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:20px; margin-top:8px; line-height: 1.7; }
+
+/* AVISO OBLIGATORIO */
+.aviso { background:var(--err-bg); border:1px solid var(--err); border-radius:8px; padding:24px; margin-bottom:20px; }
+.aviso h3 { color:#ff7b72; font-size:18px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.aviso h4 { color:#ff7b72; font-size:14px; margin:12px 0 4px; }
+.aviso p { font-size:14px; color:var(--tx); margin-bottom:10px; }
+.aviso ul { margin:10px 0 10px 24px; font-size:14px; color:var(--tx); }
+.chk { display:flex; align-items:flex-start; gap:10px; margin-top:20px; font-size:14px; color:#fff; cursor:pointer; background: var(--panel2); padding: 16px; border-radius: 8px; border: 1px solid var(--linea); }
+.chk input { margin-top:2px; accent-color:var(--err); width:18px; height:18px; cursor:pointer;}
+
+/* FORMATIVA (preguntas) */
+.qbar { height:6px; background:var(--linea); border-radius:100px; overflow:hidden; margin-bottom:20px; }
+.qbar i { display:block; height:100%; background:var(--neon); transition:.3s; }
+.qtxt { font-size:18px; font-weight:600; color:#fff; margin-bottom:20px; font-family:'Chakra Petch'; }
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt { background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:16px; font-size:14px; color:var(--tx); cursor:pointer; text-align:left; transition:.15s; font-family: 'Inter', sans-serif; }
+.opt:hover { border-color:var(--tx2); background:var(--panel2); }
+.opt.flash-ok { border-color:var(--ok); background:rgba(35, 134, 54, 0.15); color:var(--ok-tx); }
+.opt.flash-err { border-color:var(--err); background:var(--err-bg); color:#ff7b72; }
+.opt:disabled { cursor:default; }
+.qmeta { display:flex; justify-content:space-between; font-size:13px; color:var(--tx2); margin-bottom:10px; }
+
+/* PASO A PASO */
+.paso-nav { display:flex; justify-content:space-between; align-items:center; margin-top:24px; gap:12px; }
+.paso-dots { display:flex; gap:6px; }
+.paso-dots span { width:8px; height:8px; border-radius:50%; background:var(--linea); }
+.paso-dots span.on { background:var(--neon); }
+.paso-mini { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+@media(max-width:760px) { .paso-mini { grid-template-columns:1fr; } }
+.paso-mini .epane { height:220px; }
+
+/* DASHBOARD Y LAYOUT DEL LABORATORIO */
+.lab-layout { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+@media(max-width: 992px) { .lab-layout { grid-template-columns: 1fr; } }
+.dash-panel { background: var(--panel); border: 1px solid var(--linea); border-radius: 12px; position: sticky; top: 20px; display: flex; flex-direction: column; gap: 1px; overflow: hidden; }
+.dash-box { background: var(--panel); padding: 16px 20px; }
+.dash-box.header { border-bottom: 1px solid var(--neon); }
+.dash-box h2 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+.dash-box p { font-size: 13px; color: var(--tx2); }
+
+/* Progress Bars */
+.prog-container { margin-top: 12px; }
+.prog-item { margin-bottom: 12px; }
+.prog-item:last-child { margin-bottom: 0; }
+.prog-label { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; color: var(--tx2); margin-bottom: 6px; font-family: 'Chakra Petch'; font-weight: 600; }
+.prog-bar-bg { height: 6px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 4px; }
+.pb-lab { background: var(--neon); width: 0%; transition: width 1s linear; }
+.pb-proy { background: var(--oro); width: 0%; }
+
+/* Info Grid */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.info-item { background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--linea); text-align: center; }
+.info-item span { display: block; font-size: 10px; text-transform: uppercase; color: var(--tx3); margin-bottom: 4px; font-family: 'Chakra Petch'; }
+.info-item b { font-size: 16px; color: #fff; font-family: 'JetBrains Mono', monospace; }
+.info-item b.timer { color: var(--neon); }
+.info-item b.timer.rojo { color: var(--err); animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+
+/* EDITOR HTML CON NÚMEROS DE LÍNEA */
+.editorwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; height: 60vh; min-height: 450px; margin-bottom: 20px; transition: 0.3s; }
+@media(max-width: 760px) { .editorwrap { grid-template-columns: 1fr; height: auto; } .editorwrap > div { height: 350px; } }
+.epane { background: var(--panel2); border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.ehdr { padding: 10px 16px; font-family: 'Chakra Petch'; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--tx); background: var(--panel); border-bottom: 1px solid var(--linea); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+
+.code-container { display: flex; flex: 1; overflow: hidden; background: #0d1117; position: relative; }
+.line-numbers { padding: 14px 8px; background: #161b22; color: #484f58; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; text-align: right; border-right: 1px solid var(--linea); user-select: none; overflow: hidden; min-width: 40px; }
+.epane textarea { flex: 1; width: 100%; background: transparent; color: #c9d1d9; border: none; outline: none; resize: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 14px; line-height: 1.6; white-space: pre; overflow: auto; }
+.epane textarea.readonly { color:#8b949e; cursor:default; }
+.epane iframe { flex: 1; width: 100%; border: none; background: #fff; }
+
+.labfoot { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--panel); border: 1px solid var(--linea); border-radius: 8px; flex-wrap: wrap; gap: 12px; }
+
+/* MENSAJE ÉXITO & PROYECTO */
+.success-msg { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--ok); border-radius: 8px; padding: 32px; margin-bottom: 24px; text-align: center; }
+.success-msg i.big { font-size: 48px; color: var(--ok-tx); margin-bottom: 16px; display: block; }
+.success-msg h3 { color: #fff; font-size: 24px; margin-bottom: 12px; }
+.success-msg p { color: var(--tx); font-size: 15px; margin-bottom: 24px; }
+.success-msg .btn-wrap { background: var(--panel); border: 1px solid var(--linea); padding: 24px; border-radius: 8px; display: inline-block; }
+
+/* RETROALIMENTACIÓN */
+.rubrica-tabla { width:100%; border-collapse:collapse; margin-top:16px; }
+.rubrica-tabla th, .rubrica-tabla td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--linea); font-size:13px; }
+.rubrica-tabla th { color:var(--tx2); font-family:'Chakra Petch'; text-transform:uppercase; font-size:11px; letter-spacing:.5px; }
+.nota-grande { font-family:'Chakra Petch'; font-size:42px; font-weight:700; color:#fff; }
+.nota-grande.ap { color:var(--ok-tx); } .nota-grande.re { color:#ff7b72; }
+.obs-box { background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:16px; margin-top:8px; font-size:14px; white-space:pre-line; }
+
+/* TOAST ADVERTENCIA */
+.toastov { position:fixed; inset:0; background:rgba(13, 17, 23, 0.85); backdrop-filter: blur(4px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
+.toastov.on { display:flex; }
+.toastbox { background:var(--panel); border:1px solid var(--err); border-radius:12px; padding:32px; max-width:450px; text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.toastbox.confirm { border-color:var(--neon); }
+.toastbox i.warnic { font-size:48px; color:#ff7b72; margin-bottom:16px; display:block; }
+.toastbox i.confirmic { font-size:48px; color:var(--neon); margin-bottom:16px; display:block; }
+.toastbox h3 { color:#fff; font-size:20px; margin-bottom:16px; font-family: 'Chakra Petch'; text-transform: uppercase; }
+.toastbox p { font-size:15px; color:var(--tx); margin-bottom:24px; line-height: 1.6; }
+.toastbox .btnrow { display:flex; gap:12px; }
+.toastbox .btnrow .btn { flex:1; justify-content:center; }
+
+footer { text-align:center; padding-top:40px; font-size:12px; color:var(--tx3); }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapMain">
+  <div class="top">
+    <div class="br"><img src="../logo.png" onerror="this.style.display='none'"><div><b>Instituto Fermín Naudeau</b><span>Laboratorio Virtual · HTML</span></div></div>
+    <a class="back" href="../materia.html?m=multimedia"><i class="ti ti-arrow-left"></i> Volver al Aula</a>
+  </div>
+
+  <div class="fases hide" id="barFases">
+    <div class="fase" data-f="teoria">1. Teoría</div>
+    <div class="fase" data-f="paso">2. Paso a paso</div>
+    <div class="fase" data-f="ejemplo">3. Código de ejemplo</div>
+    <div class="fase" data-f="lab">4. Laboratorio calificable</div>
+  </div>
+
+  <div id="scrLogin" class="card">
+    <div class="badge"><i class="ti ti-terminal-2"></i> Acceso Seguro</div>
+    <h1 class="tt">Entrar al laboratorio</h1>
+    <p class="sub">Ingresa tu código estudiantil para continuar.</p>
+    <div class="fl"><label>Código estudiantil</label><input id="inCod" placeholder="MUL-2026-001" autocomplete="off"></div>
+    <button class="btn action block" id="btnLogin" onclick="login()"><i class="ti ti-login"></i> Iniciar Sesión</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <div id="scrSoon" class="card hide">
+    <div style="text-align:center; padding:40px 20px;">
+      <i class="ti ti-clock-hour-4" style="font-size:48px; color:var(--tx3); margin-bottom:16px; display:block;"></i>
+      <h3 style="color:#fff; font-size:18px; margin-bottom:8px;">Laboratorio 1</h3>
+      <p style="color:var(--tx2); font-size:14px;">Este laboratorio estará disponible próximamente.</p>
+    </div>
+  </div>
+
+  <!-- 1. TEORÍA -->
+  <div id="scrTeoria" class="card hide">
+    <div class="badge"><i class="ti ti-book-2"></i> 1. Teoría del Laboratorio</div>
+    <h1 class="tt">Estructura básica de HTML5 y primer documento</h1>
+    <p class="sub">Antes de programar, entendamos qué vamos a construir y con qué herramienta.</p>
+
+    <div class="sec-h"><i class="ti ti-code-dots"></i> ¿Qué es un editor de código?</div>
+    <p style="font-size:14px; color:var(--tx); margin-bottom:8px; line-height:1.7;">Un editor de código es un programa donde se escribe el código de una página web, similar a un procesador de texto pero especializado: resalta etiquetas, numera líneas y muestra errores. Ejemplos reales que usan profesionales son Visual Studio Code o editores en línea como CodePen. En este Laboratorio Virtual tienes un editor integrado en el navegador que funciona igual: escribes código HTML a la izquierda y ves el resultado a la derecha, sin necesidad de instalar nada.</p>
+
+    <div class="sec-h"><i class="ti ti-file-code"></i> Las piezas de un documento HTML5</div>
+    <p style="font-size:13px; color:var(--tx2); margin-bottom:4px;">Todo documento HTML5 se construye con estas piezas, siempre en el mismo orden:</p>
+    <div class="material-grid" id="teoriaMaterial"></div>
+
+    <div class="sec-h"><i class="ti ti-list-details"></i> Buenas prácticas desde el primer documento</div>
+    <ul class="lst">
+      <li>Todo documento HTML5 empieza con <code style="color:var(--neon)">&lt;!DOCTYPE html&gt;</code>, sin excepción.</li>
+      <li>Cada etiqueta que se abre debe cerrarse: <code style="color:var(--neon)">&lt;p&gt;...&lt;/p&gt;</code>.</li>
+      <li>Las etiquetas van anidadas correctamente (una dentro de otra, sin cruzarse).</li>
+      <li>El contenido visible del usuario va siempre dentro de <code style="color:var(--neon)">&lt;body&gt;</code>, nunca en <code style="color:var(--neon)">&lt;head&gt;</code>.</li>
+    </ul>
+
+    <button class="btn action block" style="margin-top:32px; padding:16px;" onclick="irPasoAPaso()">
+      <i class="ti ti-arrow-right" style="font-size:20px;"></i> Continuar a la Explicación Paso a Paso
+    </button>
+  </div>
+
+  <!-- 2. EXPLICACIÓN PASO A PASO -->
+  <div id="scrPaso" class="card hide">
+    <div class="badge"><i class="ti ti-list-numbers"></i> 2. Explicación paso a paso</div>
+    <h1 class="tt" id="pasoTitulo">—</h1>
+    <p class="sub" id="pasoExplicacion">—</p>
+
+    <div class="paso-mini">
+      <div class="epane">
+        <div class="ehdr"><span><i class="ti ti-code"></i> Código acumulado</span></div>
+        <div class="code-container"><textarea id="pasoCodigo" class="readonly" readonly wrap="off"></textarea></div>
+      </div>
+      <div class="epane">
+        <div class="ehdr"><span><i class="ti ti-device-desktop"></i> Resultado esperado</span></div>
+        <iframe id="pasoPreview" sandbox="allow-same-origin"></iframe>
+      </div>
+    </div>
+
+    <div class="paso-nav">
+      <button class="btn ghost" id="btnPasoAnt" onclick="irAPaso(pasoIdx-1)"><i class="ti ti-chevron-left"></i> Anterior</button>
+      <div class="paso-dots" id="pasoDots"></div>
+      <button class="btn action" id="btnPasoSig" onclick="pasoSiguiente()">Siguiente <i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- 3. CÓDIGO DE EJEMPLO -->
+  <div id="scrEjemplo" class="card hide">
+    <div class="badge"><i class="ti ti-lock-open"></i> 3. Código de ejemplo desbloqueado</div>
+    <h1 class="tt">Analiza este ejemplo completo</h1>
+    <p class="sub">Puedes leerlo y ejecutarlo cuantas veces quieras. Cuando lo entiendas, continúa al laboratorio calificable (con un tema distinto al de este ejemplo).</p>
+
+    <div class="editorwrap" style="height:50vh; min-height:380px;">
+      <div class="epane">
+        <div class="ehdr">
+          <span><i class="ti ti-code"></i> Código de ejemplo</span>
+          <button class="btn ghost" style="padding: 4px 8px; font-size: 11px;" onclick="ejecutarEjemplo()"><i class="ti ti-player-play"></i> Ejecutar</button>
+        </div>
+        <div class="code-container"><textarea id="ejemploCodigo" class="readonly" readonly wrap="off"></textarea></div>
+      </div>
+      <div class="epane">
+        <div class="ehdr"><span><i class="ti ti-device-desktop"></i> Vista previa</span></div>
+        <iframe id="ejemploPreview" sandbox="allow-same-origin"></iframe>
+      </div>
+    </div>
+
+    <button class="btn action block" style="margin-top:12px; padding:16px;" onclick="irAviso()">
+      <i class="ti ti-flask" style="font-size:20px;"></i> Continuar al Laboratorio Calificable
+    </button>
+  </div>
+
+  <div id="scrAviso" class="card hide">
+    <div class="aviso">
+      <h3><i class="ti ti-alert-triangle"></i> IMPORTANTE</h3>
+      <p>Este laboratorio debe desarrollarse <b>únicamente dentro del Portal IFN</b>.</p>
+      <p>Mientras el laboratorio esté activo:</p>
+      <ul>
+        <li>No cambies de pestaña.</li>
+        <li>No minimices el navegador.</li>
+        <li>No abandones el laboratorio.</li>
+      </ul>
+      <p>El editor tiene copiar, pegar, cortar y clic derecho deshabilitados. Todas las acciones serán registradas automáticamente.</p>
+
+      <h4>Sistema de advertencias</h4>
+      <ul>
+        <li><b>Primera advertencia</b> — Penalización: -2 puntos.</li>
+        <li><b>Segunda advertencia</b> — Penalización: -5 puntos.</li>
+        <li><b>Tercera advertencia</b> — Penalización: -10 puntos.</li>
+      </ul>
+      <p style="margin-top:12px; color: #ff7b72;">Podrás salir únicamente después de presionar "Enviar laboratorio". Una vez enviado, no podrás modificarlo: solo tu docente puede habilitar un reenvío.</p>
+
+      <label class="chk"><input type="checkbox" id="chkAviso" onchange="document.getElementById('btnIniciarLab').disabled=!this.checked"> He leído y acepto las condiciones.</label>
+    </div>
+    <button class="btn action block" id="btnIniciarLab" disabled onclick="iniciarLaboratorio()"><i class="ti ti-player-play"></i> Ingresar al Editor HTML</button>
+  </div>
+
+  <!-- RETROALIMENTACIÓN -->
+  <div id="scrRetro" class="card hide">
+    <div class="badge"><i class="ti ti-clipboard-check"></i> Retroalimentación</div>
+    <h1 class="tt">Laboratorio 1 — Resultado</h1>
+    <div id="retroPendiente" class="hide" style="text-align:center; padding:20px 0;">
+      <i class="ti ti-hourglass" style="font-size:40px; color:var(--tx3); display:block; margin-bottom:12px;"></i>
+      <p style="color:var(--tx2); font-size:14px;">Tu laboratorio fue entregado y está pendiente de calificación por tu docente. Vuelve más tarde para ver tu nota.</p>
+    </div>
+    <div id="retroCalificado" class="hide">
+      <div style="text-align:center; margin-bottom:24px;">
+        <p style="color:var(--tx2); font-size:12px; text-transform:uppercase; font-family:'Chakra Petch'; letter-spacing:1px;">Nota final (escala 1.0 – 5.0)</p>
+        <div class="nota-grande" id="retroNota">—</div>
+      </div>
+      <div class="sec-h"><i class="ti ti-checklist"></i> Rúbrica</div>
+      <table class="rubrica-tabla">
+        <thead><tr><th>Criterio</th><th>Puntaje</th></tr></thead>
+        <tbody id="retroRubricaBody"></tbody>
+      </table>
+      <div class="sec-h"><i class="ti ti-message-2"></i> Observaciones del docente</div>
+      <div class="obs-box" id="retroObs">—</div>
+    </div>
+    <button class="btn action block" style="margin-top:32px; padding:16px;" onclick="activarEntornoProyecto()">
+      <i class="ti ti-world-code" style="font-size:20px;"></i> Ir al Proyecto Final
+    </button>
+  </div>
+</div>
+
+<div class="wrap wide hide" id="wrapWorkspace">
+  <div class="lab-layout">
+
+    <aside class="dash-panel">
+      <div class="dash-box header">
+        <h2 id="dashName">Estudiante</h2>
+        <p id="dashSub">Curso HTML - Grupo Base</p>
+      </div>
+      <div class="dash-box">
+        <p style="color:#fff; font-family:'Chakra Petch'; margin-bottom:4px;" id="dashLabTitle">Laboratorio 1</p>
+
+        <div class="prog-container">
+          <div class="prog-item" id="boxProgProy" style="opacity: 0.3;">
+            <div class="prog-label"><span>Proyecto Final</span><span id="lblProgProy">Bloqueado</span></div>
+            <div class="prog-bar-bg"><div class="prog-bar-fill pb-proy" id="barProgProy"></div></div>
+          </div>
+        </div>
+
+        <div class="info-grid" id="infoGridLab">
+          <div class="info-item">
+            <span>Estado</span>
+            <b id="wStatus" style="font-size: 13px; color: var(--oro);">🟡 En progreso</b>
+          </div>
+          <div class="info-item">
+            <span>Advertencias</span>
+            <b id="wWarns">0 / 3</b>
+          </div>
+          <div class="info-item" style="grid-column: 1 / -1;">
+            <span>Tiempo restante</span>
+            <b class="timer" id="clockTxt">--:--:--</b>
+          </div>
+          <div class="info-item" style="grid-column: 1 / -1; background: transparent; border: none; padding: 0;">
+            <span style="display:flex; justify-content:center; align-items:center; gap:6px; margin:0;">
+              <i class="ti ti-cloud-check" style="color:var(--ok-tx); font-size:14px;"></i> <span id="saveTxt" style="margin:0;">Autoguardado...</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+
+      <div id="msgReenvio" class="card hide" style="padding:16px 20px; margin-bottom:16px; border-color:var(--oro);">
+        <p style="color:var(--oro); font-size:13px;"><i class="ti ti-refresh"></i> Tu docente habilitó un reenvío para este laboratorio. Corrige tu código y vuelve a enviarlo.</p>
+      </div>
+
+      <div id="msgSuccess" class="success-msg hide">
+        <i class="ti ti-circle-check-filled big"></i>
+        <h3>¡Excelente trabajo!</h3>
+        <p>Has entregado correctamente tu Laboratorio 1. El código ha sido guardado para la revisión de tu docente con la rúbrica.</p>
+
+        <div class="btn-wrap">
+          <p style="font-size: 14px; margin-bottom: 12px; color: #fff;">El Proyecto Final de tu curso ya se actualizó con esta primera página. Puedes seguir trabajando en él libremente cuando quieras.</p>
+          <button class="btn action block" onclick="activarEntornoProyecto()"><i class="ti ti-world-code"></i> Ir al Proyecto Final</button>
+        </div>
+      </div>
+
+      <div id="editorSeccion">
+        <div style="background: var(--panel); border: 1px solid var(--linea); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;" id="boxInstCortas">
+          <p style="font-family:'Chakra Petch'; color:#fff; font-size:14px; margin-bottom:4px;" id="instCortasTitulo"><i class="ti ti-list"></i> Tu tema asignado</p>
+          <p id="instCortasTxt" style="font-size:13px; color:var(--tx); white-space:pre-line;"></p>
+        </div>
+
+        <div class="editorwrap">
+          <div class="epane">
+            <div class="ehdr">
+              <span><i class="ti ti-code"></i> Editor HTML <span id="modoTxt" style="color:var(--neon); margin-left:8px;">[Laboratorio]</span></span>
+            </div>
+            <div class="code-container">
+              <div class="line-numbers" id="lineNumbers">1</div>
+              <textarea id="codeIn" spellcheck="false" wrap="off"></textarea>
+            </div>
+          </div>
+          <div class="epane">
+            <div class="ehdr">
+              <span><i class="ti ti-device-desktop"></i> Vista previa</span>
+              <button class="btn ghost hide" id="btnVistaPrevia" style="padding: 4px 8px; font-size: 11px;" onclick="verVistaPrevia()"><i class="ti ti-player-play"></i> Vista previa</button>
+            </div>
+            <iframe id="preview" sandbox="allow-same-origin"></iframe>
+          </div>
+        </div>
+
+        <div class="labfoot">
+          <span class="msg" id="msgLab" style="margin:0;"></span>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn ghost" onclick="autoguardar()"><i class="ti ti-device-floppy"></i> Guardar manual</button>
+            <button class="btn primary" id="btnEntregar" disabled onclick="pedirConfirmacionEnvio()"><i class="ti ti-send"></i> Enviar laboratorio</button>
+            <button class="btn action hide" id="btnProyExit" onclick="terminarSesion()"><i class="ti ti-logout"></i> Guardar y Salir del Portal</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toastov" id="toastAdv">
+  <div class="toastbox">
+    <i class="ti ti-alert-triangle warnic"></i>
+    <h3 id="toastTit">Advertencia</h3>
+    <p id="toastTxt">—</p>
+    <button class="btn danger block" onclick="cerrarToast()">Entendido</button>
+  </div>
+</div>
+
+<div class="toastov" id="toastConfirmEnvio">
+  <div class="toastbox confirm">
+    <i class="ti ti-send confirmic"></i>
+    <h3>Confirmar envío</h3>
+    <p>¿Está seguro de enviar el laboratorio? Una vez enviado no podrás modificarlo ni volver a enviarlo por tu cuenta.</p>
+    <div class="btnrow">
+      <button class="btn ghost" onclick="cerrarConfirmEnvio()">Cancelar</button>
+      <button class="btn primary" onclick="confirmarEnvio()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<footer><div><i class="ti ti-code"></i> Aula Virtual IFN — <b>Prof. Mario Carrasco</b></div></footer>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+
+const ACT_ID = 'lab-01';
+const LAB_NUM = 1;
+
+// ============================================================
+// 1. TEORÍA — piezas del documento HTML5
+// ============================================================
+const TEORIA_MATERIAL = [
+  { etiqueta: "<!DOCTYPE html>", desc: "Declaración obligatoria. Le dice al navegador que este es un documento HTML5. Va en la primera línea, siempre." },
+  { etiqueta: "<html lang=\"es\">", desc: "Envuelve todo el documento. El atributo lang indica el idioma principal de la página." },
+  { etiqueta: "<head>", desc: "La cabeza. Aquí van configuraciones ocultas para el navegador (no se ve en la pantalla)." },
+  { etiqueta: "<meta charset=\"UTF-8\">", desc: "Va dentro de head. Indica la codificación de caracteres (permite usar tildes y ñ correctamente)." },
+  { etiqueta: "<title>", desc: "Va dentro de head. Es el texto que aparece en la pestaña del navegador." },
+  { etiqueta: "<body>", desc: "El cuerpo. TODO lo que el usuario ve en pantalla va aquí dentro." }
+];
+
+// ============================================================
+// 2. EXPLICACIÓN PASO A PASO — demo neutral: "Mi rincón de lectura"
+// (Este tema de demostración es distinto al del código de ejemplo
+// y distinto a los 12 temas asignados en el laboratorio calificable)
+// ============================================================
+const PASOS = [
+  {
+    titulo: "Paso 1 — La declaración DOCTYPE",
+    explicacion: "Todo documento HTML5 empieza con esta línea. Le avisa al navegador qué tipo de documento va a leer.",
+    codigo: "<!DOCTYPE html>"
+  },
+  {
+    titulo: "Paso 2 — La etiqueta <html>",
+    explicacion: "Después del DOCTYPE, abrimos <html>. Esta etiqueta envuelve absolutamente todo el contenido del documento.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n\n</html>"
+  },
+  {
+    titulo: "Paso 3 — La sección <head>",
+    explicacion: "Dentro de <html>, agregamos <head>. Aquí ponemos la codificación de caracteres y el título de la pestaña. Nada de esto se ve en la pantalla todavía.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n\n</html>"
+  },
+  {
+    titulo: "Paso 4 — La sección <body>",
+    explicacion: "Después de </head>, abrimos <body>. A partir de aquí, todo lo que escribamos SÍ se mostrará en la pantalla del navegador.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n<body>\n\n</body>\n</html>"
+  },
+  {
+    titulo: "Paso 5 — Un título con <h1>",
+    explicacion: "Dentro de <body>, agregamos un título principal con <h1>. Es el texto más importante de la página.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n<body>\n\n  <h1>Mi rincón de lectura</h1>\n\n</body>\n</html>"
+  },
+  {
+    titulo: "Paso 6 — Párrafos con <p>",
+    explicacion: "Agregamos texto normal usando <p>. Cada <p> es un bloque de texto independiente.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n<body>\n\n  <h1>Mi rincón de lectura</h1>\n  <p>Este es el lugar donde comparto los libros que voy leyendo este año.</p>\n  <p>Cada semana intento terminar al menos un capítulo nuevo.</p>\n\n</body>\n</html>"
+  },
+  {
+    titulo: "Paso 7 — Resaltar texto con <strong> y <em>",
+    explicacion: "<strong> marca una palabra como muy importante (se ve en negrita). <em> le da un tono distinto, como énfasis (se ve en cursiva).",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n<body>\n\n  <h1>Mi rincón de lectura</h1>\n  <p>Este es el lugar donde comparto los libros que voy leyendo este año.</p>\n  <p>Mi <strong>libro favorito</strong> hasta ahora ha sido uno de aventuras, y lo recomiendo <em>totalmente</em>.</p>\n\n</body>\n</html>"
+  },
+  {
+    titulo: "Paso 8 — Separar secciones con <hr>",
+    explicacion: "<hr> dibuja una línea horizontal para separar visualmente secciones de contenido. No necesita etiqueta de cierre.",
+    codigo: "<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Mi rincón de lectura</title>\n</head>\n<body>\n\n  <h1>Mi rincón de lectura</h1>\n  <p>Este es el lugar donde comparto los libros que voy leyendo este año.</p>\n  <p>Mi <strong>libro favorito</strong> hasta ahora ha sido uno de aventuras, y lo recomiendo <em>totalmente</em>.</p>\n  <hr>\n  <p>Gracias por leer hasta aquí.</p>\n\n</body>\n</html>"
+  }
+];
+
+// ============================================================
+// 3. CÓDIGO DE EJEMPLO — tema neutral distinto: "Club de Ajedrez"
+// ============================================================
+const CODIGO_EJEMPLO = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Club de Ajedrez del Instituto</title>
+</head>
+<body>
+
+  <h1>Club de Ajedrez del Instituto</h1>
+  <h2>Reuniones todos los viernes</h2>
+
+  <p>El Club de Ajedrez reúne a estudiantes de todos los grados que quieren mejorar su
+  pensamiento estratégico mientras se divierten. No necesitas experiencia previa para unirte.</p>
+
+  <p>Este trimestre estamos organizando un <strong>torneo interno</strong> con premios para
+  los primeros tres lugares. <em>¡Todos los niveles son bienvenidos!</em></p>
+
+  <hr>
+
+  <p>Si quieres participar, habla con el profesor encargado durante el receso.</p>
+
+</body>
+</html>`;
+
+// ============================================================
+// 12 TEMAS ANTICOPIA (misma consigna y etiquetas, distinto contenido)
+// Asignado de forma automática y consistente por hash del código estudiantil.
+// ============================================================
+const TEMAS_ANTICOPIA = [
+  { tema:"Turismo en Panamá", titulo:"Descubre Panamá", h1:"Turismo en Panamá", ideas:["Lugares como el Casco Viejo, Bocas del Toro o Boquete.","Alguna tradición o plato típico panameño."] },
+  { tema:"Videojuegos", titulo:"Mundo Gamer", h1:"El Mundo de los Videojuegos", ideas:["Tu videojuego o consola favorita.","Un género de videojuegos que te guste (estrategia, deportes, aventura)."] },
+  { tema:"Animales", titulo:"Reino Animal", h1:"Animales Sorprendentes", ideas:["Un animal que te parezca fascinante y por qué.","Un dato curioso sobre ese animal."] },
+  { tema:"Tecnología", titulo:"Innovación Tech", h1:"Avances en Tecnología", ideas:["Un dispositivo o app que uses todos los días.","Cómo crees que cambiará la tecnología en el futuro."] },
+  { tema:"Música", titulo:"Notas y Ritmos", h1:"El Poder de la Música", ideas:["Tu artista o género musical favorito.","Cómo te hace sentir la música."] },
+  { tema:"Deportes", titulo:"Pasión Deportiva", h1:"El Mundo del Deporte", ideas:["Tu deporte favorito y por qué te gusta.","Un equipo o atleta que admires."] },
+  { tema:"Robótica", titulo:"Robots del Futuro", h1:"Introducción a la Robótica", ideas:["Para qué crees que sirven los robots hoy en día.","Un robot famoso (real o de ficción) que conozcas."] },
+  { tema:"Ciberseguridad", titulo:"Mundo Seguro", h1:"Ciberseguridad para Todos", ideas:["Una buena práctica para proteger una contraseña.","Por qué es importante cuidar tu información en internet."] },
+  { tema:"Inteligencia Artificial", titulo:"Era de la IA", h1:"Inteligencia Artificial", ideas:["Un uso de la inteligencia artificial que conozcas.","Una ventaja y un riesgo de usar IA."] },
+  { tema:"Historia", titulo:"Memoria Viva", h1:"Un Momento de la Historia", ideas:["Un evento histórico que te parezca importante.","Por qué crees que se debe recordar."] },
+  { tema:"Ciencia", titulo:"Mente Científica", h1:"Curiosidades de la Ciencia", ideas:["Un experimento o fenómeno científico interesante.","Una rama de la ciencia que te llame la atención."] },
+  { tema:"Astronomía", titulo:"Universo Infinito", h1:"Explorando el Universo", ideas:["Un planeta, estrella o fenómeno espacial que te interese.","Algo que te gustaría saber sobre el espacio."] }
+];
+
+const INSTRUCCIONES_BASE = "1. Verifica que tu documento comience con <!DOCTYPE html> y tenga <html lang=\"es\">.\n2. Dentro de <head>, agrega <meta charset=\"UTF-8\"> y un <title> relacionado con tu tema asignado.\n3. Dentro de <body>, agrega un <h1> como título principal sobre tu tema.\n4. Agrega un <h2> como subtítulo relacionado.\n5. Escribe dos párrafos (<p>) con contenido sobre tu tema.\n6. Resalta una palabra o frase importante usando <strong>.\n7. Usa <em> para enfatizar otra palabra o frase distinta.\n8. Cierra una sección con una línea <hr>.";
+
+let EST = null;
+let TEMA_ASIGNADO = null;
+let advertencias = 0, bitacora = [], guardados = 0;
+let timerInterval = null, currentMode = 'LAB';
+let dirty = false, htVistaPrevia = false;
+let targetTime = null;
+let actAbierta = true, actConfig = {};
+let pasoIdx = 0;
+let resultadoExistente = null;
+
+function show(id) {
+  ['scrLogin','scrSoon','scrTeoria','scrPaso','scrEjemplo','scrAviso','scrRetro','wrapWorkspace'].forEach(s => $(s).classList.add('hide'));
+  $('wrapMain').classList.toggle('hide', id === 'wrapWorkspace');
+  $('barFases').classList.toggle('hide', !['scrTeoria','scrPaso','scrEjemplo','scrAviso'].includes(id));
+  const faseMap = { scrTeoria:'teoria', scrPaso:'paso', scrEjemplo:'ejemplo', scrAviso:'lab' };
+  if(faseMap[id]) marcarFase(faseMap[id]);
+  $(id).classList.remove('hide');
+  window.scrollTo(0,0);
+}
+function marcarFase(actual){
+  const orden = ['teoria','paso','ejemplo','lab'];
+  const i = orden.indexOf(actual);
+  document.querySelectorAll('.fase').forEach(el=>{
+    const j = orden.indexOf(el.dataset.f);
+    el.classList.remove('act','done');
+    if(j < i) el.classList.add('done'); else if(j === i) el.classList.add('act');
+  });
+}
+
+// CANDADO POR GRUPO (mismo patrón que las demás actividades — lo controla la pestaña Control del panel)
+async function verificarEstado(){
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+    // La cuenta Demo no pertenece a ningún grupo real de Multimedia (su grado es solo de prueba),
+    // así que para previsualizar apertura/cierre correctamente usamos el primer grupo real configurado.
+    let k;
+    if(EST.demo){
+      const gruposReales = (typeof MATERIA_GRUPOS!=='undefined' && MATERIA_GRUPOS.multimedia) || ['11°A','11°B'];
+      k = 'g_'+(gruposReales[0]||'').replace(/[°\s]/g,'');
+    } else {
+      k = EST.grado ? 'g_'+EST.grado.replace(/[°\s]/g,'') : null;
+    }
+    const gc = (k && actConfig[k]) ? actConfig[k] : {};
+    actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+    if(gc.apertura) actConfig._apertura = gc.apertura;
+    if(gc.cierre) actConfig._cierre = gc.cierre;
+  }catch(e){ actConfig={}; actAbierta=true; }
+}
+function actividadDisponible(){
+  if(!actAbierta) return {ok:false, msg:'⏳ Este laboratorio está cerrado. Espera a que el docente lo abra.'};
+  const ahora = new Date();
+  const apertura = actConfig._apertura || actConfig.apertura;
+  const cierre = actConfig._cierre || actConfig.cierre;
+  if(apertura){ const ini=new Date(apertura); if(ahora<ini) return {ok:false,msg:'🕐 Este laboratorio abre el '+ini.toLocaleString('es-PA')+'.'}; }
+  if(cierre){ const fin=new Date(cierre); if(ahora>fin) return {ok:false,msg:'🔒 Este laboratorio cerró el '+fin.toLocaleString('es-PA')+'.'}; }
+  return {ok:true};
+}
+
+// LOGIN
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin'), btn = $('btnLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Escribe tu código.'; return; }
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; btn.disabled=true;
+
+  if(typeof CODIGO_DEMO !== 'undefined' && cod === CODIGO_DEMO){
+    EST = { codigo:cod, ...ESTUDIANTE_DEMO, demo:true };
+    await verificarEstado();
+    btn.disabled=false;
+    await despuesLogin();
+    return;
+  }
+  if(cod === 'DEMO-2026'){
+    EST = { codigo:cod, nombre:'Profesor (Demo)', grado:'Admin', demo:true };
+    await verificarEstado();
+    btn.disabled=false;
+    await despuesLogin();
+    return;
+  }
+
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    await verificarEstado();
+    const dispo = actividadDisponible();
+    if(!dispo.ok){ m.className='msg warn'; m.textContent=dispo.msg; btn.disabled=false; return; }
+    btn.disabled=false; await despuesLogin();
+  }catch(e){
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false;
+  }
+};
+$('inCod').addEventListener('keydown', e=>{ if(e.key==='Enter') window.login(); });
+
+function asignarTema(){
+  let hash = 0;
+  for(let i=0;i<EST.codigo.length;i++) hash = EST.codigo.charCodeAt(i) + ((hash<<5)-hash);
+  const idx = Math.abs(hash) % TEMAS_ANTICOPIA.length;
+  TEMA_ASIGNADO = TEMAS_ANTICOPIA[idx];
+}
+
+function starterParaTema(t){
+  return `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <title>${t.titulo}</title>\n</head>\n<body>\n\n  <!-- Escribe tu código aquí -->\n\n</body>\n</html>`;
+}
+
+async function despuesLogin(){
+  asignarTema();
+  try {
+    const snap = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+    if(snap.exists()){
+      resultadoExistente = snap.data();
+      advertencias = resultadoExistente.advertencias||0;
+      bitacora = resultadoExistente.bitacora||[];
+      guardados = resultadoExistente.guardados||0;
+      if(resultadoExistente.entregado){
+        mostrarRetro(resultadoExistente);
+        return;
+      }
+      // entregado === false: o nunca inició, o el docente habilitó reenvío
+      if(resultadoExistente.horaInicio){
+        calcularTargetTime();
+        setupWorkspace(resultadoExistente.codigoActual || starterParaTema(TEMA_ASIGNADO), 'LAB', !!resultadoExistente.nota);
+        return;
+      }
+    }
+  } catch(e){}
+  pintarTeoria();
+  show('scrTeoria');
+}
+
+function calcularTargetTime(){
+  const cierrePanel = actConfig._cierre || actConfig.cierre;
+  if(cierrePanel && new Date(cierrePanel) > new Date()){
+    targetTime = new Date(cierrePanel).getTime();
+  } else {
+    targetTime = Date.now() + (2*60*60*1000); // resguardo de 2 horas
+  }
+}
+
+// ---------- RETROALIMENTACIÓN ----------
+function mostrarRetro(r){
+  show('scrRetro');
+  const calificado = typeof r.nota === 'number';
+  $('retroPendiente').classList.toggle('hide', calificado);
+  $('retroCalificado').classList.toggle('hide', !calificado);
+  if(!calificado) return;
+  const notaEl = $('retroNota');
+  notaEl.textContent = r.nota.toFixed(1);
+  notaEl.className = 'nota-grande ' + (r.nota >= 3.0 ? 'ap' : 're');
+  const rubrica = (typeof RUBRICA_LAB_DEFAULT !== 'undefined') ? RUBRICA_LAB_DEFAULT : [
+    {criterio:'Estructura HTML',pts:5},{criterio:'Uso correcto de etiquetas',pts:5},
+    {criterio:'Organización del código',pts:5},{criterio:'Cumplimiento de la actividad',pts:5}
+  ];
+  const detalle = r.rubrica_detalle || {};
+  $('retroRubricaBody').innerHTML = rubrica.map((c,i)=>`<tr><td>${c.criterio}</td><td>${detalle[i]??0} / ${c.pts}</td></tr>`).join('');
+  $('retroObs').textContent = r.observaciones && r.observaciones.trim() ? r.observaciones : 'Tu docente no dejó observaciones adicionales.';
+}
+
+// ---------- 1. TEORÍA ----------
+function pintarTeoria(){
+  $('teoriaMaterial').innerHTML = TEORIA_MATERIAL.map(m=>`
+    <div class="mat-item">
+      <code>${m.etiqueta.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code><br>
+      ${m.desc}
+    </div>`).join('');
+}
+window.irPasoAPaso = () => { pasoIdx = 0; show('scrPaso'); pintarPaso(); };
+
+// ---------- 2. EXPLICACIÓN PASO A PASO ----------
+function pintarPaso(){
+  const p = PASOS[pasoIdx];
+  $('pasoTitulo').textContent = p.titulo;
+  $('pasoExplicacion').textContent = p.explicacion;
+  $('pasoCodigo').value = p.codigo;
+  $('pasoPreview').srcdoc = p.codigo;
+  $('btnPasoAnt').disabled = pasoIdx === 0;
+  $('btnPasoSig').innerHTML = (pasoIdx === PASOS.length-1)
+    ? '<i class="ti ti-lock-open"></i> Ver código de ejemplo'
+    : 'Siguiente <i class="ti ti-chevron-right"></i>';
+  $('pasoDots').innerHTML = PASOS.map((_,i)=>`<span class="${i===pasoIdx?'on':''}"></span>`).join('');
+}
+window.irAPaso = (i) => { if(i<0||i>=PASOS.length) return; pasoIdx=i; pintarPaso(); };
+window.pasoSiguiente = () => {
+  if(pasoIdx === PASOS.length-1){ irCodigoEjemplo(); return; }
+  pasoIdx++; pintarPaso();
+};
+
+// ---------- 3. CÓDIGO DE EJEMPLO ----------
+function irCodigoEjemplo(){
+  $('ejemploCodigo').value = CODIGO_EJEMPLO;
+  $('ejemploPreview').srcdoc = CODIGO_EJEMPLO;
+  show('scrEjemplo');
+}
+window.ejecutarEjemplo = () => { $('ejemploPreview').srcdoc = $('ejemploCodigo').value; };
+
+// ---------- AVISO Y ARRANQUE DEL LABORATORIO CALIFICABLE ----------
+window.irAviso = () => show('scrAviso');
+
+window.iniciarLaboratorio = async () => {
+  calcularTargetTime();
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado, labNum:LAB_NUM,
+      tema: TEMA_ASIGNADO.tema,
+      horaInicio: new Date().toISOString(), codigoActual: starterParaTema(TEMA_ASIGNADO),
+      guardados:0, advertencias:0, bitacora:[], entregado:false
+    });
+  } catch(e){}
+  setupWorkspace(starterParaTema(TEMA_ASIGNADO), 'LAB', false);
+};
+
+function setupWorkspace(codigoInicial, modo, esReenvio){
+  $('dashName').textContent = EST.nombre;
+  $('dashSub').textContent = (EST.grado||'—') + ' · Multimedia';
+  $('dashLabTitle').textContent = 'Laboratorio 1: Estructura básica de HTML5';
+  $('wWarns').textContent = `${advertencias} / 3`;
+  $('msgReenvio').classList.toggle('hide', !esReenvio);
+
+  const tema = TEMA_ASIGNADO;
+  $('instCortasTitulo').innerHTML = `<i class="ti ti-list"></i> Tu tema asignado: ${tema.tema}`;
+  $('instCortasTxt').textContent = INSTRUCCIONES_BASE + '\n\nIdeas de contenido para tu tema:\n- ' + tema.ideas.join('\n- ');
+
+  $('codeIn').value = codigoInicial;
+  actualizarLineas();
+  currentMode = 'LAB';
+  htVistaPrevia = false;
+  $('btnEntregar').disabled = true;
+  $('preview').srcdoc = '';
+  $('wStatus').textContent = '🟡 En progreso';
+  $('wStatus').style.color = 'var(--oro)';
+  $('boxInstCortas').classList.remove('hide');
+  $('editorSeccion').classList.remove('hide');
+  $('msgSuccess').classList.add('hide');
+  $('infoGridLab').style.display = 'grid';
+  $('btnVistaPrevia').classList.remove('hide');
+
+  show('wrapWorkspace');
+  iniciarReloj();
+  document.addEventListener('visibilitychange', onVisChange);
+  setInterval(() => { if(dirty) window.autoguardar(); }, 20000);
+}
+
+// ---------- EDITOR ----------
+const codeIn = $('codeIn');
+const lineNumbers = $('lineNumbers');
+
+codeIn.addEventListener('input', () => {
+  dirty = true; actualizarLineas();
+});
+
+// RESTRICCIONES ANTICOPIA (desincentivar, no infalibles)
+['copy','cut','paste','contextmenu','dragstart','drop'].forEach(evt=>{
+  codeIn.addEventListener(evt, e => { if(currentMode==='LAB'){ e.preventDefault(); return false; } });
+});
+codeIn.addEventListener('keydown', e => {
+  if(currentMode!=='LAB') return;
+  const k = e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey) && (k==='c'||k==='v'||k==='x')) e.preventDefault();
+});
+
+function actualizarLineas() {
+  const lines = codeIn.value.split('\n').length;
+  lineNumbers.innerHTML = Array(lines).fill(0).map((_, i) => i + 1).join('<br>');
+
+  if(currentMode === 'PROY') {
+    window.actualizarPreviewProy();
+  }
+}
+
+// VISTA PREVIA EXPLÍCITA (obligatoria antes de poder enviar)
+window.verVistaPrevia = () => {
+  $('preview').srcdoc = codeIn.value;
+  htVistaPrevia = true;
+  $('btnEntregar').disabled = false;
+};
+window.actualizarPreviewProy = () => { $('preview').srcdoc = codeIn.value; };
+
+// GUARDADO
+window.autoguardar = async () => {
+  dirty = false; guardados++;
+  const t = new Date();
+  $('saveTxt').textContent = `Guardado: ${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')}`;
+  try{
+    if(currentMode === 'PROY'){
+      await setDoc(doc(db,'proyectoFinal',EST.codigo),{
+        nombre:EST.nombre, grado:EST.grado,
+        paginas: { index: codeIn.value },
+        guardados, ultimaActualizacion: new Date().toISOString()
+      }, {merge:true});
+    } else {
+      await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+        codigoActual: codeIn.value, guardados, advertencias, bitacora
+      }, {merge:true});
+    }
+  }catch(e){}
+};
+
+// ADVERTENCIAS POR CAMBIO DE PESTAÑA
+function onVisChange(){
+  if(document.hidden && currentMode === 'LAB' && targetTime > Date.now()){
+    advertencias++;
+    const pts = advertencias === 1 ? 2 : (advertencias === 2 ? 5 : 10);
+    bitacora.push({ tipo:'abandono_pestaña', advertencia:advertencias, fecha:new Date().toISOString() });
+
+    $('wWarns').textContent = `${advertencias} / 3`;
+    $('wWarns').style.color = 'var(--err)';
+
+    if(advertencias === 1){
+      $('toastTit').textContent = '⚠ ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has salido del laboratorio.<br><br>Penalización: <b>-2 puntos</b>.<br><br>Regresa para continuar con tu actividad.';
+    } else if(advertencias === 2){
+      $('toastTit').textContent = '⚠ SEGUNDA ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has vuelto a salir del laboratorio.<br><br>Penalización: <b>-5 puntos</b>.<br><br>Continúa trabajando dentro del Portal IFN.';
+    } else {
+      $('toastTit').textContent = '❌ TERCERA ADVERTENCIA';
+      $('toastTxt').innerHTML = 'Has abandonado nuevamente el laboratorio.<br><br>Penalización: <b>-10 puntos</b>.<br><br>Continúa trabajando hasta entregar el laboratorio.';
+    }
+    $('toastAdv').classList.add('on'); window.autoguardar();
+  }
+}
+window.cerrarToast = () => $('toastAdv').classList.remove('on');
+
+// CRONÓMETRO
+function iniciarReloj(){
+  clearInterval(timerInterval);
+  function tick(){
+    const rest = Math.max(0, Math.floor((targetTime - Date.now())/1000));
+    if(rest <= 0){
+      $('clockTxt').textContent = '00:00:00'; $('clockTxt').classList.add('rojo');
+      clearInterval(timerInterval); forzarCierre(); return;
+    }
+    const h = String(Math.floor(rest/3600)).padStart(2,'0');
+    const m = String(Math.floor((rest%3600)/60)).padStart(2,'0');
+    const s = String(rest%60).padStart(2,'0');
+    $('clockTxt').textContent = `${h}:${m}:${s}`;
+    if(rest < 300) $('clockTxt').classList.add('rojo');
+  }
+  tick(); timerInterval = setInterval(tick, 1000);
+}
+function forzarCierre(){
+  clearInterval(timerInterval);
+  codeIn.disabled = true;
+  $('btnEntregar').disabled = true;
+  $('wStatus').textContent = '🔴 Tiempo Agotado';
+  $('wStatus').style.color = 'var(--tx3)';
+  $('msgLab').textContent = 'El cronómetro ha llegado a cero. Código guardado.';
+}
+
+// ---------- ENVÍO CON MODAL DE CONFIRMACIÓN ----------
+window.pedirConfirmacionEnvio = () => {
+  if(!htVistaPrevia) return; // salvaguarda: no debería poder llegar aquí sin vista previa
+  $('toastConfirmEnvio').classList.add('on');
+};
+window.cerrarConfirmEnvio = () => $('toastConfirmEnvio').classList.remove('on');
+window.confirmarEnvio = async () => {
+  $('toastConfirmEnvio').classList.remove('on');
+  await finalizarLaboratorio();
+};
+
+async function finalizarLaboratorio(){
+  await window.autoguardar();
+  const codigoFinal = codeIn.value;
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      entregado:true, horaEntrega: new Date().toISOString(), codigoFinalLab: codigoFinal
+    }, {merge:true});
+    // PROYECTO FINAL ACUMULATIVO: se habilita/actualiza con cada laboratorio entregado
+    await setDoc(doc(db,'proyectoFinal',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado,
+      paginas: { index: codigoFinal },
+      labsCompletados: arrayUnion(LAB_NUM),
+      ultimaActualizacion: new Date().toISOString()
+    }, {merge:true});
+  }catch(e){}
+
+  clearInterval(timerInterval);
+  document.removeEventListener('visibilitychange', onVisChange);
+  codeIn.disabled = true;
+  $('wStatus').textContent = '🟢 Lab Entregado';
+  $('wStatus').style.color = 'var(--ok-tx)';
+  $('editorSeccion').classList.add('hide');
+  $('msgSuccess').classList.remove('hide');
+}
+
+// ---------- PROYECTO FINAL PERSISTENTE (libre, sin bloqueos ni cronómetro) ----------
+window.activarEntornoProyecto = async () => {
+  clearInterval(timerInterval);
+  document.removeEventListener('visibilitychange', onVisChange);
+  currentMode = 'PROY';
+  codeIn.disabled = false;
+
+  let codigoProyecto = starterParaTema({ titulo: 'Mi Proyecto Web' });
+  try{
+    const snap = await getDoc(doc(db,'proyectoFinal',EST.codigo));
+    if(snap.exists() && snap.data().paginas && snap.data().paginas.index){
+      codigoProyecto = snap.data().paginas.index;
+    }
+  }catch(e){}
+
+  $('scrRetro').classList.add('hide');
+  $('wrapMain').classList.add('hide');
+  $('msgSuccess').classList.add('hide');
+  $('msgReenvio').classList.add('hide');
+  $('boxInstCortas').classList.add('hide');
+  $('boxProgProy').style.opacity='1';
+  $('lblProgProy').textContent = 'Activo';
+  $('infoGridLab').style.display = 'none';
+  $('btnVistaPrevia').classList.add('hide');
+  $('modoTxt').textContent = '[Proyecto Final · Libre]';
+  $('modoTxt').style.color = 'var(--oro)';
+  $('dashLabTitle').textContent = 'Proyecto Final del curso';
+  $('wStatus').textContent = '🟠 Proyecto en construcción';
+  $('wStatus').style.color = 'var(--oro)';
+
+  $('btnEntregar').classList.add('hide');
+  $('btnProyExit').classList.remove('hide');
+
+  $('editorSeccion').classList.remove('hide');
+  $('codeIn').value = codigoProyecto;
+  actualizarLineas();
+  window.actualizarPreviewProy();
+
+  show('wrapWorkspace');
+  setInterval(() => { if(dirty) window.autoguardar(); }, 20000);
+};
+
+// CIERRE Y SALIDA
+window.terminarSesion = async () => {
+  await window.autoguardar();
+  window.location.href = "../materia.html?m=multimedia";
+};
+</script>
+</body>
+</html>
