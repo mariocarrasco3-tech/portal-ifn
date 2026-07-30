@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Word 365 · Laboratorio 1 — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #21262d;
+  --linea: #30363d; --linea2: rgba(88, 166, 255, 0.3);
+  --tx: #c9d1d9; --tx2: #8b949e; --tx3: #6e7681;
+  --neon: #58a6ff; --ok: #238636; --ok-tx: #3fb950;
+  --err: #da3633; --err-bg: rgba(218, 54, 51, 0.1);
+  --oro: #d29922;
+  --word: #2b579a; --wordlt: #eef3fb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; color:var(--tx); background:var(--bg); min-height:100vh; line-height:1.5; font-size:16px; }
+h1,h2,h3 { font-family:'Chakra Petch',sans-serif; }
+.wrap { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:24px 20px 60px; }
+.wrap.wide { max-width:1500px; }
+.hide { display:none!important; }
+
+/* TOP BAR */
+.top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap; background: var(--panel); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--linea); }
+.br { display:flex; align-items:center; gap:12px; }
+.br img { height:42px; width:42px; object-fit:contain; border-radius:9px; background:#fff; padding:3px; }
+.br b { font-family:'Chakra Petch'; font-weight:700; font-size:15px; color:#fff; display:block; line-height:1.1; }
+.br span { font-size:10px; color:var(--neon); letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+.back { font-size:13px; color:var(--tx2); text-decoration:none; padding:8px 14px; border:1px solid var(--linea); border-radius:7px; display:flex; align-items:center; gap:6px; cursor:pointer; background:var(--panel2); transition: 0.2s; }
+.back:hover { color:var(--neon); border-color:var(--neon); }
+.spin { display:inline-block; width:14px; height:14px; border:2px solid var(--linea2); border-top-color:var(--neon); border-radius:50%; animation:sp .7s linear infinite; vertical-align:middle; }
+@keyframes sp { to { transform:rotate(360deg); } }
+.msg { font-size:13px; margin-top:10px; min-height:16px; }
+.msg.err { color:var(--err); } .msg.ok { color:var(--ok-tx); } .msg.warn { color:var(--oro); }
+
+/* CARDS */
+.card { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:32px; margin-bottom:20px; position:relative; overflow:hidden; }
+.card::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--word); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:'Chakra Petch'; font-size:11px; font-weight:600; padding:6px 14px; border-radius:100px; letter-spacing:.5px; background:rgba(43,87,154,.15); color:#8fb4ea; border:1px solid rgba(43,87,154,.4); margin-bottom:16px; }
+h1.tt { font-size:29px; color:#fff; margin-bottom:8px; }
+.sub { font-size:16px; color:var(--tx2); margin-bottom:20px; }
+
+.fl { margin-bottom:20px; }
+.fl label { display:block; font-size:12px; color:var(--tx2); margin-bottom:8px; font-family:'Chakra Petch'; letter-spacing:.5px; text-transform:uppercase; }
+.fl input { width:100%; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:14px; color:#fff; font-size:15px; outline:none; transition:0.2s; }
+.fl input:focus { border-color:var(--neon); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+.btn { font-family:'Chakra Petch'; font-weight:600; font-size:14px; letter-spacing:.5px; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.2s; }
+.btn.primary { background:var(--ok); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.primary:hover { background: #2ea043; }
+.btn.primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn.ghost { background:var(--panel2); border:1px solid var(--linea); color:var(--tx); }
+.btn.ghost:hover { border-color:var(--tx); color:#fff; }
+.btn.danger { background:var(--err); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.danger:hover { background: #f85149; }
+.btn.action { background: var(--word); color: #fff; }
+.btn.action:hover { background: #3a6bb5; }
+.btn.action:disabled { opacity:.4; cursor:not-allowed; }
+.btn.block { width:100%; justify-content:center; }
+
+ul.lst { list-style:none; margin:10px 0 0; }
+ul.lst li { padding:8px 0 8px 24px; position:relative; font-size:16px; color:var(--tx); border-bottom:1px solid var(--linea); }
+ul.lst li:last-child { border-bottom:none; }
+ul.lst li::before { content:"▹"; position:absolute; left:0; color:var(--neon); font-weight:700; }
+.sec-h { font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#fff; font-family:'Chakra Petch'; font-weight:600; margin:32px 0 12px; display:flex; align-items:center; gap:8px; border-bottom: 1px solid var(--linea); padding-bottom: 8px; }
+.sec-h i { color:var(--neon); font-size:19px; }
+.sec-h:first-child { margin-top:0; }
+.instr { font-size:16px; color:var(--tx); white-space:pre-line; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:20px; margin-top:8px; line-height: 1.7; }
+
+/* AVISO OBLIGATORIO */
+.aviso { background:var(--err-bg); border:1px solid var(--err); border-radius:8px; padding:24px; margin-bottom:20px; }
+.aviso h3 { color:#ff7b72; font-size:20px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.aviso h4 { color:#ff7b72; font-size:16px; margin:12px 0 4px; }
+.aviso p { font-size:16px; color:var(--tx); margin-bottom:10px; }
+.aviso ul { margin:10px 0 10px 24px; font-size:16px; color:var(--tx); }
+.chk { display:flex; align-items:flex-start; gap:10px; margin-top:20px; font-size:16px; color:#fff; cursor:pointer; background: var(--panel2); padding: 16px; border-radius: 8px; border: 1px solid var(--linea); }
+.chk input { margin-top:2px; accent-color:var(--err); width:18px; height:18px; cursor:pointer;}
+
+/* DEMO PASOS */
+.demo-box { background:var(--panel2); border:1px solid var(--linea); border-radius:8px; padding:16px; margin-top:12px; }
+.demo-box .simword { background:#fff; color:#111; border-radius:6px; padding:14px 18px; font-family:'Calibri',Arial,sans-serif; }
+
+/* ============ SIMULADOR WORD 365 ============ */
+.wordwrap { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.4); color:#1b1b1b; }
+.wtitlebar { background:linear-gradient(180deg,#2b579a,#1e4277); color:#fff; padding:6px 14px; display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+.wtitlebar .doctitle { display:flex; align-items:center; gap:8px; font-family:'Calibri',Arial,sans-serif; }
+.wtitlebar input#docNombre { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:4px; padding:3px 8px; font-size:12px; width:200px; }
+.wtitlebar .wtb-right { display:flex; align-items:center; gap:14px; font-size:11px; }
+.wribbon-tabs { background:#f3f2f1; border-bottom:1px solid #d6d6d6; display:flex; padding:0 8px; font-family:'Calibri',Arial,sans-serif; font-size:13px; }
+.wtab { padding:8px 14px; cursor:pointer; color:#444; position:relative; user-select:none; }
+.wtab.on { color:#185abd; font-weight:700; border-bottom:2px solid #185abd; }
+.wtab.locked { color:#aaa; cursor:not-allowed; }
+.wtab.locked i { font-size:11px; margin-right:3px; }
+.wribbon { background:#f8f8f8; border-bottom:1px solid #d6d6d6; padding:8px 10px; display:flex; gap:14px; flex-wrap:wrap; font-family:'Calibri',Arial,sans-serif; }
+.wgroup { display:flex; flex-direction:column; align-items:center; border-right:1px solid #e0e0e0; padding:0 12px; min-width:70px; }
+.wgroup:last-child { border-right:none; }
+.wgrow { display:flex; gap:4px; align-items:center; margin-bottom:4px; }
+.wgroup label.wglabel { font-size:10.5px; color:#666; margin-top:2px; }
+.wbtn { background:transparent; border:1px solid transparent; border-radius:4px; width:28px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#333; font-size:14px; }
+.wbtn:hover { background:#e5f1fb; border-color:#c7e0f4; }
+.wbtn.active { background:#cce4f7; border-color:#185abd; color:#185abd; }
+.wsel { border:1px solid #c7c6c6; border-radius:4px; font-size:12px; padding:3px 4px; background:#fff; color:#222; }
+.wsel.font { width:110px; } .wsel.size { width:50px; }
+.wswatch-pop { position:relative; display:inline-block; }
+.wswatch-menu { position:absolute; top:30px; left:0; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 4px 14px rgba(0,0,0,.25); padding:8px; display:none; z-index:50; width:150px; }
+.wswatch-menu.on { display:block; }
+.wswatch { display:flex; align-items:center; gap:6px; padding:5px 6px; border-radius:4px; cursor:pointer; font-size:11.5px; color:#333; }
+.wswatch:hover { background:#f1f1f1; }
+.wswatch i.dot { width:14px; height:14px; border-radius:3px; display:inline-block; border:1px solid #999; }
+
+.wbody { display:flex; background:#e9e9ea; }
+.wpage-col { flex:1; min-width:0; padding:18px 24px; overflow-x:auto; }
+.wruler { height:20px; background:repeating-linear-gradient(90deg,#fff 0 1px,#f4f4f4 1px 20px); border:1px solid #d0d0d0; border-bottom:none; max-width:680px; margin:0 auto; display:none; }
+.wruler.on { display:block; }
+.wpage { background:#fff; max-width:680px; margin:0 auto; min-height:520px; box-shadow:0 1px 6px rgba(0,0,0,.25); padding:60px 64px; font-family:'Calibri',Arial,sans-serif; font-size:14px; color:#1b1b1b; transform-origin: top center; }
+.dline { outline:none; min-height:1.4em; padding:2px 3px; border-radius:2px; }
+.dline:focus { background:rgba(43,87,154,.06); }
+.dline[data-placeholder]:empty:before { content:attr(data-placeholder); color:#9aa0a6; font-style:italic; }
+#lineTitulo { font-size:26px; margin-bottom:6px; }
+#lineSubtitulo { font-size:17px; margin-bottom:14px; }
+#lineParrafo { margin-bottom:14px; }
+#areaLista .li-line { padding-left:22px; position:relative; }
+#lineFirma { margin-top:18px; }
+#linePractica { margin-top:22px; padding-top:14px; border-top:1px dashed #ccc; color:#555; font-size:13px; }
+
+.wsidebar { width:340px; flex-shrink:0; background:#fff; border-left:1px solid #d6d6d6; padding:14px; max-height:78vh; overflow-y:auto; }
+.wsb-hdr { font-family:'Chakra Petch'; font-weight:700; font-size:14px; color:#2b579a; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+.wsb-hdr small { color:#777; font-weight:500; text-transform:none; font-size:12px; letter-spacing:0; }
+.wprog { height:8px; background:#eee; border-radius:100px; overflow:hidden; margin-bottom:14px; }
+.wprog i { display:block; height:100%; background:linear-gradient(90deg,#2b579a,#4d8fe0); transition:.3s; }
+.mision { display:flex; gap:8px; padding:8px 6px; border-radius:6px; font-size:14px; color:#333; align-items:flex-start; cursor:pointer; }
+.mision.done { background:#eaf7ee; }
+.mision input[type=checkbox] { margin-top:2px; width:16px; height:16px; flex-shrink:0; accent-color:#238636; cursor:pointer; }
+.mision b { display:block; color:#111; }
+.mision .mi-help { color:#888; font-size:12.5px; margin-top:2px; }
+.mision-nota { font-size:11px; color:#999; font-style:italic; margin:0 0 10px; line-height:1.4; }
+
+.whistorial { display:none; }
+.hist-item { padding:5px 0; border-bottom:1px dashed #e2e2e2; }
+.hist-item b { color:#2b579a; }
+
+.wstatus { background:#2b579a; color:#fff; font-size:11.5px; padding:5px 14px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.wstatus .wz { display:flex; align-items:center; gap:6px; }
+.wstatus input[type=range] { width:100px; }
+
+.timerbox { font-family:'Chakra Petch'; font-weight:700; font-size:13px; padding:4px 10px; border-radius:6px; background:rgba(255,255,255,.15); }
+.timerbox.warn { background:#da3633; animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+.foot-actions { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f3f2f1; border-top:1px solid #d6d6d6; }
+
+/* TOASTS */
+.toastov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; align-items:center; justify-content:center; padding:20px; }
+.toastov.on { display:flex; }
+.toastbox { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:28px; max-width:420px; text-align:center; }
+.toastbox i.warnic { font-size:40px; color:var(--oro); margin-bottom:12px; display:block; }
+.toastbox i.confirmic { font-size:40px; color:var(--neon); margin-bottom:12px; display:block; }
+.toastbox h3 { color:#fff; margin-bottom:10px; }
+.toastbox p { font-size:14px; color:var(--tx); margin-bottom:16px; }
+.toastbox.confirm .btnrow { display:flex; gap:10px; }
+.toastbox.confirm .btnrow button { flex:1; }
+
+/* PANTALLA RESULTADO FINAL */
+.res-hero { text-align:center; padding:20px 0 10px; }
+.res-hero .num { font-family:'Chakra Petch'; font-size:52px; font-weight:700; color:#fff; }
+.res-hero .pct { font-size:16px; color:var(--neon); font-family:'Chakra Petch'; font-weight:600; }
+.res-list { margin-top:16px; }
+.res-item { display:flex; gap:10px; padding:8px 4px; border-bottom:1px solid var(--linea); font-size:15px; align-items:flex-start; }
+.res-item.ok i { color:var(--ok-tx); }
+.res-item.bad i { color:var(--err); }
+.game-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+.game-chip { flex:1; min-width:120px; background:var(--panel2); border:1px solid var(--linea); border-radius:10px; padding:14px; text-align:center; }
+.game-chip .gv { font-family:'Chakra Petch'; font-size:22px; font-weight:700; color:#fff; }
+.game-chip .gl { font-size:11px; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; margin-top:4px; }
+.badge-tier { display:inline-block; padding:8px 18px; border-radius:100px; font-family:'Chakra Petch'; font-weight:700; font-size:13px; margin-top:12px; }
+.badge-tier.bronce{ background:rgba(205,127,50,.15); color:#cd7f32; border:1px solid rgba(205,127,50,.4); }
+.badge-tier.plata{ background:rgba(192,192,192,.15); color:#c0c0c0; border:1px solid rgba(192,192,192,.4); }
+.badge-tier.oro{ background:rgba(210,153,34,.15); color:var(--oro); border:1px solid rgba(210,153,34,.4); }
+.badge-tier.diamante{ background:rgba(88,166,255,.15); color:var(--neon); border:1px solid rgba(88,166,255,.4); }
+
+footer { text-align:center; padding:30px 0; font-size:12px; color:var(--tx3); }
+footer i { color:var(--neon); margin-right:6px; }
+
+@media(max-width: 1100px){ .wsidebar,.whistorial{ display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapMain">
+  <div class="top">
+    <div class="br">
+      <img src="https://raw.githubusercontent.com/mcarrasco-ifn/portal-ifn/main/logo.png" onerror="this.style.display='none'">
+      <div><b>Instituto Fermín Naudeau</b><span>Simulador Word 365 · Aula Virtual</span></div>
+    </div>
+    <a class="back" href="../index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="scrLogin" class="card">
+    <span class="badge"><i class="ti ti-file-word"></i> Word 365 · Laboratorio 1</span>
+    <h1 class="tt">Primeros pasos: crear y dar formato a un documento</h1>
+    <p class="sub">Ingresa tu código de estudiante para comenzar.</p>
+    <div class="fl">
+      <label>Código de estudiante</label>
+      <input type="text" id="inCod" placeholder="Ej. NPU935986" autocomplete="off">
+    </div>
+    <button class="btn action block" id="btnLogin" onclick="login()"><i class="ti ti-login"></i> Ingresar</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <!-- ACTIVIDAD CERRADA / SIN ASIGNAR -->
+  <div id="scrSoon" class="card hide">
+    <h1 class="tt">Laboratorio no disponible</h1>
+    <p class="sub" id="soonTxt">Esta actividad no está abierta en este momento.</p>
+  </div>
+
+  <!-- INTRODUCCIÓN -->
+  <div id="scrIntro" class="card hide">
+    <span class="badge"><i class="ti ti-info-circle"></i> Introducción</span>
+    <h1 class="tt">Bienvenido al simulador de Word 365</h1>
+    <p class="sub">Vas a practicar exactamente las mismas acciones que usarás en Microsoft Word real: escribir, seleccionar, dar formato, alinear, organizar listas y guardar tu trabajo.</p>
+    <div class="sec-h"><i class="ti ti-target-arrow"></i> Objetivos del laboratorio</div>
+    <ul class="lst">
+      <li>Escribir y dar formato a un título y un subtítulo (negrita, cursiva, tamaño, color, centrado).</li>
+      <li>Redactar un párrafo y aplicarle alineación, fuente y tamaño correctos.</li>
+      <li>Subrayar y resaltar palabras clave dentro de un párrafo.</li>
+      <li>Crear una lista con viñetas y aplicar sangría.</li>
+      <li>Usar herramientas de Word 365: deshacer/rehacer, atajos de teclado, zoom, regla y guardado.</li>
+    </ul>
+    <div class="sec-h"><i class="ti ti-clock"></i> Duración y reglas</div>
+    <div class="instr">Este laboratorio dura 35 minutos, con un cronómetro visible en todo momento.
+La mayor parte del tiempo la pasarás trabajando directamente dentro del simulador (no leyendo teoría).
+Solo la pestaña "Inicio" está disponible en este laboratorio. Las demás pestañas de la cinta se desbloquean en laboratorios siguientes.
+Cada acción que realices se valida automáticamente y queda registrada en tu historial.</div>
+    <button class="btn action block" style="margin-top:20px" onclick="irADemo()"><i class="ti ti-arrow-right"></i> Continuar</button>
+  </div>
+
+  <!-- DEMOSTRACIÓN INTERACTIVA -->
+  <div id="scrDemo" class="card hide">
+    <span class="badge"><i class="ti ti-player-play"></i> Demostración interactiva</span>
+    <h1 class="tt" id="demoTitulo">Demostración</h1>
+    <p class="sub" id="demoExp"></p>
+    <div class="demo-box"><div class="simword" id="demoSim">—</div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:20px">
+      <button class="btn ghost" id="demoPrev" onclick="demoNav(-1)"><i class="ti ti-chevron-left"></i> Anterior</button>
+      <button class="btn action" id="demoNext" onclick="demoNav(1)">Siguiente <i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- AVISO OBLIGATORIO -->
+  <div id="scrAviso" class="card hide">
+    <div class="aviso">
+      <h3><i class="ti ti-alert-triangle"></i> Antes de comenzar — Reglas del laboratorio</h3>
+      <p>Este laboratorio se evalúa automáticamente. Lee con atención antes de continuar:</p>
+      <h4>Un solo intento</h4>
+      <ul><li>Una vez enviado el laboratorio no podrás modificarlo ni volver a enviarlo por tu cuenta.</li></ul>
+      <h4>Tiempo límite</h4>
+      <ul><li>Tienes 35 minutos. Si el cronómetro llega a cero, tu documento se entregará automáticamente con lo que tengas guardado en ese momento.</li></ul>
+      <h4>No cambiar de pestaña</h4>
+      <ul><li>Cambiar de pestaña o minimizar la ventana genera una advertencia registrada. Recibirás avisos en la advertencia 1, 3 y 5. Si llegas a <b>10 advertencias</b>, tu laboratorio se entregará automáticamente con lo que tengas escrito en ese momento.</li></ul>
+      <h4>No ayudar a tus compañeros</h4>
+      <ul><li>Este laboratorio es individual. Ayudar a un compañero o recibir ayuda durante el laboratorio resta puntos de tu calificación final.</li></ul>
+      <h4>Evaluación automática</h4>
+      <ul><li>El sistema valida tus acciones en tiempo real. Al terminar o al agotarse el tiempo, tu calificación se genera automáticamente al instante.</li></ul>
+      <label class="chk"><input type="checkbox" id="chkAviso" onchange="document.getElementById('btnEmpezar').disabled=!this.checked"> Entiendo las reglas y estoy listo para comenzar el laboratorio.</label>
+    </div>
+    <button class="btn primary block" id="btnEmpezar" disabled onclick="iniciarLaboratorio()"><i class="ti ti-player-play"></i> Comenzar laboratorio</button>
+  </div>
+
+  <!-- RETROALIMENTACIÓN (si ya fue calificado) -->
+  <div id="scrRetro" class="card hide">
+    <span class="badge"><i class="ti ti-report"></i> Resultado</span>
+    <h1 class="tt">Tu laboratorio ya fue calificado</h1>
+    <div id="retroBody"></div>
+  </div>
+
+  <!-- RESULTADO FINAL AUTOMÁTICO (justo después de entregar) -->
+  <div id="scrResultado" class="card hide">
+    <span class="badge"><i class="ti ti-checklist"></i> Evaluación automática</span>
+    <div class="res-hero">
+      <div class="num" id="resNum">0/29</div>
+      <div class="pct" id="resPct">0%</div>
+      <div id="resBadge"></div>
+    </div>
+    <div class="game-row">
+      <div class="game-chip"><div class="gv" id="gXp">0</div><div class="gl">XP ganado</div></div>
+      <div class="game-chip"><div class="gv" id="gCoins">0</div><div class="gl">Monedas</div></div>
+      <div class="game-chip"><div class="gv" id="gNota">1.0</div><div class="gl">Nota MEDUCA</div></div>
+    </div>
+    <div class="sec-h"><i class="ti ti-list-check"></i> Detalle de acciones verificadas</div>
+    <div class="res-list" id="resLista"></div>
+    <div class="sec-h"><i class="ti ti-bulb"></i> Retroalimentación</div>
+    <div class="instr" id="resFeedback">—</div>
+  </div>
+</div>
+
+<!-- ================= SIMULADOR (pantalla ancha) ================= -->
+<div class="wrap wide hide" id="wrapSim">
+  <div class="top">
+    <div class="br">
+      <img src="https://raw.githubusercontent.com/mcarrasco-ifn/portal-ifn/main/logo.png" onerror="this.style.display='none'">
+      <div><b>Instituto Fermín Naudeau</b><span>Word 365 · Laboratorio 1</span></div>
+    </div>
+    <div id="timerWrap" class="timerbox">⏱ 35:00</div>
+  </div>
+
+  <div class="wordwrap">
+    <div class="wtitlebar">
+      <div class="doctitle"><i class="ti ti-file-word"></i> <input type="text" id="docNombre" value="Documento1"></div>
+      <div class="wtb-right">
+        <span id="advCount">0 advertencias</span>
+        <span id="guardadoTxt">Guardado</span>
+      </div>
+    </div>
+    <div class="wribbon-tabs">
+      <div class="wtab on" onclick="clickTabInicio()">Inicio</div>
+      <div class="wtab locked" title="Se desbloquea en el Laboratorio 3"><i class="ti ti-lock"></i>Insertar</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Diseño</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Referencias</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Revisar</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Vista</div>
+    </div>
+    <div class="wribbon">
+      <div class="wgroup">
+        <div class="wgrow">
+          <select class="wsel font" id="selFuente" onchange="aplicarFuente(this.value)">
+            <option value="Calibri">Calibri</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+          </select>
+          <select class="wsel size" id="selTamano" onchange="aplicarTamano(this.value)">
+            <option>10</option><option>11</option><option selected>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
+          </select>
+        </div>
+        <div class="wgrow">
+          <button class="wbtn" onclick="cmd('bold')" title="Negrita (Ctrl+B)"><b>N</b></button>
+          <button class="wbtn" onclick="cmd('italic')" title="Cursiva (Ctrl+I)"><i>K</i></button>
+          <button class="wbtn" onclick="cmd('underline')" title="Subrayado (Ctrl+U)"><u>S</u></button>
+          <button class="wbtn" onclick="cmd('strikeThrough')" title="Tachado"><s>T</s></button>
+          <div class="wswatch-pop">
+            <button class="wbtn" onclick="toggleMenu('menuColor')" title="Color de fuente">A<span style="color:#c00">▾</span></button>
+            <div class="wswatch-menu" id="menuColor"></div>
+          </div>
+          <div class="wswatch-pop">
+            <button class="wbtn" onclick="toggleMenu('menuResaltado')" title="Color de resaltado"><i class="ti ti-highlight"></i></button>
+            <div class="wswatch-menu" id="menuResaltado"></div>
+          </div>
+          <button class="wbtn" onclick="cambiarMayusculas()" title="Cambiar mayúsculas y minúsculas">Aa</button>
+          <button class="wbtn" onclick="quitarFormato()" title="Borrar todo el formato"><i class="ti ti-eraser"></i></button>
+        </div>
+        <label class="wglabel">Fuente</label>
+      </div>
+      <div class="wgroup">
+        <div class="wgrow">
+          <button class="wbtn" onclick="cmd('justifyLeft')" title="Alinear a la izquierda"><i class="ti ti-align-left"></i></button>
+          <button class="wbtn" onclick="cmd('justifyCenter')" title="Centrar"><i class="ti ti-align-center"></i></button>
+          <button class="wbtn" onclick="cmd('justifyRight')" title="Alinear a la derecha"><i class="ti ti-align-right"></i></button>
+          <button class="wbtn" onclick="cmd('justifyFull')" title="Justificar"><i class="ti ti-align-justified"></i></button>
+        </div>
+        <div class="wgrow">
+          <button class="wbtn" onclick="cmd('insertUnorderedList')" title="Viñetas"><i class="ti ti-list"></i></button>
+          <button class="wbtn" onclick="cmd('indent')" title="Aumentar sangría"><i class="ti ti-indent-increase"></i></button>
+          <button class="wbtn" onclick="cmd('outdent')" title="Disminuir sangría"><i class="ti ti-indent-decrease"></i></button>
+        </div>
+        <label class="wglabel">Párrafo</label>
+      </div>
+      <div class="wgroup">
+        <div class="wgrow">
+          <button class="wbtn" onclick="hacerUndo()" title="Deshacer (Ctrl+Z)"><i class="ti ti-arrow-back-up"></i></button>
+          <button class="wbtn" onclick="hacerRedo()" title="Rehacer (Ctrl+Y)"><i class="ti ti-arrow-forward-up"></i></button>
+        </div>
+        <label class="wglabel">Deshacer</label>
+      </div>
+    </div>
+
+    <div class="wbody">
+      <div class="wpage-col">
+        <div class="wruler" id="ruler"></div>
+        <div class="wpage" id="wpage">
+          <div class="dline" id="lineTitulo" contenteditable="true" data-placeholder="Escribe aquí el título…"></div>
+          <div class="dline" id="lineSubtitulo" contenteditable="true" data-placeholder="Escribe aquí el subtítulo…"></div>
+          <div class="dline" id="lineParrafo" contenteditable="true" data-placeholder="Escribe aquí tu párrafo…"></div>
+          <div id="areaLista">
+            <div class="dline li-line" id="li1" contenteditable="true" data-placeholder="Elemento 1 de la lista…"></div>
+            <div class="dline li-line" id="li2" contenteditable="true" data-placeholder="Elemento 2 de la lista…"></div>
+            <div class="dline li-line" id="li3" contenteditable="true" data-placeholder="Elemento 3 de la lista…"></div>
+          </div>
+          <div class="dline" id="lineFirma" contenteditable="true" data-placeholder="Escribe aquí la línea de firma…"></div>
+          <div class="dline" id="linePractica" contenteditable="true">Zona de práctica: tacha esta palabra, pon esta OTRA en mayúsculas, y a esta última bórrale el formato después de aplicarle uno.</div>
+        </div>
+      </div>
+      <div class="wsidebar">
+        <div class="wsb-hdr">Indicaciones <small id="misProgTxt">0/29</small></div>
+        <div class="wprog"><i id="misProgBar" style="width:0%"></i></div>
+        <p class="mision-nota">Marca la casilla cuando creas que ya cumpliste cada indicación. Es solo para que organices tu trabajo: <b>no afecta tu nota</b>. La nota la calcula el sistema revisando directamente tu documento de Word.</p>
+        <div id="misLista"></div>
+      </div>
+      <div class="whistorial" id="historialBox"></div>
+    </div>
+
+    <div class="wstatus">
+      <span id="wordCountTxt">0 palabras</span>
+      <div class="wz">
+        <i class="ti ti-ruler-2" style="cursor:pointer" onclick="toggleRuler()" title="Mostrar/ocultar regla"></i>
+        <input type="range" min="60" max="200" step="10" value="100" id="zoomRange" oninput="aplicarZoom(this.value)">
+        <span id="zoomTxt">100%</span>
+      </div>
+    </div>
+    <div class="foot-actions">
+      <span class="msg" id="msgLab" style="margin:0;color:#333"></span>
+      <div style="display:flex;gap:10px">
+        <button class="btn ghost" onclick="guardarManual()"><i class="ti ti-device-floppy"></i> Guardar</button>
+        <button class="btn primary" onclick="pedirConfirmacionEnvio()"><i class="ti ti-send"></i> Entregar laboratorio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toastov" id="toastAdv">
+  <div class="toastbox">
+    <i class="ti ti-alert-triangle warnic"></i>
+    <h3 id="toastTit">Advertencia</h3>
+    <p id="toastTxt">—</p>
+    <button class="btn danger block" onclick="cerrarToast()">Entendido</button>
+  </div>
+</div>
+
+<div class="toastov" id="toastConfirmEnvio">
+  <div class="toastbox confirm">
+    <i class="ti ti-send confirmic"></i>
+    <h3>Confirmar envío</h3>
+    <p>¿Está seguro de entregar el laboratorio? Una vez enviado no podrás modificarlo ni volver a enviarlo por tu cuenta.</p>
+    <div class="btnrow">
+      <button class="btn ghost" onclick="cerrarConfirmEnvio()">Cancelar</button>
+      <button class="btn primary" onclick="confirmarEnvio()">Entregar</button>
+    </div>
+  </div>
+</div>
+
+<footer><div><i class="ti ti-file-word"></i> Aula Virtual IFN — <b>Prof. Mario Carrasco</b></div></footer>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+
+const ACT_ID = 'word-lab-01';
+const DURACION_MS = 35*60*1000; // 35 minutos
+
+// ============================================================
+// TEMAS ANTICOPIA — cada estudiante recibe un set de contenidos distinto
+// asignado de forma determinística (mismo estudiante = mismo tema siempre),
+// pero distinto entre estudiantes, para evitar copiar texto literal.
+// ============================================================
+const TEMAS = [
+  { tema:'Turismo en Panamá', titulo:'Descubre Panamá', subtitulo:'Un país, mil paisajes', parrafo:'Panamá ofrece playas, montañas y selva en un mismo viaje. El Casco Viejo conserva su historia colonial mientras Bocas del Toro sorprende con sus arrecifes de coral.', clave:'Casco Viejo', resaltar:'arrecifes', lista:['Playas de Bocas del Toro','Tierras altas de Boquete','Historia del Casco Viejo'], firma:'— Redactado por el equipo de turismo' },
+  { tema:'Videojuegos', titulo:'Mundo Gamer', subtitulo:'Estrategia, acción y diversión', parrafo:'Los videojuegos combinan tecnología y creatividad. Géneros como la estrategia exigen planificación, mientras que la aventura invita a explorar mundos completos.', clave:'estrategia', resaltar:'aventura', lista:['Juegos de estrategia','Juegos de aventura','Juegos deportivos'], firma:'— Reseña escrita por un gamer' },
+  { tema:'Animales', titulo:'Reino Animal', subtitulo:'Criaturas sorprendentes', parrafo:'El mundo animal está lleno de curiosidades. El pulpo puede cambiar de color en segundos, y las hormigas trabajan en equipo para construir colonias enormes.', clave:'pulpo', resaltar:'colonias', lista:['El pulpo y su camuflaje','Las hormigas y su organización','Aves migratorias'], firma:'— Informe de ciencias naturales' },
+  { tema:'Tecnología', titulo:'Innovación Tech', subtitulo:'El futuro ya llegó', parrafo:'La tecnología cambia cada año. Los teléfonos inteligentes concentran funciones que antes requerían varios aparatos, y la inteligencia artificial ya forma parte de la vida diaria.', clave:'inteligencia artificial', resaltar:'teléfonos', lista:['Teléfonos inteligentes','Inteligencia artificial','Internet de las cosas'], firma:'— Boletín de tecnología escolar' },
+  { tema:'Música', titulo:'Notas y Ritmos', subtitulo:'El poder de la música', parrafo:'La música acompaña momentos importantes de la vida. Un buen ritmo puede motivar a un equipo, y una melodía tranquila ayuda a concentrarse mejor.', clave:'ritmo', resaltar:'melodía', lista:['Música para concentrarse','Música para hacer ejercicio','Instrumentos favoritos'], firma:'— Club de música del colegio' },
+  { tema:'Deportes', titulo:'Pasión Deportiva', subtitulo:'Disciplina y trabajo en equipo', parrafo:'El deporte enseña disciplina desde temprana edad. Un buen entrenamiento combina resistencia física y estrategia de juego para lograr resultados.', clave:'disciplina', resaltar:'resistencia', lista:['Fútbol','Baloncesto','Atletismo'], firma:'— Comité deportivo estudiantil' },
+  { tema:'Robótica', titulo:'Robots del Futuro', subtitulo:'Máquinas que aprenden', parrafo:'La robótica combina mecánica y programación. Hoy existen robots capaces de aprender de sus errores gracias a sensores y algoritmos cada vez más precisos.', clave:'sensores', resaltar:'algoritmos', lista:['Robots industriales','Robots educativos','Sensores y actuadores'], firma:'— Club de robótica IFN' },
+  { tema:'Ciberseguridad', titulo:'Mundo Seguro', subtitulo:'Protege tu información', parrafo:'Cuidar tus contraseñas es tan importante como cuidar la llave de tu casa. Una contraseña fuerte combina letras, números y símbolos difíciles de adivinar.', clave:'contraseña', resaltar:'símbolos', lista:['Contraseñas seguras','Cuidado con enlaces desconocidos','Privacidad en redes sociales'], firma:'— Campaña de ciberseguridad escolar' },
+  { tema:'Inteligencia Artificial', titulo:'Era de la IA', subtitulo:'Aprendiendo junto a las máquinas', parrafo:'La inteligencia artificial ayuda a resolver problemas complejos. Se usa para traducir idiomas, recomendar contenido y hasta diagnosticar enfermedades a tiempo.', clave:'traducir', resaltar:'diagnosticar', lista:['IA en la medicina','IA en los idiomas','IA en el entretenimiento'], firma:'— Ensayo sobre inteligencia artificial' },
+  { tema:'Astronomía', titulo:'Universo Infinito', subtitulo:'Explorando el espacio', parrafo:'El universo guarda misterios que los científicos apenas empiezan a entender. Cada estrella que vemos en el cielo es en realidad un sol lejano.', clave:'estrella', resaltar:'científicos', lista:['El sistema solar','Las estrellas y galaxias','Misiones espaciales'], firma:'— Club de astronomía IFN' }
+];
+
+function hashCodigo(cod){
+  let h=0; for(let i=0;i<cod.length;i++){ h=(h*31+cod.charCodeAt(i))>>>0; }
+  return h;
+}
+
+let EST = null, T = null;
+let advertencias = 0, bitacora = [];
+let timerInterval = null, targetTime = null, horaInicioMs = null;
+let actAbierta = true, actConfig = {};
+let dirty = false, _autoEnviando = false;
+let demoIdx = 0;
+let ultimoResultado = null;
+
+function show(id){
+  ['scrLogin','scrSoon','scrIntro','scrDemo','scrAviso','scrRetro','scrResultado'].forEach(s=>$(s).classList.add('hide'));
+  $('wrapMain').classList.toggle('hide', id==='wrapSim');
+  $('wrapSim').classList.toggle('hide', id!=='wrapSim');
+  if(id!=='wrapSim') $(id).classList.remove('hide');
+}
+
+function log(accion){
+  const hora = new Date().toLocaleTimeString('es-PA',{hour:'2-digit',minute:'2-digit',timeZone:'America/Panama'});
+  bitacora.push({hora, accion});
+  const box = $('historialBox');
+  if(box){
+    const d = document.createElement('div');
+    d.className='hist-item';
+    d.innerHTML = `<b>${hora}</b><br>${accion}`;
+    box.prepend(d);
+  }
+  dirty = true;
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Ingresa tu código.'; return; }
+  const btn = $('btnLogin'); btn.disabled = true;
+  m.className='msg warn'; m.innerHTML = '<span class="spin"></span> Verificando…';
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    T = TEMAS[ hashCodigo(cod) % TEMAS.length ];
+    await verificarEstado();
+    let yaTieneRegistro = false;
+    try{
+      const snapRes = await getDoc(doc(db,'actividades',ACT_ID,'resultados',cod));
+      yaTieneRegistro = snapRes.exists();
+      if(yaTieneRegistro) ultimoResultado = snapRes.data();
+    }catch(e){}
+    if(!yaTieneRegistro){
+      const dispo = actividadDisponible();
+      if(!dispo.ok){ m.className='msg warn'; m.textContent=dispo.msg; btn.disabled=false; return; }
+    }
+    btn.disabled = false;
+    await despuesLogin();
+  }catch(e){
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false;
+  }
+};
+
+async function verificarEstado(){
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+  }catch(e){ actConfig = {}; }
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+}
+function actividadDisponible(){
+  if(!actAbierta) return {ok:false, msg:'Esta actividad está cerrada por tu docente en este momento.'};
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const apertura = gc.apertura || actConfig.apertura;
+  const cierre = gc.cierre || actConfig.cierre;
+  const ahora = new Date();
+  if(apertura && new Date(apertura) > ahora) return {ok:false, msg:'Este laboratorio abre el '+new Date(apertura).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  if(cierre && new Date(cierre) < ahora) return {ok:false, msg:'Este laboratorio cerró el '+new Date(cierre).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  return {ok:true};
+}
+
+async function despuesLogin(){
+  let resultadoExistente = null;
+  try{
+    const snap = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+    if(snap.exists()) resultadoExistente = snap.data();
+  }catch(e){}
+  if(resultadoExistente && resultadoExistente.entregado){
+    mostrarRetro(resultadoExistente);
+    return;
+  }
+  if(resultadoExistente && resultadoExistente.horaInicio){
+    horaInicioMs = resultadoExistente.horaInicio;
+    bitacora = resultadoExistente.bitacora || [];
+    restaurarDocumento(resultadoExistente.docHTML || {});
+    advertencias = resultadoExistente.advertencias || 0;
+    actualizarAdvUI();
+    calcularTargetTime();
+    show('wrapSim');
+    iniciarReloj();
+    reconstruirHistorialUI();
+    inicializarMisiones();
+    return;
+  }
+  show('scrIntro');
+}
+
+function mostrarRetro(r){
+  const rub = (actConfig.rubrica)||[];
+  $('retroBody').innerHTML = `
+    <p class="sub">Nota (escala MEDUCA 1.0–5.0): <b style="color:#fff;font-size:20px">${r.nota??'—'}</b></p>
+    <div class="instr">${(r.observaciones||'Sin observaciones del docente.').replace(/</g,'&lt;')}</div>
+  `;
+  show('scrRetro');
+}
+
+window.irADemo = () => { demoIdx = 0; renderDemo(); show('scrDemo'); };
+
+const PASOS_DEMO = [
+  { titulo:'Escribir texto', exp:'Haz clic dentro del documento y escribe normalmente, igual que en Word real.', sim:'Mi primer documento' },
+  { titulo:'Seleccionar texto', exp:'Haz clic y arrastra sobre una palabra o frase para seleccionarla antes de darle formato.', sim:'<span style="background:#cfe2ff">Mi primer documento</span>' },
+  { titulo:'Aplicar negrita', exp:'Con el texto seleccionado, haz clic en el botón "N" (Negrita) o presiona Ctrl+B.', sim:'<b>Mi primer documento</b>' },
+  { titulo:'Cambiar tamaño y color', exp:'Usa los menús de tamaño y color en la cinta "Inicio" para destacar tu título.', sim:'<b style="font-size:22px;color:#1F4E79">Mi primer documento</b>' },
+  { titulo:'Centrar el texto', exp:'Haz clic en el botón de alinear al centro para que el título quede centrado en la página.', sim:'<div style="text-align:center"><b style="font-size:22px;color:#1F4E79">Mi primer documento</b></div>' }
+];
+window.demoNav = (dir) => {
+  demoIdx = Math.max(0, Math.min(PASOS_DEMO.length-1, demoIdx+dir));
+  renderDemo();
+};
+function renderDemo(){
+  const p = PASOS_DEMO[demoIdx];
+  $('demoTitulo').textContent = p.titulo;
+  $('demoExp').textContent = p.exp;
+  $('demoSim').innerHTML = p.sim;
+  $('demoPrev').disabled = demoIdx===0;
+  if(demoIdx === PASOS_DEMO.length-1){
+    $('demoNext').innerHTML = 'Continuar al laboratorio <i class="ti ti-arrow-right"></i>';
+    $('demoNext').onclick = () => show('scrAviso');
+  } else {
+    $('demoNext').innerHTML = 'Siguiente <i class="ti ti-chevron-right"></i>';
+    $('demoNext').onclick = () => window.demoNav(1);
+  }
+}
+
+// ============================================================
+// INICIAR LABORATORIO
+// ============================================================
+window.iniciarLaboratorio = async () => {
+  horaInicioMs = Date.now();
+  bitacora = [];
+  advertencias = 0;
+  aplicarTemaAsignado();
+  calcularTargetTime();
+  show('wrapSim');
+  iniciarReloj();
+  inicializarMisiones();
+  log('Inicio del laboratorio — tema asignado: '+T.tema);
+  await guardarProgreso();
+};
+
+function aplicarTemaAsignado(){
+  $('lineTitulo').setAttribute('data-placeholder', 'Escribe aquí: '+T.titulo);
+  $('lineSubtitulo').setAttribute('data-placeholder', 'Escribe aquí: '+T.subtitulo);
+  $('lineParrafo').setAttribute('data-placeholder', 'Escribe tu párrafo sobre "'+T.tema+'"');
+  $('li1').setAttribute('data-placeholder', T.lista[0]);
+  $('li2').setAttribute('data-placeholder', T.lista[1]);
+  $('li3').setAttribute('data-placeholder', T.lista[2]);
+  $('lineFirma').setAttribute('data-placeholder', 'Escribe: '+T.firma);
+}
+
+function restaurarDocumento(docHTML){
+  aplicarTemaAsignado();
+  ['lineTitulo','lineSubtitulo','lineParrafo','li1','li2','li3','lineFirma','linePractica'].forEach(id=>{
+    if(docHTML[id] !== undefined) $(id).innerHTML = docHTML[id];
+  });
+  if(docHTML.docNombre) $('docNombre').value = docHTML.docNombre;
+}
+
+function snapshotDocumento(){
+  const o = {};
+  ['lineTitulo','lineSubtitulo','lineParrafo','li1','li2','li3','lineFirma','linePractica'].forEach(id=>{ o[id]=$(id).innerHTML; });
+  o.docNombre = $('docNombre').value;
+  return o;
+}
+
+// ============================================================
+// CRONÓMETRO (70 min, o hora de cierre configurada por el docente)
+// ============================================================
+function calcularTargetTime(){
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const cierrePanel = gc.cierre || actConfig.cierre;
+  if(cierrePanel){
+    targetTime = new Date(cierrePanel).getTime();
+  } else {
+    targetTime = horaInicioMs + DURACION_MS;
+  }
+}
+function iniciarReloj(){
+  clearInterval(timerInterval);
+  tick(); timerInterval = setInterval(tick, 1000);
+}
+function tick(){
+  const rest = Math.max(0, Math.floor((targetTime-Date.now())/1000));
+  const mm = String(Math.floor(rest/60)).padStart(2,'0');
+  const ss = String(rest%60).padStart(2,'0');
+  $('timerWrap').textContent = '⏱ '+mm+':'+ss;
+  $('timerWrap').classList.toggle('warn', rest<=300);
+  if(rest<=0) forzarCierre();
+}
+async function forzarCierre(){
+  if(_autoEnviando) return;
+  _autoEnviando = true;
+  clearInterval(timerInterval);
+  $('msgLab').textContent = 'Tiempo agotado. Enviando automáticamente tu documento…';
+  await entregarLaboratorio(true);
+}
+
+// ============================================================
+// ANTI-COPIA / ANTI-SALIDA
+// ============================================================
+const LIMITE_ADVERTENCIAS = 10;
+const MENSAJES_ADVERTENCIA = {
+  1: 'Cambiaste de pestaña o minimizaste la ventana. Esta acción quedó registrada. Evita volver a salir de esta pantalla.',
+  3: 'Ya llevas 3 advertencias. Si continúas saliendo de la pantalla, tu laboratorio podría entregarse automáticamente antes de que termines.',
+  5: 'Ya llevas 5 advertencias, la mitad del límite permitido (10). Al llegar a 10, tu documento se enviará automáticamente tal como esté en ese momento.'
+};
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden && !$('wrapSim').classList.contains('hide') && !_autoEnviando){
+    advertencias++;
+    log('⚠ Cambió de pestaña / minimizó la ventana. ('+advertencias+'/'+LIMITE_ADVERTENCIAS+')');
+    actualizarAdvUI();
+    guardarProgreso();
+    if(advertencias >= LIMITE_ADVERTENCIAS){
+      mostrarToast('Límite de advertencias alcanzado', 'Llegaste a '+LIMITE_ADVERTENCIAS+' advertencias por salir de esta pantalla. Tu laboratorio se entregará automáticamente ahora mismo con lo que tengas escrito.');
+      _autoEnviando = true;
+      setTimeout(()=>{ entregarLaboratorio(true); }, 1800);
+    } else {
+      const txt = MENSAJES_ADVERTENCIA[advertencias] || ('Cambiaste de pestaña o minimizaste la ventana. Esta acción quedó registrada ('+advertencias+' de '+LIMITE_ADVERTENCIAS+').');
+      mostrarToast('Advertencia '+advertencias+' de '+LIMITE_ADVERTENCIAS, txt);
+    }
+  }
+});
+function actualizarAdvUI(){ $('advCount').textContent = advertencias+' advertencia'+(advertencias===1?'':'s'); }
+window.mostrarToast = (tit, txt) => { $('toastTit').textContent=tit; $('toastTxt').textContent=txt; $('toastAdv').classList.add('on'); };
+window.cerrarToast = () => $('toastAdv').classList.remove('on');
+
+// ============================================================
+// RIBBON / EDITOR — comandos de formato
+// ============================================================
+// Evita que la cinta de opciones "robe" el foco y borre la selección de texto
+// antes de aplicar el comando (esto era la causa de que Negrita, Azul, etc. "no funcionaran").
+document.querySelector('.wribbon').addEventListener('mousedown', (e)=>{
+  if(e.target.tagName !== 'SELECT') e.preventDefault();
+});
+
+window.clickTabInicio = () => { flags.tabInicio = true; log('Clic en la pestaña Inicio.'); };
+window.cmd = (comando) => { document.execCommand(comando, false, null); log('Ejecutó comando: '+comando); dirty=true; };
+window.toggleMenu = (id) => {
+  document.querySelectorAll('.wswatch-menu').forEach(m=>{ if(m.id!==id) m.classList.remove('on'); });
+  $(id).classList.toggle('on');
+};
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.wswatch-pop')) document.querySelectorAll('.wswatch-menu').forEach(m=>m.classList.remove('on'));
+});
+
+const COLORES = [
+  {n:'Azul', h:'#1F4E79'}, {n:'Rojo', h:'#C00000'}, {n:'Verde', h:'#375623'},
+  {n:'Naranja', h:'#C55A11'}, {n:'Morado', h:'#5B2C86'}, {n:'Negro', h:'#000000'}
+];
+const RESALTADOS = [
+  {n:'Amarillo', h:'#FFFF00'}, {n:'Verde claro', h:'#A9D18E'}, {n:'Rosado', h:'#F4B3D0'}, {n:'Celeste', h:'#9DC3E6'}
+];
+$('menuColor').innerHTML = COLORES.map(c=>`<div class="wswatch" onclick="aplicarColor('${c.h}','${c.n}')"><i class="dot" style="background:${c.h}"></i>${c.n}</div>`).join('');
+$('menuResaltado').innerHTML = RESALTADOS.map(c=>`<div class="wswatch" onclick="aplicarResaltado('${c.h}','${c.n}')"><i class="dot" style="background:${c.h}"></i>${c.n}</div>`).join('');
+window.aplicarColor = (hex, nombre) => { document.execCommand('foreColor', false, hex); log('Cambió el color de fuente a '+nombre+'.'); $('menuColor').classList.remove('on'); dirty=true; };
+window.aplicarResaltado = (hex, nombre) => { document.execCommand('hiliteColor', false, hex); log('Resaltó texto en '+nombre+'.'); $('menuResaltado').classList.remove('on'); dirty=true; };
+
+window.aplicarFuente = (fuente) => { document.execCommand('fontName', false, fuente); log('Cambió la fuente a '+fuente+'.'); dirty=true; };
+window.aplicarTamano = (pt) => {
+  document.execCommand('fontSize', false, '7');
+  document.querySelectorAll('font[size="7"]').forEach(f=>{
+    const span = document.createElement('span');
+    span.style.fontSize = pt+'pt';
+    span.innerHTML = f.innerHTML;
+    f.replaceWith(span);
+  });
+  log('Cambió el tamaño de fuente a '+pt+'pt.');
+  dirty = true;
+};
+window.cambiarMayusculas = () => {
+  const sel = window.getSelection();
+  if(sel && sel.toString().trim()){
+    const txt = sel.toString();
+    document.execCommand('insertText', false, txt === txt.toUpperCase() ? txt.toLowerCase() : txt.toUpperCase());
+  }
+  flags.mayusculas = true;
+  log('Usó "Cambiar mayúsculas y minúsculas".');
+  dirty = true;
+};
+window.quitarFormato = () => { document.execCommand('removeFormat', false, null); flags.quitarFormato = true; log('Borró el formato de un fragmento de texto.'); dirty=true; };
+window.hacerUndo = () => { document.execCommand('undo', false, null); flags.deshacer = true; log('Usó Deshacer.'); };
+window.hacerRedo = () => { document.execCommand('redo', false, null); flags.rehacer = true; log('Usó Rehacer.'); };
+
+document.addEventListener('keydown', (e)=>{
+  if(!e.ctrlKey) return;
+  if((e.key==='b'||e.key==='B')){ flags.atajoNegrita = true; log('Usó el atajo de teclado Ctrl+B.'); }
+  if((e.key==='z'||e.key==='Z') && !e.shiftKey){ flags.deshacer = true; log('Usó el atajo Ctrl+Z (deshacer).'); }
+  if((e.key==='y'||e.key==='Y') || (e.shiftKey && (e.key==='z'||e.key==='Z'))){ flags.rehacer = true; log('Usó el atajo Ctrl+Y (rehacer).'); }
+});
+
+window.toggleRuler = () => {
+  $('ruler').classList.toggle('on');
+  if($('ruler').classList.contains('on')){ flags.regla = true; log('Activó la regla del documento.'); }
+};
+window.aplicarZoom = (val) => {
+  $('zoomTxt').textContent = val+'%';
+  $('wpage').style.transform = 'scale('+(val/100)+')';
+  if(parseInt(val) !== 100){ flags.zoom = true; log('Cambió el zoom del documento a '+val+'%.'); }
+};
+
+document.addEventListener('selectionchange', ()=>{
+  const sel = window.getSelection();
+  if(!sel || !sel.anchorNode) return;
+  const tituloEl = $('lineTitulo');
+  if(tituloEl && tituloEl.contains(sel.anchorNode)){
+    const seleccionado = sel.toString().trim();
+    const textoTitulo = tituloEl.textContent.trim();
+    if(textoTitulo && seleccionado.length >= textoTitulo.length*0.7){ flags.seleccionoTitulo = true; }
+  }
+});
+
+['lineTitulo','lineSubtitulo','lineParrafo','li1','li2','li3','lineFirma','linePractica'].forEach(id=>{
+  $(id).addEventListener('input', ()=>{ dirty=true; });
+});
+
+window.guardarManual = async () => { flags.guardadoManual = true; await guardarProgreso(); log('Guardó el documento manualmente.'); $('msgLab').textContent='✓ Documento guardado.'; };
+
+// ============================================================
+// FLAGS (acciones puntuales, no verificables por estado final)
+// ============================================================
+let flags = { tabInicio:false, seleccionoTitulo:false, deshacer:false, rehacer:false, atajoNegrita:false, zoom:false, regla:false, guardadoManual:false, mayusculas:false, quitarFormato:false };
+
+// ============================================================
+// MISIONES — definición + validación automática
+// ============================================================
+function bloqueTiene(elId, regex){ return regex.test($(elId).innerHTML); }
+function textoContiene(elId, texto){ return $(elId).textContent.trim().toLowerCase().includes(texto.trim().toLowerCase().slice(0,12)); }
+function contarPalabras(elId){ return $(elId).textContent.trim().split(/\s+/).filter(Boolean).length; }
+// Mínimo de palabras para aceptar el párrafo: solo se valida por cantidad (contenido libre)
+const MIN_PALABRAS_PARRAFO = 50;
+const RE_NEGRITA = /<(b|strong)[\s>]|font-weight:\s*(bold|[6-9]00)/i;
+const RE_CURSIVA = /<(i|em)[\s>]|font-style:\s*italic/i;
+const RE_SUBRAYADO = /<u[\s>]|text-decoration[^;]*underline/i;
+const RE_TACHADO = /<(strike|s)[\s>]|text-decoration[^;]*line-through/i;
+const RE_RESALTADO = /background-color\s*:/i;
+
+function construirMisiones(){
+  return [
+    { id:'m1', cat:'D', pts:1, titulo:'Clic en la pestaña Inicio', ayuda:'Haz clic en la palabra "Inicio" en la parte superior de la cinta de opciones.', check:()=>flags.tabInicio },
+    { id:'m2', cat:'C', pts:1, titulo:'Escribir el título: "'+T.titulo+'"', ayuda:'Haz clic dentro de la línea del título y escríbelo tal como se indica.', check:()=>textoContiene('lineTitulo', T.titulo) },
+    { id:'m3', cat:'D', pts:1, titulo:'Seleccionar el título completo', ayuda:'Haz clic y arrastra el mouse sobre todo el título para seleccionarlo.', check:()=>flags.seleccionoTitulo },
+    { id:'m4', cat:'A', pts:1, titulo:'Aplicar Negrita al título', ayuda:'Selecciona el título y haz clic en el botón "N" (Negrita).', check:()=>bloqueTiene('lineTitulo', RE_NEGRITA) },
+    { id:'m5', cat:'B', pts:1, titulo:'Cambiar el tamaño del título a 20', ayuda:'Selecciona el título y elige 20 en el menú de tamaño de fuente.', check:()=>/font-size:\s*20pt/i.test($('lineTitulo').innerHTML) },
+    { id:'m6', cat:'A', pts:1, titulo:'Cambiar el color del título a Azul', ayuda:'Selecciona el título, abre el menú de color y elige "Azul".', check:()=>/#1F4E79/i.test($('lineTitulo').innerHTML) || /rgb\(\s*31\s*,\s*78\s*,\s*121\s*\)/i.test($('lineTitulo').innerHTML) },
+    { id:'m7', cat:'B', pts:1, titulo:'Centrar el título', ayuda:'Con el cursor en el título, haz clic en el botón de alinear al centro.', check:()=>getComputedStyle($('lineTitulo')).textAlign==='center' },
+    { id:'m8', cat:'C', pts:1, titulo:'Escribir el subtítulo: "'+T.subtitulo+'"', ayuda:'Haz clic en la línea de subtítulo y escríbelo tal como se indica.', check:()=>textoContiene('lineSubtitulo', T.subtitulo) },
+    { id:'m9', cat:'A', pts:1, titulo:'Aplicar Cursiva al subtítulo', ayuda:'Selecciona el subtítulo y haz clic en el botón de cursiva (K).', check:()=>bloqueTiene('lineSubtitulo', RE_CURSIVA) },
+    { id:'m10', cat:'C', pts:1, titulo:'Escribir un párrafo sobre tu tema: "'+T.tema+'"', ayuda:'Redacta con tus propias palabras un párrafo de al menos '+MIN_PALABRAS_PARRAFO+' palabras sobre tu tema en la línea correspondiente.', check:()=>contarPalabras('lineParrafo') >= MIN_PALABRAS_PARRAFO },
+    { id:'m11', cat:'A', pts:1, titulo:'Subrayar la palabra "'+T.clave+'" en el párrafo', ayuda:'Selecciona esa palabra dentro del párrafo y aplica subrayado.', check:()=> bloqueTiene('lineParrafo', RE_SUBRAYADO) && $('lineParrafo').textContent.toLowerCase().includes(T.clave.toLowerCase()) },
+    { id:'m12', cat:'A', pts:1, titulo:'Resaltar la palabra "'+T.resaltar+'" en el párrafo', ayuda:'Selecciona esa palabra y aplica un color de resaltado.', check:()=> bloqueTiene('lineParrafo', RE_RESALTADO) && $('lineParrafo').textContent.toLowerCase().includes(T.resaltar.toLowerCase()) },
+    { id:'m13', cat:'B', pts:1, titulo:'Justificar el párrafo', ayuda:'Con el cursor en el párrafo, haz clic en el botón de justificar.', check:()=>getComputedStyle($('lineParrafo')).textAlign==='justify' },
+    { id:'m14', cat:'B', pts:1, titulo:'Cambiar la fuente del párrafo a Arial', ayuda:'Selecciona el párrafo completo y elige "Arial" en el menú de fuente.', check:()=>/arial/i.test($('lineParrafo').innerHTML) },
+    { id:'m15', cat:'B', pts:1, titulo:'Cambiar el tamaño del párrafo a 12', ayuda:'Selecciona el párrafo completo y elige 12 en el menú de tamaño.', check:()=>/font-size:\s*12pt/i.test($('lineParrafo').innerHTML) || !/font-size/i.test($('lineParrafo').innerHTML) },
+    { id:'m16', cat:'C', pts:1, titulo:'Escribir los 3 elementos de la lista', ayuda:'Escribe cada elemento de la lista en su línea correspondiente.', check:()=> T.lista.every((it,i)=>textoContiene('li'+(i+1), it)) },
+    { id:'m17', cat:'B', pts:1, titulo:'Aplicar viñetas a la lista', ayuda:'Haz clic dentro de cada línea de la lista (una por una) y presiona el botón de viñetas en cada una.', check:()=> ['li1','li2','li3'].some(id=>/<ul|<ol/i.test($(id).innerHTML)) || /<ul|<ol/i.test($('areaLista').innerHTML) },
+    { id:'m18', cat:'B', pts:1, titulo:'Aumentar la sangría de la lista', ayuda:'Con el cursor dentro de una línea de la lista, haz clic en el botón de aumentar sangría.', check:()=> ['li1','li2','li3'].some(id=>/<blockquote|margin-left/i.test($(id).innerHTML) || parseFloat(getComputedStyle($(id)).marginLeft)>15) },
+    { id:'m19', cat:'C', pts:1, titulo:'Escribir la línea de firma: "'+T.firma+'"', ayuda:'Escribe la firma tal como se indica al final del documento.', check:()=>textoContiene('lineFirma', T.firma) },
+    { id:'m20', cat:'B', pts:1, titulo:'Alinear la firma a la derecha', ayuda:'Con el cursor en la firma, haz clic en el botón de alinear a la derecha.', check:()=>getComputedStyle($('lineFirma')).textAlign==='right' },
+    { id:'m21', cat:'A', pts:1, titulo:'Tachar una palabra en la zona de práctica', ayuda:'Selecciona la palabra indicada como "tacha esta palabra" y aplica tachado.', check:()=>bloqueTiene('linePractica', RE_TACHADO) },
+    { id:'m22', cat:'A', pts:1, titulo:'Cambiar una palabra de práctica a MAYÚSCULAS', ayuda:'Selecciona la palabra "OTRA" y usa el botón "Aa".', check:()=>flags.mayusculas },
+    { id:'m23', cat:'A', pts:1, titulo:'Borrar el formato de una palabra de práctica', ayuda:'Aplica algún formato a una palabra y luego usa el botón de borrar formato sobre ella.', check:()=>flags.quitarFormato },
+    { id:'m24', cat:'D', pts:1, titulo:'Usar Deshacer al menos una vez', ayuda:'Haz clic en el botón de deshacer, o presiona Ctrl+Z.', check:()=>flags.deshacer },
+    { id:'m25', cat:'D', pts:1, titulo:'Usar Rehacer al menos una vez', ayuda:'Haz clic en el botón de rehacer, o presiona Ctrl+Y.', check:()=>flags.rehacer },
+    { id:'m26', cat:'D', pts:1, titulo:'Aplicar negrita con el atajo Ctrl+B', ayuda:'Selecciona cualquier palabra y presiona Ctrl+B en tu teclado.', check:()=>flags.atajoNegrita },
+    { id:'m27', cat:'D', pts:1, titulo:'Cambiar el zoom del documento', ayuda:'Mueve el control de zoom en la parte inferior del documento.', check:()=>flags.zoom },
+    { id:'m28', cat:'D', pts:1, titulo:'Activar la regla del documento', ayuda:'Haz clic en el ícono de regla, junto al control de zoom.', check:()=>flags.regla },
+    { id:'m29', cat:'D', pts:1, titulo:'Guardar el documento manualmente', ayuda:'Haz clic en el botón "Guardar" en la parte inferior.', check:()=>flags.guardadoManual }
+  ];
+}
+let MISIONES = [];
+// Autoevaluación del propio estudiante: NO se usa para calificar (la nota real
+// siempre se calcula al entregar, revisando el documento con construirMisiones()).
+let autorreporte = {};
+
+function inicializarMisiones(){
+  MISIONES = construirMisiones();
+  autorreporte = {};
+  renderMisionesLista();
+  clearInterval(window._misTimer);
+  window._misTimer = setInterval(actualizarProgresoYPalabras, 1000);
+}
+function renderMisionesLista(){
+  if(!MISIONES.length) return;
+  $('misLista').innerHTML = MISIONES.map(m=>{
+    const marcado = !!autorreporte[m.id];
+    return `<label class="mision ${marcado?'done':''}">
+      <input type="checkbox" ${marcado?'checked':''} onchange="marcarAutorreporte('${m.id}', this.checked)">
+      <div><b>${m.titulo}</b><div class="mi-help">${m.ayuda}</div></div>
+    </label>`;
+  }).join('');
+  actualizarProgresoYPalabras();
+}
+window.marcarAutorreporte = (id, val) => { autorreporte[id] = val; dirty = true; actualizarProgresoYPalabras(); renderMisionesLista(); };
+function actualizarProgresoYPalabras(){
+  if(!MISIONES.length) return;
+  const marcadas = MISIONES.filter(m=>autorreporte[m.id]).length;
+  $('misProgTxt').textContent = marcadas+'/'+MISIONES.length;
+  $('misProgBar').style.width = Math.round(marcadas/MISIONES.length*100)+'%';
+  const palabras = ($('lineTitulo').textContent+' '+$('lineSubtitulo').textContent+' '+$('lineParrafo').textContent+' '+$('li1').textContent+' '+$('li2').textContent+' '+$('li3').textContent+' '+$('lineFirma').textContent).trim().split(/\s+/).filter(Boolean).length;
+  $('wordCountTxt').textContent = palabras+' palabras';
+}
+function reconstruirHistorialUI(){
+  $('historialBox').innerHTML = '';
+  bitacora.slice().reverse().forEach(b=>{
+    const d = document.createElement('div');
+    d.className='hist-item';
+    d.innerHTML = `<b>${b.hora}</b><br>${b.accion}`;
+    $('historialBox').appendChild(d);
+  });
+}
+
+// ============================================================
+// GUARDADO AUTOMÁTICO
+// ============================================================
+async function guardarProgreso(){
+  if(!EST) return;
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado, entregado:false,
+      horaInicio:horaInicioMs, docHTML:snapshotDocumento(),
+      bitacora, advertencias, tema:T.tema
+    },{merge:true});
+    $('guardadoTxt').textContent = 'Guardado';
+    dirty = false;
+  }catch(e){}
+}
+setInterval(()=>{ if(dirty && EST && !_autoEnviando) guardarProgreso(); }, 20000);
+
+// ============================================================
+// ENTREGA + EVALUACIÓN AUTOMÁTICA
+// ============================================================
+window.pedirConfirmacionEnvio = () => $('toastConfirmEnvio').classList.add('on');
+window.cerrarConfirmEnvio = () => $('toastConfirmEnvio').classList.remove('on');
+window.confirmarEnvio = () => { $('toastConfirmEnvio').classList.remove('on'); entregarLaboratorio(false); };
+
+async function entregarLaboratorio(automatico){
+  clearInterval(timerInterval); clearInterval(window._misTimer);
+  MISIONES = construirMisiones();
+  const resultado = MISIONES.map(m=>({ id:m.id, titulo:m.titulo, cat:m.cat, ayuda:m.ayuda, logrado:!!m.check() }));
+  const correctas = resultado.filter(r=>r.logrado).length;
+  const total = resultado.length;
+
+  const cats = {A:[0,0],B:[0,0],C:[0,0],D:[0,0]}; // [logradas, total]
+  resultado.forEach(r=>{ cats[r.cat][1]++; if(r.logrado) cats[r.cat][0]++; });
+  const rubricaDetalle = ['A','B','C','D'].map(c=> Math.round((cats[c][1]?cats[c][0]/cats[c][1]:0)*5*2)/2 );
+  const totalRub = rubricaDetalle.reduce((s,v)=>s+v,0);
+  const nota = notaMeduca(totalRub, 20);
+
+  const xp = correctas*30;
+  const monedas = correctas*5;
+  const pct = Math.round(correctas/total*100);
+  let tier = 'bronce';
+  if(pct>=90) tier='diamante'; else if(pct>=75) tier='oro'; else if(pct>=50) tier='plata';
+
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado, entregado:true, horaEntrega:Date.now(),
+      horaInicio:horaInicioMs, docHTML:snapshotDocumento(), codigoFinal: construirHTMLFinal(),
+      bitacora, advertencias, tema:T.tema,
+      rubrica_detalle: rubricaDetalle, nota,
+      checklistMisiones: resultado, correctas, totalMisiones: total,
+      xp, monedas, entregaAutomatica: !!automatico
+    },{merge:true});
+  }catch(e){}
+
+  mostrarResultadoFinal(resultado, correctas, total, nota, xp, monedas, pct, tier);
+}
+
+function construirHTMLFinal(){
+  return `<div style="font-family:Calibri,Arial,sans-serif">
+  ${$('lineTitulo').innerHTML}
+  ${$('lineSubtitulo').innerHTML}
+  ${$('lineParrafo').innerHTML}
+  <ul>${['li1','li2','li3'].map(id=>'<li>'+$(id).innerHTML+'</li>').join('')}</ul>
+  ${$('lineFirma').innerHTML}
+  </div>`;
+}
+
+function mostrarResultadoFinal(resultado, correctas, total, nota, xp, monedas, pct, tier){
+  $('resNum').textContent = correctas+'/'+total;
+  $('resPct').textContent = pct+'% de acciones correctas';
+  $('resBadge').innerHTML = `<span class="badge-tier ${tier}">Insignia ${tier.charAt(0).toUpperCase()+tier.slice(1)}</span>`;
+  $('gXp').textContent = xp;
+  $('gCoins').textContent = monedas;
+  $('gNota').textContent = nota;
+  $('resLista').innerHTML = resultado.map(r=>`<div class="res-item ${r.logrado?'ok':'bad'}"><i class="ti ${r.logrado?'ti-check':'ti-x'}"></i><span>${r.titulo}</span></div>`).join('');
+  const fallidas = resultado.filter(r=>!r.logrado);
+
+  const MOTIVACION = {
+    diamante: '¡Excelente trabajo! Dominaste el laboratorio casi a la perfección. Sigue así en el próximo.',
+    oro:      '¡Muy buen desempeño! Estás cerca de la perfección, revisa los puntos abajo para llegar al máximo.',
+    plata:    'Buen esfuerzo. Vas por buen camino, pero hay varias acciones que necesitas reforzar antes del siguiente laboratorio.',
+    bronce:   'Este resultado es bajo. No te desanimes: revisa con calma cada punto pendiente y repásalo antes del próximo laboratorio; con práctica vas a mejorar.'
+  };
+
+  let feedbackHTML = '<p style="margin-bottom:14px"><b>'+(MOTIVACION[tier]||'')+'</b></p>';
+  if(fallidas.length){
+    feedbackHTML += '<p style="margin-bottom:8px">Esto fue lo que te faltó y cómo corregirlo la próxima vez:</p><ul style="margin:0 0 0 20px">'
+      + fallidas.map(r=>'<li style="margin-bottom:6px"><b>'+r.titulo+':</b> '+r.ayuda+'</li>').join('')
+      + '</ul>';
+  } else {
+    feedbackHTML += '<p>Completaste correctamente todas las acciones del laboratorio.</p>';
+  }
+  $('resFeedback').innerHTML = feedbackHTML;
+  show('scrResultado');
+}
+
+// permitir Enter para iniciar sesión
+$('inCod').addEventListener('keydown', e=>{ if(e.key==='Enter') window.login(); });
+</script>
+</body>
+</html>
