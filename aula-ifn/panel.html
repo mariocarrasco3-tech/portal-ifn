@@ -759,11 +759,14 @@ window.guardarDrawer = async ()=>{
   const apertura = $('drApertura').dataset.iso||'';
   const cierre = $('drCierre').dataset.iso||'';
   const m = $('msgCtrl');
-  if(apertura && cierre && new Date(cierre) <= new Date(apertura)){
-    m.className='msg err';
-    m.textContent = `⚠ La fecha de cierre (${fmtFecha12h(cierre)}) queda antes o igual que la de apertura (${fmtFecha12h(apertura)}). Revisa si elegiste AM/PM correctamente. No se guardó.`;
-    return;
+
+  // Ya no se bloquea, solo se advierte y se continúa
+  if (apertura && cierre && new Date(cierre) <= new Date(apertura)) {
+    m.className = 'msg warn';
+    m.textContent = `⚠ El cierre (${fmtFecha12h(cierre)}) es anterior o igual a la apertura (${fmtFecha12h(apertura)}). Revisa las fechas. Se guardará de todos modos.`;
+    // No retornamos, continuamos
   }
+
   c[k] = {
     ...c[k],
     abierta: $('drTgAbierta').classList.contains('on'),
@@ -1360,10 +1363,9 @@ window.renderTabla = ()=>{
       ? (r._sinDatos ? 'Sin entregar' : (r.entregado ? (r.tiempoUsado? String(Math.floor(r.tiempoUsado/60)).padStart(2,'0')+':'+String(r.tiempoUsado%60).padStart(2,'0') : '—') : 'En progreso'))
       : (r._sinDatos ? 'Sin entregar' : (r.puntaje??'—'));
     const col6 = esLab ? (r.advertencias||0)+' adv.' : (r.intentos??'—');
-    const notaCell = esLab
-      ? `<span class="celledit ${cls}" style="display:inline-block;min-width:44px;text-align:center;${!tieneNota?'opacity:.5':''}">${tieneNota?n.toFixed(1):'—'}</span>
-         <button class="dbtn" title="Ver detalle y calificar con rúbrica" onclick="verDetalleLab('${r._codigo}')" style="margin-left:6px;background:none;border:1px solid var(--linea2);color:var(--neon);border-radius:6px;padding:5px 8px;cursor:pointer"><i class="ti ti-clipboard-check"></i></button>`
-      : `<input type="number" min="1" max="5" step="0.1" class="celledit ${cls}" placeholder="—" value="${tieneNota?n.toFixed(1):''}" onchange="editarNotaRes('${r._codigo}',this)">`;
+    // Ahora usamos input para ambos tipos (quiz y laboratorio)
+    const notaCell = `<input type="number" min="0" max="5" step="0.1" class="celledit ${cls}" placeholder="0.0" value="${tieneNota ? n.toFixed(1) : '0.0'}" onchange="editarNotaRes('${r._codigo}',this)">
+      ${esLab ? `<button class="dbtn" title="Ver detalle y calificar con rúbrica" onclick="verDetalleLab('${r._codigo}')" style="margin-left:6px;background:none;border:1px solid var(--linea2);color:var(--neon);border-radius:6px;padding:5px 8px;cursor:pointer"><i class="ti ti-clipboard-check"></i></button>` : ''}`;
     return `<tr><td>${i+1}</td><td>${r.nombre}<br><span style="font-size:11px;color:var(--tx3)">${r._codigo}</span></td><td>${r.grado}</td><td>${col4}</td>
     <td>${notaCell}</td>
     <td>${col6}</td><td>${f}</td></tr>`;
@@ -1600,10 +1602,12 @@ window.editarNotaRes = async (codigo,input)=>{
   }
 
   let v=parseFloat(raw);
-  if(isNaN(v)){ input.value = (r && typeof r.nota==='number') ? r.nota.toFixed(1) : ''; return; }
-  if(v<1)v=1.0; if(v>5)v=5.0;
+  if(isNaN(v)){ input.value = (r && typeof r.nota==='number') ? r.nota.toFixed(1) : '0.0'; return; }
+  v=Math.min(5,Math.max(0,v));
   v=Math.round(v*10)/10; input.value=v.toFixed(1);
-  input.classList.remove('ap','re'); input.classList.add(v>=3?'ap':'re');
+  input.classList.remove('ap','re');
+  if (v >= 3) input.classList.add('ap');
+  else if (v > 0) input.classList.add('re');
   if(r){ r.nota=v; r._sinDatos=false; }
   const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
   try{
@@ -1667,7 +1671,7 @@ window.confirmarPegarNotas = async ()=>{
   rows.forEach((r,i)=>{
     if(i>=lineas.length) return;
     let v=parseFloat(lineas[i]); if(isNaN(v)) return;
-    v=Math.min(5,Math.max(1,v)); v=Math.round(v*10)/10;
+    v=Math.min(5,Math.max(0,v)); v=Math.round(v*10)/10;
     r.nota=v; aplicadas++;
     tareas.push(setDoc(doc(db,'actividades',actId,'resultados',r._codigo),{nota:v},{merge:true}));
     if(sync?.activo){
@@ -1892,7 +1896,7 @@ document.addEventListener('keydown', e=>{
     <h3><i class="ti ti-clipboard-list"></i> Pegar notas para todos</h3>
     <p class="mdsub" id="pegarNotasInfo" style="margin-bottom:4px">—</p>
     <div id="pegarNotasLista" style="max-height:130px;overflow-y:auto;font-size:12px;color:var(--tx3);background:var(--bg,#0d1117);border:1px solid var(--linea2);border-radius:8px;padding:8px 10px;margin-bottom:14px"></div>
-    <label style="display:block;font-size:12px;color:var(--tx2);margin-bottom:6px;font-family:'Chakra Petch';letter-spacing:.5px;text-transform:uppercase">Pega aquí una nota por línea (1.0 a 5.0), en el mismo orden que la lista de arriba</label>
+    <label style="display:block;font-size:12px;color:var(--tx2);margin-bottom:6px;font-family:'Chakra Petch';letter-spacing:.5px;text-transform:uppercase">Pega aquí una nota por línea (0.0 a 5.0), en el mismo orden que la lista de arriba</label>
     <textarea id="pegarNotasArea" oninput="previsualizarPegarNotas()" placeholder="4.5
 5.0
 3.2
