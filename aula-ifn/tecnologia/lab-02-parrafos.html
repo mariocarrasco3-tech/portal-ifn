@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Word 365 · Laboratorio 2 — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #21262d;
+  --linea: #30363d; --linea2: rgba(88, 166, 255, 0.3);
+  --tx: #c9d1d9; --tx2: #8b949e; --tx3: #6e7681;
+  --neon: #58a6ff; --ok: #238636; --ok-tx: #3fb950;
+  --err: #da3633; --err-bg: rgba(218, 54, 51, 0.1);
+  --oro: #d29922;
+  --word: #2b579a; --wordlt: #eef3fb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; color:var(--tx); background:var(--bg); min-height:100vh; line-height:1.5; font-size:16px; }
+h1,h2,h3 { font-family:'Chakra Petch',sans-serif; }
+.wrap { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:24px 20px 60px; }
+.wrap.wide { max-width:none; width:100%; padding:20px 26px 60px; }
+.hide { display:none!important; }
+
+/* TOP BAR */
+.top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap; background: var(--panel); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--linea); }
+.br { display:flex; align-items:center; gap:12px; }
+.br img { height:42px; width:42px; object-fit:contain; border-radius:9px; background:#fff; padding:3px; }
+.br b { font-family:'Chakra Petch'; font-weight:700; font-size:15px; color:#fff; display:block; line-height:1.1; }
+.br span { font-size:10px; color:var(--neon); letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+.back { font-size:13px; color:var(--tx2); text-decoration:none; padding:8px 14px; border:1px solid var(--linea); border-radius:7px; display:flex; align-items:center; gap:6px; cursor:pointer; background:var(--panel2); transition: 0.2s; }
+.back:hover { color:var(--neon); border-color:var(--neon); }
+.spin { display:inline-block; width:14px; height:14px; border:2px solid var(--linea2); border-top-color:var(--neon); border-radius:50%; animation:sp .7s linear infinite; vertical-align:middle; }
+@keyframes sp { to { transform:rotate(360deg); } }
+.msg { font-size:13px; margin-top:10px; min-height:16px; }
+.msg.err { color:var(--err); } .msg.ok { color:var(--ok-tx); } .msg.warn { color:var(--oro); }
+
+/* CARDS */
+.card { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:32px; margin-bottom:20px; position:relative; overflow:hidden; }
+.card::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--word); }
+.badge { display:inline-flex; align-items:center; gap:6px; font-family:'Chakra Petch'; font-size:11px; font-weight:600; padding:6px 14px; border-radius:100px; letter-spacing:.5px; background:rgba(43,87,154,.15); color:#8fb4ea; border:1px solid rgba(43,87,154,.4); margin-bottom:16px; }
+h1.tt { font-size:29px; color:#fff; margin-bottom:8px; }
+.sub { font-size:16px; color:var(--tx2); margin-bottom:20px; }
+
+.fl { margin-bottom:20px; }
+.fl label { display:block; font-size:12px; color:var(--tx2); margin-bottom:8px; font-family:'Chakra Petch'; letter-spacing:.5px; text-transform:uppercase; }
+.fl input, .fl select { width:100%; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:14px; color:#fff; font-size:15px; outline:none; transition:0.2s; }
+.fl input:focus, .fl select:focus { border-color:var(--neon); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+.btn { font-family:'Chakra Petch'; font-weight:600; font-size:14px; letter-spacing:.5px; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.2s; }
+.btn.primary { background:var(--ok); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.primary:hover { background: #2ea043; }
+.btn.primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn.ghost { background:var(--panel2); border:1px solid var(--linea); color:var(--tx); }
+.btn.ghost:hover { border-color:var(--tx); color:#fff; }
+.btn.danger { background:var(--err); color:#fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn.danger:hover { background: #f85149; }
+.btn.action { background: var(--word); color: #fff; }
+.btn.action:hover { background: #3a6bb5; }
+.btn.action:disabled { opacity:.4; cursor:not-allowed; }
+.btn.block { width:100%; justify-content:center; }
+
+ul.lst { list-style:none; margin:10px 0 0; }
+ul.lst li { padding:8px 0 8px 24px; position:relative; font-size:16px; color:var(--tx); border-bottom:1px solid var(--linea); }
+ul.lst li:last-child { border-bottom:none; }
+ul.lst li::before { content:"▹"; position:absolute; left:0; color:var(--neon); font-weight:700; }
+.sec-h { font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#fff; font-family:'Chakra Petch'; font-weight:600; margin:32px 0 12px; display:flex; align-items:center; gap:8px; border-bottom: 1px solid var(--linea); padding-bottom: 8px; }
+.sec-h i { color:var(--neon); font-size:19px; }
+.sec-h:first-child { margin-top:0; }
+.instr { font-size:16px; color:var(--tx); white-space:pre-line; background:var(--bg); border:1px solid var(--linea); border-radius:8px; padding:20px; margin-top:8px; line-height: 1.7; }
+
+.tip { background:rgba(210,153,34,.1); border:1px solid rgba(210,153,34,.4); border-radius:8px; padding:16px 18px; margin-top:14px; font-size:15px; color:var(--tx); }
+.tip b { color:var(--oro); }
+
+/* AVISO OBLIGATORIO */
+.aviso { background:var(--err-bg); border:1px solid var(--err); border-radius:8px; padding:24px; margin-bottom:20px; }
+.aviso h3 { color:#ff7b72; font-size:20px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.aviso h4 { color:#ff7b72; font-size:16px; margin:12px 0 4px; }
+.aviso p { font-size:16px; color:var(--tx); margin-bottom:10px; }
+.aviso ul { margin:10px 0 10px 24px; font-size:16px; color:var(--tx); }
+.chk { display:flex; align-items:flex-start; gap:10px; margin-top:20px; font-size:16px; color:#fff; cursor:pointer; background: var(--panel2); padding: 16px; border-radius: 8px; border: 1px solid var(--linea); }
+.chk input { margin-top:2px; accent-color:var(--err); width:18px; height:18px; cursor:pointer;}
+
+/* DEMO PASOS */
+.demo-box { background:var(--panel2); border:1px solid var(--linea); border-radius:8px; padding:16px; margin-top:12px; }
+.demo-box .simword { background:#fff; color:#111; border-radius:6px; padding:14px 18px; font-family:'Calibri',Arial,sans-serif; }
+
+/* ============ SIMULADOR WORD 365 ============ */
+.wordwrap { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.4); color:#1b1b1b; }
+.wtitlebar { background:linear-gradient(180deg,#2b579a,#1e4277); color:#fff; padding:6px 14px; display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+.wtitlebar .doctitle { display:flex; align-items:center; gap:8px; font-family:'Calibri',Arial,sans-serif; }
+.wtitlebar input#docNombre { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:4px; padding:3px 8px; font-size:12px; width:230px; }
+.wtitlebar .wtb-right { display:flex; align-items:center; gap:14px; font-size:11px; }
+.wribbon-tabs { background:#f3f2f1; border-bottom:1px solid #d6d6d6; display:flex; padding:0 8px; font-family:'Calibri',Arial,sans-serif; font-size:13px; }
+.wtab { padding:9px 15px; cursor:pointer; color:#444; position:relative; user-select:none; }
+.wtab.on { color:#185abd; font-weight:700; border-bottom:2px solid #185abd; }
+.wtab.locked { color:#aaa; cursor:not-allowed; }
+.wtab.locked i { font-size:11px; margin-right:3px; }
+.wribbon { background:#f8f8f8; border-bottom:1px solid #d6d6d6; padding:9px 12px; display:flex; gap:16px; flex-wrap:wrap; font-family:'Calibri',Arial,sans-serif; }
+.wgroup { display:flex; flex-direction:column; align-items:center; border-right:1px solid #e0e0e0; padding:0 14px; min-width:76px; }
+.wgroup:last-child { border-right:none; }
+.wgrow { display:flex; gap:5px; align-items:center; margin-bottom:5px; }
+.wgroup label.wglabel { font-size:11px; color:#666; margin-top:3px; }
+.wbtn { background:transparent; border:1px solid transparent; border-radius:5px; width:34px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#333; font-size:16px; }
+.wbtn:hover { background:#e5f1fb; border-color:#c7e0f4; }
+.wbtn.active { background:#cce4f7; border-color:#185abd; color:#185abd; }
+.wbtn.launcher { width:16px; height:32px; font-size:11px; color:#666; }
+.wsel { border:1px solid #c7c6c6; border-radius:4px; font-size:13px; padding:4px 5px; background:#fff; color:#222; }
+.wsel.font { width:120px; } .wsel.size { width:56px; }
+.wswatch-pop { position:relative; display:inline-block; }
+.wswatch-menu { position:absolute; top:34px; left:0; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 4px 14px rgba(0,0,0,.25); padding:8px; display:none; z-index:50; width:230px; }
+.wswatch-menu.on { display:block; }
+.wswatch { display:flex; align-items:center; gap:7px; padding:7px 8px; border-radius:4px; cursor:pointer; font-size:13px; color:#333; }
+.wswatch:hover { background:#f1f1f1; }
+.wswatch i.dot { width:14px; height:14px; border-radius:3px; display:inline-block; border:1px solid #999; }
+.wswatch-sep { height:1px; background:#e5e5e5; margin:6px 2px; }
+
+.wbody { display:flex; background:#e9e9ea; }
+.wpage-col { flex:1; min-width:0; padding:20px 26px; overflow-x:auto; }
+.wruler { height:20px; background:repeating-linear-gradient(90deg,#fff 0 1px,#f4f4f4 1px 20px); border:1px solid #d0d0d0; border-bottom:none; max-width:720px; margin:0 auto; display:none; }
+.wruler.on { display:block; }
+.wpage { background:#fff; max-width:720px; margin:0 auto; min-height:560px; box-shadow:0 1px 6px rgba(0,0,0,.25); padding:64px 68px; font-family:'Calibri',Arial,sans-serif; font-size:14px; color:#1b1b1b; transform-origin: top center; }
+.dline { outline:none; min-height:1.4em; padding:3px 4px; border-radius:2px; margin-bottom:10px; }
+.dline:focus { background:rgba(43,87,154,.06); }
+.dline[data-placeholder]:empty:before { content:attr(data-placeholder); color:#9aa0a6; font-style:italic; }
+#lineTitulo { font-size:22px; margin-bottom:16px; }
+
+.wsidebar { width:380px; flex-shrink:0; background:#fff; border-left:1px solid #d6d6d6; padding:15px; max-height:80vh; overflow-y:auto; }
+.wsb-hdr { font-family:'Chakra Petch'; font-weight:700; font-size:14px; color:#2b579a; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+.wsb-hdr small { color:#777; font-weight:500; text-transform:none; font-size:12px; letter-spacing:0; }
+.wprog { height:8px; background:#eee; border-radius:100px; overflow:hidden; margin-bottom:14px; }
+.wprog i { display:block; height:100%; background:linear-gradient(90deg,#2b579a,#4d8fe0); transition:.3s; }
+.mision { display:flex; gap:8px; padding:8px 6px; border-radius:6px; font-size:14px; color:#333; align-items:flex-start; cursor:pointer; }
+.mision.done { background:#eaf7ee; }
+.mision input[type=checkbox] { margin-top:2px; width:16px; height:16px; flex-shrink:0; accent-color:#238636; cursor:pointer; }
+.mision b { display:block; color:#111; }
+.mision .mi-help { color:#888; font-size:12.5px; margin-top:2px; }
+.mision-nota { font-size:11px; color:#999; font-style:italic; margin:0 0 10px; line-height:1.4; }
+
+.whistorial { display:none; }
+html.reanalisis-mode body{ display:none !important; }
+.hist-item { padding:5px 0; border-bottom:1px dashed #e2e2e2; }
+.hist-item b { color:#2b579a; }
+
+.wstatus { background:#2b579a; color:#fff; font-size:11.5px; padding:6px 15px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.wstatus .wz { display:flex; align-items:center; gap:6px; }
+.wstatus input[type=range] { width:100px; }
+
+.timerbox { font-family:'Chakra Petch'; font-weight:700; font-size:13px; padding:4px 10px; border-radius:6px; background:rgba(255,255,255,.15); }
+.timerbox.warn { background:#da3633; animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+.foot-actions { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f3f2f1; border-top:1px solid #d6d6d6; }
+
+/* TOASTS / MODALES */
+.toastov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:200; align-items:center; justify-content:center; padding:20px; }
+.toastov.on { display:flex; }
+.toastbox { background:var(--panel); border:1px solid var(--linea); border-radius:12px; padding:28px; max-width:420px; text-align:center; }
+.toastbox i.warnic { font-size:40px; color:var(--oro); margin-bottom:12px; display:block; }
+.toastbox i.confirmic { font-size:40px; color:var(--neon); margin-bottom:12px; display:block; }
+.toastbox h3 { color:#fff; margin-bottom:10px; }
+.toastbox p { font-size:14px; color:var(--tx); margin-bottom:16px; }
+.toastbox.confirm .btnrow { display:flex; gap:10px; }
+.toastbox.confirm .btnrow button { flex:1; }
+
+.dlgbox { background:#fff; color:#222; border-radius:10px; padding:0; max-width:420px; width:100%; text-align:left; overflow:hidden; font-family:'Calibri',Arial,sans-serif; }
+.dlgbox .dlg-hdr { background:#2b579a; color:#fff; padding:12px 18px; font-family:'Chakra Petch'; font-weight:700; font-size:15px; }
+.dlgbox .dlg-body { padding:18px; }
+.dlgbox .dlg-sec { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#666; margin:14px 0 8px; font-weight:700; }
+.dlgbox .dlg-sec:first-child { margin-top:0; }
+.dlgrow { display:flex; gap:10px; margin-bottom:10px; align-items:center; }
+.dlgrow label { flex:1; font-size:13px; color:#333; }
+.dlgrow input, .dlgrow select { flex:1; border:1px solid #c7c6c6; border-radius:4px; padding:7px 8px; font-size:13px; }
+.dlgbox .dlg-foot { padding:14px 18px; background:#f5f5f5; display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #e2e2e2; }
+.dlgbox .dlg-foot button { font-family:'Chakra Petch'; font-weight:600; font-size:13px; padding:9px 18px; border-radius:6px; border:none; cursor:pointer; }
+.dlgbox .dlg-foot .dlg-ok { background:#2b579a; color:#fff; }
+.dlgbox .dlg-foot .dlg-cancel { background:#e2e2e2; color:#333; }
+
+/* PANTALLA RESULTADO FINAL */
+.res-hero { text-align:center; padding:20px 0 10px; }
+.res-hero .num { font-family:'Chakra Petch'; font-size:52px; font-weight:700; color:#fff; }
+.res-hero .pct { font-size:16px; color:var(--neon); font-family:'Chakra Petch'; font-weight:600; }
+.res-hero .pen { font-size:13px; color:#ff9b93; margin-top:6px; }
+.res-list { margin-top:16px; }
+.res-item { display:flex; gap:10px; padding:8px 4px; border-bottom:1px solid var(--linea); font-size:15px; align-items:flex-start; }
+.res-item.ok i { color:var(--ok-tx); }
+.res-item.bad i { color:var(--err); }
+.game-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+.game-chip { flex:1; min-width:120px; background:var(--panel2); border:1px solid var(--linea); border-radius:10px; padding:14px; text-align:center; }
+.game-chip .gv { font-family:'Chakra Petch'; font-size:22px; font-weight:700; color:#fff; }
+.game-chip .gl { font-size:11px; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; margin-top:4px; }
+.badge-tier { display:inline-block; padding:8px 18px; border-radius:100px; font-family:'Chakra Petch'; font-weight:700; font-size:13px; margin-top:12px; }
+.badge-tier.bronce{ background:rgba(205,127,50,.15); color:#cd7f32; border:1px solid rgba(205,127,50,.4); }
+.badge-tier.plata{ background:rgba(192,192,192,.15); color:#c0c0c0; border:1px solid rgba(192,192,192,.4); }
+.badge-tier.oro{ background:rgba(210,153,34,.15); color:var(--oro); border:1px solid rgba(210,153,34,.4); }
+.badge-tier.diamante{ background:rgba(88,166,255,.15); color:var(--neon); border:1px solid rgba(88,166,255,.4); }
+
+footer { text-align:center; padding:30px 0; font-size:12px; color:var(--tx3); }
+footer i { color:var(--neon); margin-right:6px; }
+
+@media(max-width: 1200px){ .wsidebar,.whistorial{ display:none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrapMain">
+  <div class="top">
+    <div class="br">
+      <img src="https://raw.githubusercontent.com/mcarrasco-ifn/portal-ifn/main/logo.png" onerror="this.style.display='none'">
+      <div><b>Instituto Fermín Naudeau</b><span>Simulador Word 365 · Aula Virtual</span></div>
+    </div>
+    <a class="back" href="../index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="scrLogin" class="card">
+    <span class="badge"><i class="ti ti-file-word"></i> Word 365 · Laboratorio 2</span>
+    <h1 class="tt">Párrafos y alineación</h1>
+    <p class="sub">Ingresa tu código de estudiante para comenzar.</p>
+    <div class="fl">
+      <label>Código de estudiante</label>
+      <input type="text" id="inCod" placeholder="Ej. NPU935986" autocomplete="off">
+    </div>
+    <button class="btn action block" id="btnLogin" onclick="login()"><i class="ti ti-login"></i> Ingresar</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <!-- ACTIVIDAD CERRADA / SIN ASIGNAR -->
+  <div id="scrSoon" class="card hide">
+    <h1 class="tt">Laboratorio no disponible</h1>
+    <p class="sub" id="soonTxt">Esta actividad no está abierta en este momento.</p>
+  </div>
+
+  <!-- INTRODUCCIÓN -->
+  <div id="scrIntro" class="card hide">
+    <span class="badge"><i class="ti ti-info-circle"></i> Introducción</span>
+    <h1 class="tt">Formato de párrafos en Word 365</h1>
+    <p class="sub">Vas a escribir un título y cuatro párrafos, y a aplicarles alineación, sangrías, interlineado, espaciado y bordes — las herramientas de formato de párrafo de Microsoft Word.</p>
+    <div class="sec-h"><i class="ti ti-target-arrow"></i> Objetivos del laboratorio</div>
+    <ul class="lst">
+      <li>Escribir y dar formato a un título (negrita, tamaño, centrado).</li>
+      <li>Redactar cuatro párrafos de al menos 60 palabras cada uno.</li>
+      <li>Aplicar alineación (justificado, izquierda, centrado, derecha) a cada párrafo.</li>
+      <li>Configurar interlineado, espaciado posterior, sangrías y bordes de párrafo.</li>
+    </ul>
+    <div class="tip"><b>Dato clave:</b> el formato de <b>fuente</b> (negrita, tamaño) necesita que selecciones el texto primero. El formato de <b>párrafo</b> (alineación, interlineado, sangría, espaciado, bordes) se aplica solo con el cursor dentro del párrafo — <b>sin seleccionar nada</b>. Fíjate en la diferencia mientras trabajas.</div>
+    <div class="sec-h"><i class="ti ti-clock"></i> Duración y reglas</div>
+    <div class="instr">Este laboratorio dura 45 minutos, con un cronómetro visible en todo momento.
+Solo la pestaña "Inicio" está disponible en este laboratorio.
+Cada acción que realices se valida automáticamente y queda registrada en tu historial.
+Escribirás sobre un tema distinto al de tus compañeros en cada párrafo — evita copiar texto ajeno.</div>
+    <button class="btn action block" style="margin-top:20px" onclick="irADemo()"><i class="ti ti-arrow-right"></i> Continuar</button>
+  </div>
+
+  <!-- DEMOSTRACIÓN INTERACTIVA -->
+  <div id="scrDemo" class="card hide">
+    <span class="badge"><i class="ti ti-player-play"></i> Demostración interactiva</span>
+    <h1 class="tt" id="demoTitulo">Demostración</h1>
+    <p class="sub" id="demoExp"></p>
+    <div class="demo-box"><div class="simword" id="demoSim">—</div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:20px">
+      <button class="btn ghost" id="demoPrev" onclick="demoNav(-1)"><i class="ti ti-chevron-left"></i> Anterior</button>
+      <button class="btn action" id="demoNext" onclick="demoNav(1)">Siguiente <i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <!-- AVISO OBLIGATORIO -->
+  <div id="scrAviso" class="card hide">
+    <div class="aviso">
+      <h3><i class="ti ti-alert-triangle"></i> Antes de comenzar — Reglas del laboratorio</h3>
+      <p>Este laboratorio se evalúa automáticamente. Lee con atención antes de continuar:</p>
+      <h4>Un solo intento</h4>
+      <ul><li>Una vez enviado el laboratorio no podrás modificarlo ni volver a enviarlo por tu cuenta.</li></ul>
+      <h4>Tiempo límite</h4>
+      <ul><li>Tienes 45 minutos. Cuando falten 5 minutos, el cronómetro se pondrá en rojo como aviso. Si llega a cero, tu documento se entregará automáticamente con lo que tengas guardado en ese momento.</li></ul>
+      <h4>No cambiar de pestaña</h4>
+      <ul><li>Cambiar de pestaña o minimizar la ventana genera una advertencia <b>con descuento de puntos</b>: la 1ª resta 3 puntos, la 2ª resta 5 puntos adicionales y la 3ª resta 10 puntos adicionales. Al llegar a <b>3 advertencias</b> tu laboratorio se entrega automáticamente, con esos puntos ya descontados de tu nota final.</li></ul>
+      <h4>No ayudar a tus compañeros</h4>
+      <ul><li>Este laboratorio es individual. Ayudar a un compañero o recibir ayuda durante el laboratorio resta puntos de tu calificación final.</li></ul>
+      <h4>Evaluación automática</h4>
+      <ul><li>El sistema valida tus acciones en tiempo real. Al terminar o al agotarse el tiempo, tu calificación se genera automáticamente al instante.</li></ul>
+      <label class="chk"><input type="checkbox" id="chkAviso" onchange="document.getElementById('btnEmpezar').disabled=!this.checked"> Entiendo las reglas y estoy listo para comenzar el laboratorio.</label>
+    </div>
+    <button class="btn primary block" id="btnEmpezar" disabled onclick="iniciarLaboratorio()"><i class="ti ti-player-play"></i> Comenzar laboratorio</button>
+  </div>
+
+  <!-- RETROALIMENTACIÓN (si ya fue calificado) -->
+  <div id="scrRetro" class="card hide">
+    <span class="badge"><i class="ti ti-report"></i> Resultado</span>
+    <h1 class="tt">Tu laboratorio ya fue calificado</h1>
+    <div id="retroBody"></div>
+  </div>
+
+  <!-- RESULTADO FINAL AUTOMÁTICO (justo después de entregar) -->
+  <div id="scrResultado" class="card hide">
+    <span class="badge"><i class="ti ti-checklist"></i> Evaluación automática</span>
+    <div class="res-hero">
+      <div class="num" id="resNum">0/20</div>
+      <div class="pct" id="resPct">0%</div>
+      <div class="pen" id="resPen"></div>
+      <div id="resBadge"></div>
+    </div>
+    <div class="game-row">
+      <div class="game-chip"><div class="gv" id="gXp">0</div><div class="gl">XP ganado</div></div>
+      <div class="game-chip"><div class="gv" id="gCoins">0</div><div class="gl">Monedas</div></div>
+      <div class="game-chip"><div class="gv" id="gNota">1.0</div><div class="gl">Nota MEDUCA</div></div>
+    </div>
+    <div class="sec-h"><i class="ti ti-list-check"></i> Detalle de acciones verificadas</div>
+    <div class="res-list" id="resLista"></div>
+    <div class="sec-h"><i class="ti ti-bulb"></i> Retroalimentación</div>
+    <div class="instr" id="resFeedback">—</div>
+  </div>
+</div>
+
+<!-- ================= SIMULADOR (pantalla ancha) ================= -->
+<div class="wrap wide hide" id="wrapSim">
+  <div class="top">
+    <div class="br">
+      <img src="https://raw.githubusercontent.com/mcarrasco-ifn/portal-ifn/main/logo.png" onerror="this.style.display='none'">
+      <div><b>Instituto Fermín Naudeau</b><span>Word 365 · Laboratorio 2</span></div>
+    </div>
+    <div id="timerWrap" class="timerbox">⏱ 45:00</div>
+  </div>
+
+  <div class="wordwrap">
+    <div class="wtitlebar">
+      <div class="doctitle"><i class="ti ti-file-word"></i> <input type="text" id="docNombre" value="Documento1"></div>
+      <div class="wtb-right">
+        <span id="advCount">0 advertencias</span>
+        <span id="guardadoTxt">Guardado</span>
+      </div>
+    </div>
+    <div class="wribbon-tabs">
+      <div class="wtab" onclick="clickTabInicio()">Inicio</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Insertar</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Diseño</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Referencias</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Revisar</div>
+      <div class="wtab locked" title="Se desbloquea más adelante"><i class="ti ti-lock"></i>Vista</div>
+    </div>
+    <div class="wribbon">
+      <div class="wgroup">
+        <div class="wgrow">
+          <select class="wsel font" id="selFuente" onmousedown="guardarSeleccion()" onchange="aplicarFuente(this.value)">
+            <option value="Calibri">Calibri</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+          </select>
+          <select class="wsel size" id="selTamano" onmousedown="guardarSeleccion()" onchange="aplicarTamano(this.value)">
+            <option>10</option><option>11</option><option selected>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
+          </select>
+        </div>
+        <div class="wgrow">
+          <button class="wbtn" onclick="cmd('bold')" title="Negrita (Ctrl+B)"><b>N</b></button>
+          <button class="wbtn" onclick="cmd('italic')" title="Cursiva (Ctrl+I)"><i>K</i></button>
+          <button class="wbtn" onclick="cmd('underline')" title="Subrayado (Ctrl+U)"><u>S</u></button>
+        </div>
+        <label class="wglabel">Fuente</label>
+      </div>
+      <div class="wgroup" style="min-width:210px">
+        <div class="wgrow">
+          <button class="wbtn" onclick="alinearParrafo('left')" title="Alinear a la izquierda"><i class="ti ti-align-left"></i></button>
+          <button class="wbtn" onclick="alinearParrafo('center')" title="Centrar"><i class="ti ti-align-center"></i></button>
+          <button class="wbtn" onclick="alinearParrafo('right')" title="Alinear a la derecha"><i class="ti ti-align-right"></i></button>
+          <button class="wbtn" onclick="alinearParrafo('justify')" title="Justificar"><i class="ti ti-align-justified"></i></button>
+          <div class="wswatch-pop">
+            <button class="wbtn" onclick="toggleMenu('menuInterlineado')" title="Interlineado y espaciado de párrafo"><i class="ti ti-line-height"></i></button>
+            <div class="wswatch-menu" id="menuInterlineado"></div>
+          </div>
+          <div class="wswatch-pop">
+            <button class="wbtn" onclick="toggleMenu('menuBordes')" title="Bordes"><i class="ti ti-border-outer"></i></button>
+            <div class="wswatch-menu" id="menuBordes"></div>
+          </div>
+          <button class="wbtn launcher" onclick="abrirDlgParrafo()" title="Configuración de párrafo"><i class="ti ti-arrow-down-right"></i></button>
+        </div>
+        <label class="wglabel">Párrafo</label>
+      </div>
+      <div class="wgroup">
+        <div class="wgrow">
+          <button class="wbtn" onclick="hacerUndo()" title="Deshacer (Ctrl+Z)"><i class="ti ti-arrow-back-up"></i></button>
+          <button class="wbtn" onclick="hacerRedo()" title="Rehacer (Ctrl+Y)"><i class="ti ti-arrow-forward-up"></i></button>
+        </div>
+        <label class="wglabel">Deshacer</label>
+      </div>
+    </div>
+
+    <div class="wbody">
+      <div class="wpage-col">
+        <div class="wruler" id="ruler"></div>
+        <div class="wpage" id="wpage">
+          <div class="dline" id="lineTitulo" contenteditable="true" data-placeholder="Escribe aquí el título…"></div>
+          <div class="dline" id="p1" contenteditable="true" data-placeholder="Párrafo 1 (mínimo 60 palabras)…"></div>
+          <div class="dline" id="p2" contenteditable="true" data-placeholder="Párrafo 2 (mínimo 60 palabras)…"></div>
+          <div class="dline" id="p3" contenteditable="true" data-placeholder="Párrafo 3 (mínimo 60 palabras)…"></div>
+          <div class="dline" id="p4" contenteditable="true" data-placeholder="Párrafo 4 (mínimo 60 palabras)…"></div>
+        </div>
+      </div>
+      <div class="wsidebar">
+        <div class="wsb-hdr">Indicaciones <small id="misProgTxt">0/20</small></div>
+        <div class="wprog"><i id="misProgBar" style="width:0%"></i></div>
+        <p class="mision-nota">Marca la casilla cuando creas que ya cumpliste cada indicación. Es solo para que organices tu trabajo: <b>no afecta tu nota</b>. La nota la calcula el sistema revisando directamente tu documento de Word.</p>
+        <div id="misLista"></div>
+      </div>
+      <div class="whistorial" id="historialBox"></div>
+    </div>
+
+    <div class="wstatus">
+      <span id="wordCountTxt">0 palabras</span>
+      <div class="wz">
+        <i class="ti ti-ruler-2" style="cursor:pointer" onclick="toggleRuler()" title="Mostrar/ocultar regla"></i>
+        <input type="range" min="60" max="200" step="10" value="100" id="zoomRange" oninput="aplicarZoom(this.value)">
+        <span id="zoomTxt">100%</span>
+      </div>
+    </div>
+    <div class="foot-actions">
+      <span class="msg" id="msgLab" style="margin:0;color:#333"></span>
+      <div style="display:flex;gap:10px">
+        <button class="btn ghost" onclick="guardarManual()"><i class="ti ti-device-floppy"></i> Guardar</button>
+        <button class="btn primary" onclick="pedirConfirmacionEnvio()"><i class="ti ti-send"></i> Entregar laboratorio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: configuración de párrafo (sangría y espacio) -->
+<div class="toastov" id="toastDlgParrafo">
+  <div class="dlgbox">
+    <div class="dlg-hdr">Párrafo — Sangría y espacio</div>
+    <div class="dlg-body">
+      <div class="dlg-sec">Sangría</div>
+      <div class="dlgrow">
+        <label>Izquierda (cm)</label>
+        <input type="number" id="dlgSangIzq" step="0.25" min="0" max="10" value="0">
+      </div>
+      <div class="dlgrow">
+        <label>Derecha (cm)</label>
+        <input type="number" id="dlgSangDer" step="0.25" min="0" max="10" value="0">
+      </div>
+      <div class="dlgrow">
+        <label>Especial</label>
+        <select id="dlgEspecial" onchange="document.getElementById('dlgEspecialVal').disabled = (this.value==='ninguna')">
+          <option value="ninguna">(ninguna)</option>
+          <option value="primera">Primera línea</option>
+        </select>
+      </div>
+      <div class="dlgrow">
+        <label>En (cm)</label>
+        <input type="number" id="dlgEspecialVal" step="0.25" min="0" max="10" value="1.25" disabled>
+      </div>
+      <div class="dlg-sec">Espaciado</div>
+      <div class="dlgrow">
+        <label>Interlineado</label>
+        <select id="dlgInterlineado">
+          <option value="1">Sencillo</option>
+          <option value="1.15">1.15</option>
+          <option value="1.5">1.5 líneas</option>
+          <option value="2">Doble</option>
+        </select>
+      </div>
+      <div class="dlgrow">
+        <label>Posterior (pt)</label>
+        <input type="number" id="dlgEspPost" step="1" min="0" max="72" value="0">
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button class="dlg-cancel" onclick="cerrarDlgParrafo()">Cancelar</button>
+      <button class="dlg-ok" onclick="aplicarDlgParrafo()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toastov" id="toastAdv">
+  <div class="toastbox">
+    <i class="ti ti-alert-triangle warnic"></i>
+    <h3 id="toastTit">Advertencia</h3>
+    <p id="toastTxt">—</p>
+    <button class="btn danger block" onclick="cerrarToast()">Entendido</button>
+  </div>
+</div>
+
+<div class="toastov" id="toastConfirmEnvio">
+  <div class="toastbox confirm">
+    <i class="ti ti-send confirmic"></i>
+    <h3>Confirmar envío</h3>
+    <p>¿Está seguro de entregar el laboratorio? Una vez enviado no podrás modificarlo ni volver a enviarlo por tu cuenta.</p>
+    <div class="btnrow">
+      <button class="btn ghost" onclick="cerrarConfirmEnvio()">Cancelar</button>
+      <button class="btn primary" onclick="confirmarEnvio()">Entregar</button>
+    </div>
+  </div>
+</div>
+
+<footer><div><i class="ti ti-file-word"></i> Aula Virtual IFN — <b>Prof. Mario Carrasco</b></div></footer>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+
+const ACT_ID = 'word-lab-02';
+const DURACION_MS = 45*60*1000; // 45 minutos
+const TITULO_FIJO = 'Laboratorio #2 – Párrafos y Alineación TIC';
+const MIN_PALABRAS = 60;
+const PARRAFOS = ['p1','p2','p3','p4'];
+
+// ============================================================
+// TEMAS ANTICOPIA — cada estudiante responde una pregunta distinta
+// en cada párrafo, asignada de forma determinística por su código.
+// ============================================================
+const PREGUNTAS = [
+  '¿Si pudieras vivir dentro de un videojuego, cuál elegirías?',
+  '¿Qué país visitarías primero si viajar fuera gratis?',
+  '¿Qué harías si fueras millonario por un día?',
+  '¿Cuál es tu cantante favorito y por qué?',
+  'Si pudieras crear una aplicación, ¿qué haría?',
+  '¿Cómo sería tu escuela ideal?',
+  '¿Qué invento cambiará el mundo en los próximos 20 años?',
+  '¿Qué harías si pudieras hacerte invisible?',
+  '¿Cuál es el mejor deporte y por qué?',
+  '¿Qué película volverías a ver muchas veces?',
+  '¿Qué harías si fueras presidente por un día?',
+  '¿Cuál sería el automóvil de tus sueños?',
+  'Si pudieras viajar al espacio, ¿irías?',
+  '¿Qué mascota exótica te gustaría tener?',
+  '¿Cómo imaginas las ciudades del año 2100?'
+];
+
+function hashCodigo(cod){
+  let h=0; for(let i=0;i<cod.length;i++){ h=(h*31+cod.charCodeAt(i))>>>0; }
+  return h;
+}
+function preguntasAsignadas(cod){
+  const base = hashCodigo(cod) % PREGUNTAS.length;
+  return [0,1,2,3].map(i => PREGUNTAS[(base+i)%PREGUNTAS.length]);
+}
+
+let EST = null, T = null;
+let advertencias = 0, bitacora = [];
+let timerInterval = null, targetTime = null, horaInicioMs = null;
+let actAbierta = true, actConfig = {};
+let dirty = false, _autoEnviando = false;
+let demoIdx = 0;
+let ultimoResultado = null;
+let penalizacionTotal = 0;
+
+// ============================================================
+// PENALIZACIÓN POR ADVERTENCIAS
+// ============================================================
+const LIMITE_ADVERTENCIAS = 3;
+const DEDUCCIONES = [3, 5, 10]; // 1ª, 2ª, 3ª advertencia
+
+function notaMeduca(obtenido, total){
+  const n = (4*obtenido/total) + 1;
+  return Math.min(5, Math.max(1, Math.round(n*10)/10));
+}
+
+function show(id){
+  ['scrLogin','scrSoon','scrIntro','scrDemo','scrAviso','scrRetro','scrResultado'].forEach(s=>$(s).classList.add('hide'));
+  $('wrapMain').classList.toggle('hide', id==='wrapSim');
+  $('wrapSim').classList.toggle('hide', id!=='wrapSim');
+  if(id!=='wrapSim') $(id).classList.remove('hide');
+}
+
+function log(accion){
+  const hora = new Date().toLocaleTimeString('es-PA',{hour:'2-digit',minute:'2-digit',timeZone:'America/Panama'});
+  bitacora.push({hora, accion});
+  const box = $('historialBox');
+  if(box){
+    const d = document.createElement('div');
+    d.className='hist-item';
+    d.innerHTML = `<b>${hora}</b><br>${accion}`;
+    box.prepend(d);
+  }
+  dirty = true;
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Ingresa tu código.'; return; }
+  const btn = $('btnLogin'); btn.disabled = true;
+  m.className='msg warn'; m.innerHTML = '<span class="spin"></span> Verificando…';
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    T = { preguntas: preguntasAsignadas(cod) };
+    await verificarEstado();
+    let yaTieneRegistro = false;
+    try{
+      const snapRes = await getDoc(doc(db,'actividades',ACT_ID,'resultados',cod));
+      yaTieneRegistro = snapRes.exists();
+      if(yaTieneRegistro) ultimoResultado = snapRes.data();
+    }catch(e){}
+    if(!yaTieneRegistro){
+      const dispo = actividadDisponible();
+      if(!dispo.ok){ m.className='msg warn'; m.textContent=dispo.msg; btn.disabled=false; return; }
+    }
+    btn.disabled = false;
+    await despuesLogin();
+  }catch(e){
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false;
+  }
+};
+
+async function verificarEstado(){
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+  }catch(e){ actConfig = {}; }
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+}
+function actividadDisponible(){
+  if(!actAbierta) return {ok:false, msg:'Esta actividad está cerrada por tu docente en este momento.'};
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const apertura = gc.apertura || actConfig.apertura;
+  const cierre = gc.cierre || actConfig.cierre;
+  const ahora = new Date();
+  if(apertura && new Date(apertura) > ahora) return {ok:false, msg:'Este laboratorio abre el '+new Date(apertura).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  if(cierre && new Date(cierre) < ahora) return {ok:false, msg:'Este laboratorio cerró el '+new Date(cierre).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  return {ok:true};
+}
+
+async function despuesLogin(){
+  let resultadoExistente = null;
+  try{
+    const snap = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+    if(snap.exists()) resultadoExistente = snap.data();
+  }catch(e){}
+  if(resultadoExistente && resultadoExistente.entregado){
+    if(MODO_REANALISIS){ ejecutarReanalisis(resultadoExistente); return; }
+    mostrarRetro(resultadoExistente);
+    return;
+  }
+  if(resultadoExistente && resultadoExistente.horaInicio){
+    horaInicioMs = resultadoExistente.horaInicio;
+    bitacora = resultadoExistente.bitacora || [];
+    aplicarTemaAsignado();
+    restaurarDocumento(resultadoExistente.docSnap || {});
+    if(resultadoExistente.flags) Object.assign(flags, resultadoExistente.flags);
+    advertencias = resultadoExistente.advertencias || 0;
+    penalizacionTotal = resultadoExistente.penalizacionTotal || 0;
+    actualizarAdvUI();
+    calcularTargetTime();
+    show('wrapSim');
+    iniciarReloj();
+    reconstruirHistorialUI();
+    inicializarMisiones();
+    return;
+  }
+  show('scrIntro');
+}
+
+// ============================================================
+// MODO REANÁLISIS (usado por el panel del profesor: ?reanalizar=CODIGO)
+// ============================================================
+async function ejecutarReanalisis(r){
+  T = { preguntas: preguntasAsignadas(EST.codigo) };
+  aplicarTemaAsignado();
+  restaurarDocumento(r.docSnap || {});
+  if(r.flags) Object.assign(flags, r.flags);
+  const misionesFrescas = construirMisiones();
+  const anteriores = r.checklistMisiones || [];
+  const resultado = misionesFrescas.map(m=>{
+    const prev = anteriores.find(x=>x.id===m.id);
+    const logrado = FLAG_MISIONES.includes(m.id) ? !!(prev && prev.logrado) : !!m.check();
+    return { id:m.id, titulo:m.titulo, cat:m.cat, ayuda:m.ayuda, logrado };
+  });
+  const { rubricaDetalle, totalRub } = calcularRubrica(resultado);
+  const penal = r.penalizacionTotal || 0;
+  const correctas = resultado.filter(x=>x.logrado).length;
+  const puntosFinal = Math.max(0, correctas - penal);
+  const nota = notaMeduca(puntosFinal, 20);
+  const total = resultado.length;
+  parent.postMessage({
+    tipo:'reanalisisWordLab', codigo:EST.codigo,
+    checklistMisiones:resultado, rubrica_detalle:rubricaDetalle, nota, correctas, totalMisiones:total,
+    penalizacionTotal: penal, puntosBrutos: correctas, puntosFinal
+  }, '*');
+}
+
+function mostrarRetro(r){
+  const checklist = r.checklistMisiones || [];
+  const total = checklist.length;
+  const correctas = checklist.filter(x=>x.logrado).length;
+  const fallidas = checklist.filter(x=>!x.logrado);
+  const penal = r.penalizacionTotal || 0;
+
+  let checklistHTML = '';
+  if(total){
+    checklistHTML = `
+      <div class="sec-h" style="margin-top:18px"><i class="ti ti-list-check"></i> Detalle de acciones verificadas (${correctas}/${total})</div>
+      <div class="res-list">${checklist.map(x=>`<div class="res-item ${x.logrado?'ok':'bad'}"><i class="ti ${x.logrado?'ti-check':'ti-x'}"></i><span>${x.titulo}</span></div>`).join('')}</div>
+    `;
+    if(fallidas.length){
+      checklistHTML += `
+        <div class="sec-h" style="margin-top:18px"><i class="ti ti-bulb"></i> Qué te faltó y cómo corregirlo</div>
+        <div class="instr"><ul style="margin:0 0 0 20px">${fallidas.map(x=>`<li style="margin-bottom:6px"><b>${x.titulo}:</b> ${x.ayuda}</li>`).join('')}</ul></div>
+      `;
+    } else {
+      checklistHTML += `<p style="margin-top:10px">Completaste correctamente todas las acciones del laboratorio.</p>`;
+    }
+  }
+
+  $('retroBody').innerHTML = `
+    <p class="sub">Nota (escala MEDUCA 1.0–5.0): <b style="color:#fff;font-size:20px">${r.nota??'—'}</b>${penal? ' <span style="color:#ff9b93;font-size:14px">(incluye -'+penal+' pts por advertencias)</span>':''}</p>
+    <div class="sec-h"><i class="ti ti-message-circle"></i> Comentario del docente</div>
+    <div class="instr">${(r.observaciones||'Sin observaciones del docente.').replace(/</g,'&lt;')}</div>
+    ${checklistHTML}
+  `;
+  show('scrRetro');
+}
+
+window.irADemo = () => { demoIdx = 0; renderDemo(); show('scrDemo'); };
+
+const PASOS_DEMO = [
+  { titulo:'Escribir un párrafo', exp:'Haz clic dentro del párrafo y escribe normalmente, igual que en Word real.', sim:'La tecnología ha transformado la manera en que aprendemos dentro y fuera del aula...' },
+  { titulo:'Formato de párrafo sin seleccionar', exp:'Solo coloca el cursor dentro del párrafo (no hace falta seleccionar texto) y haz clic en un botón de alineación o interlineado.', sim:'<div style="text-align:justify">La tecnología ha transformado la manera en que aprendemos dentro y fuera del aula, dando acceso a recursos antes impensables.</div>' },
+  { titulo:'Ajustar sangría y espaciado', exp:'Usa la flecha pequeña del grupo "Párrafo" para abrir el cuadro de diálogo y fijar sangrías exactas en centímetros, o el espaciado posterior en puntos.', sim:'<div style="text-align:justify;text-indent:1.25cm;margin-bottom:12pt">La tecnología ha transformado la manera en que aprendemos dentro y fuera del aula...</div>' },
+  { titulo:'Aplicar interlineado', exp:'Usa el botón de interlineado para elegir 1.5 líneas o interlineado doble.', sim:'<div style="line-height:1.8;text-align:justify">La tecnología ha transformado la manera en que aprendemos dentro y fuera del aula, dando acceso a recursos antes impensables para cualquier estudiante.</div>' },
+  { titulo:'Agregar un borde', exp:'Con el cursor en el párrafo, abre el menú de Bordes y elige "Borde inferior" para agregar una línea debajo del texto.', sim:'<div style="border-bottom:1.5pt solid #000;padding-bottom:6px">La tecnología ha transformado la manera en que aprendemos dentro y fuera del aula.</div>' }
+];
+window.demoNav = (dir) => {
+  demoIdx = Math.max(0, Math.min(PASOS_DEMO.length-1, demoIdx+dir));
+  renderDemo();
+};
+function renderDemo(){
+  const p = PASOS_DEMO[demoIdx];
+  $('demoTitulo').textContent = p.titulo;
+  $('demoExp').textContent = p.exp;
+  $('demoSim').innerHTML = p.sim;
+  $('demoPrev').disabled = demoIdx===0;
+  if(demoIdx === PASOS_DEMO.length-1){
+    $('demoNext').innerHTML = 'Continuar al laboratorio <i class="ti ti-arrow-right"></i>';
+    $('demoNext').onclick = () => show('scrAviso');
+  } else {
+    $('demoNext').innerHTML = 'Siguiente <i class="ti ti-chevron-right"></i>';
+    $('demoNext').onclick = () => window.demoNav(1);
+  }
+}
+
+// ============================================================
+// INICIAR LABORATORIO
+// ============================================================
+window.iniciarLaboratorio = async () => {
+  horaInicioMs = Date.now();
+  bitacora = [];
+  advertencias = 0;
+  penalizacionTotal = 0;
+  aplicarTemaAsignado();
+  calcularTargetTime();
+  show('wrapSim');
+  iniciarReloj();
+  inicializarMisiones();
+  log('Inicio del laboratorio — párrafos asignados.');
+  await guardarProgreso();
+};
+
+function aplicarTemaAsignado(){
+  $('lineTitulo').setAttribute('data-placeholder', 'Escribe aquí: '+TITULO_FIJO);
+  PARRAFOS.forEach((id,i)=>{
+    $(id).setAttribute('data-placeholder', 'Párrafo '+(i+1)+' (mín. '+MIN_PALABRAS+' palabras) — responde: '+T.preguntas[i]);
+  });
+}
+
+// ============================================================
+// SNAPSHOT DEL DOCUMENTO (incluye estilos de párrafo, no solo texto)
+// ============================================================
+const ESTILOS_PARRAFO = ['textAlign','lineHeight','marginBottom','textIndent','marginLeft','marginRight','borderBottom'];
+function restaurarDocumento(docSnap){
+  const tit = docSnap.lineTitulo || {};
+  if(tit.html !== undefined) $('lineTitulo').innerHTML = tit.html;
+  PARRAFOS.forEach(id=>{
+    const d = docSnap[id];
+    if(!d) return;
+    const el = $(id);
+    if(d.html !== undefined) el.innerHTML = d.html;
+    ESTILOS_PARRAFO.forEach(prop=>{ if(d[prop]) el.style[prop] = d[prop]; });
+  });
+  if(docSnap.docNombre) $('docNombre').value = docSnap.docNombre;
+}
+function snapshotDocumento(){
+  const o = { lineTitulo: { html: $('lineTitulo').innerHTML } };
+  PARRAFOS.forEach(id=>{
+    const el = $(id);
+    const s = { html: el.innerHTML };
+    ESTILOS_PARRAFO.forEach(prop=>{ s[prop] = el.style[prop] || ''; });
+    o[id] = s;
+  });
+  o.docNombre = $('docNombre').value;
+  return o;
+}
+
+// ============================================================
+// CRONÓMETRO
+// ============================================================
+function calcularTargetTime(){
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const cierrePanel = gc.cierre || actConfig.cierre;
+  if(cierrePanel){
+    targetTime = new Date(cierrePanel).getTime();
+  } else {
+    targetTime = horaInicioMs + DURACION_MS;
+  }
+}
+function iniciarReloj(){
+  clearInterval(timerInterval);
+  tick(); timerInterval = setInterval(tick, 1000);
+}
+function tick(){
+  const rest = Math.max(0, Math.floor((targetTime-Date.now())/1000));
+  const mm = String(Math.floor(rest/60)).padStart(2,'0');
+  const ss = String(rest%60).padStart(2,'0');
+  $('timerWrap').textContent = '⏱ '+mm+':'+ss;
+  $('timerWrap').classList.toggle('warn', rest<=300);
+  if(rest<=0) forzarCierre();
+}
+async function forzarCierre(){
+  if(_autoEnviando) return;
+  _autoEnviando = true;
+  clearInterval(timerInterval);
+  $('msgLab').textContent = 'Tiempo agotado. Enviando automáticamente tu documento…';
+  await entregarLaboratorio(true);
+}
+
+// ============================================================
+// ANTI-COPIA / ANTI-SALIDA — 3 advertencias con descuento de puntos
+// ============================================================
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden && !$('wrapSim').classList.contains('hide') && !_autoEnviando){
+    advertencias++;
+    const descuento = DEDUCCIONES[Math.min(advertencias, DEDUCCIONES.length)-1];
+    penalizacionTotal += descuento;
+    log('⚠ Cambió de pestaña / minimizó la ventana. Advertencia '+advertencias+'/'+LIMITE_ADVERTENCIAS+' (-'+descuento+' pts, total -'+penalizacionTotal+' pts).');
+    actualizarAdvUI();
+    guardarProgreso();
+    if(advertencias >= LIMITE_ADVERTENCIAS){
+      mostrarToast('Límite de advertencias alcanzado', 'Llegaste a '+LIMITE_ADVERTENCIAS+' advertencias por salir de esta pantalla. Se te descontaron '+descuento+' puntos adicionales (total acumulado: -'+penalizacionTotal+' pts). Tu laboratorio se entregará automáticamente ahora mismo con lo que tengas escrito.');
+      _autoEnviando = true;
+      setTimeout(()=>{ entregarLaboratorio(true); }, 2200);
+    } else {
+      mostrarToast('Advertencia '+advertencias+' de '+LIMITE_ADVERTENCIAS, 'Cambiaste de pestaña o minimizaste la ventana. Se te descontaron '+descuento+' puntos de tu calificación final (total acumulado hasta ahora: -'+penalizacionTotal+' pts). Evita volver a salir de esta pantalla.');
+    }
+  }
+});
+function actualizarAdvUI(){ $('advCount').textContent = advertencias+' advertencia'+(advertencias===1?'':'s')+(penalizacionTotal?' (-'+penalizacionTotal+' pts)':''); }
+window.mostrarToast = (tit, txt) => { $('toastTit').textContent=tit; $('toastTxt').textContent=txt; $('toastAdv').classList.add('on'); };
+window.cerrarToast = () => $('toastAdv').classList.remove('on');
+
+// ============================================================
+// RIBBON / EDITOR
+// ============================================================
+document.querySelector('.wribbon').addEventListener('mousedown', (e)=>{
+  if(e.target.tagName !== 'SELECT') e.preventDefault();
+});
+
+let selecGuardada = null;
+window.guardarSeleccion = () => {
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount>0 && sel.anchorNode && $('wpage').contains(sel.anchorNode)){
+    selecGuardada = sel.getRangeAt(0).cloneRange();
+  }
+};
+function restaurarSeleccion(){
+  if(!selecGuardada) return;
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(selecGuardada);
+}
+
+window.clickTabInicio = () => { flags.tabInicio = true; document.querySelector('.wtab').classList.add('on'); log('Clic en la pestaña Inicio.'); };
+
+// ---- Seguimiento del párrafo enfocado (título o p1..p4) ----
+const ELEMS_PARRAFO = ['lineTitulo','p1','p2','p3','p4'];
+let focoActual = null;
+ELEMS_PARRAFO.forEach(id=>{
+  $(id).addEventListener('focus', ()=>{ focoActual = id; });
+});
+
+window.alinearParrafo = (valor) => {
+  if(!focoActual){ mostrarToast('Sin párrafo activo','Haz clic dentro de un párrafo primero.'); return; }
+  const el = $(focoActual);
+  el.style.textAlign = valor;
+  const nombres = {left:'izquierda', center:'centro', right:'derecha', justify:'justificado'};
+  log('Alineó el párrafo #'+focoActual+' a '+nombres[valor]+'.');
+  dirty = true;
+};
+
+// ---- Menú Interlineado y espaciado ----
+const OPCIONES_INTERLINEADO = [
+  {n:'Sencillo (1.0)', v:'1'}, {n:'1.15', v:'1.15'}, {n:'1.5 líneas', v:'1.5'}, {n:'Doble (2.0)', v:'2'}
+];
+$('menuInterlineado').innerHTML =
+  OPCIONES_INTERLINEADO.map(o=>`<div class="wswatch" onclick="aplicarInterlineado('${o.v}','${o.n}')">${o.n}</div>`).join('')
+  + '<div class="wswatch-sep"></div>'
+  + `<div class="wswatch" onclick="aplicarEspaciadoPosterior(12)">Agregar espacio después de párrafo (12 pt)</div>`
+  + `<div class="wswatch" onclick="aplicarEspaciadoPosterior(0)">Quitar espacio después de párrafo</div>`;
+window.aplicarInterlineado = (valor, nombre) => {
+  if(!focoActual){ mostrarToast('Sin párrafo activo','Haz clic dentro de un párrafo primero.'); return; }
+  $(focoActual).style.lineHeight = valor;
+  log('Aplicó interlineado '+nombre+' al párrafo #'+focoActual+'.');
+  dirty = true; toggleMenu('menuInterlineado');
+};
+window.aplicarEspaciadoPosterior = (pt) => {
+  if(!focoActual){ mostrarToast('Sin párrafo activo','Haz clic dentro de un párrafo primero.'); return; }
+  $(focoActual).style.marginBottom = pt+'pt';
+  log((pt>0?'Agregó ':'Quitó el ')+'espacio posterior de '+pt+'pt en el párrafo #'+focoActual+'.');
+  dirty = true; toggleMenu('menuInterlineado');
+};
+
+// ---- Menú Bordes ----
+$('menuBordes').innerHTML =
+  `<div class="wswatch" onclick="aplicarBorde(true)"><i class="ti ti-border-bottom"></i>&nbsp; Borde inferior</div>`
+  + `<div class="wswatch" onclick="aplicarBorde(false)"><i class="ti ti-border-none"></i>&nbsp; Sin bordes</div>`;
+window.aplicarBorde = (activar) => {
+  if(!focoActual){ mostrarToast('Sin párrafo activo','Haz clic dentro de un párrafo primero.'); return; }
+  const el = $(focoActual);
+  el.style.borderBottom = activar ? '1.5pt solid #000000' : '';
+  if(activar) el.style.paddingBottom = '6px';
+  log((activar?'Aplicó':'Quitó el')+' borde inferior en el párrafo #'+focoActual+'.');
+  dirty = true; toggleMenu('menuBordes');
+};
+
+// ---- Cuadro de diálogo Párrafo (sangría y espacio) ----
+let dlgTarget = null;
+window.abrirDlgParrafo = () => {
+  if(!focoActual || focoActual==='lineTitulo'){ mostrarToast('Sin párrafo activo','Haz clic dentro de uno de los cuatro párrafos (no el título) antes de abrir esta ventana.'); return; }
+  dlgTarget = focoActual;
+  const el = $(dlgTarget);
+  const izq = parseFloat(el.style.marginLeft)||0;
+  const der = parseFloat(el.style.marginRight)||0;
+  const ind = el.style.textIndent;
+  $('dlgSangIzq').value = izq;
+  $('dlgSangDer').value = der;
+  if(ind && parseFloat(ind)>0){ $('dlgEspecial').value='primera'; $('dlgEspecialVal').value=parseFloat(ind); $('dlgEspecialVal').disabled=false; }
+  else { $('dlgEspecial').value='ninguna'; $('dlgEspecialVal').value=1.25; $('dlgEspecialVal').disabled=true; }
+  $('dlgInterlineado').value = el.style.lineHeight || '1';
+  $('dlgEspPost').value = parseFloat(el.style.marginBottom)||0;
+  $('toastDlgParrafo').classList.add('on');
+};
+window.cerrarDlgParrafo = () => { $('toastDlgParrafo').classList.remove('on'); dlgTarget=null; };
+window.aplicarDlgParrafo = () => {
+  if(!dlgTarget) return;
+  const el = $(dlgTarget);
+  const izq = parseFloat($('dlgSangIzq').value)||0;
+  const der = parseFloat($('dlgSangDer').value)||0;
+  const especial = $('dlgEspecial').value;
+  const especialVal = parseFloat($('dlgEspecialVal').value)||0;
+  const inter = $('dlgInterlineado').value;
+  const espPost = parseFloat($('dlgEspPost').value)||0;
+
+  el.style.marginLeft = izq+'cm';
+  el.style.marginRight = der+'cm';
+  el.style.textIndent = especial==='primera' ? especialVal+'cm' : '0cm';
+  el.style.lineHeight = inter;
+  el.style.marginBottom = espPost+'pt';
+
+  log('Configuró el párrafo #'+dlgTarget+' — sangría izq: '+izq+'cm, der: '+der+'cm, especial: '+(especial==='primera'?especialVal+'cm (primera línea)':'ninguna')+', interlineado: '+inter+', espacio posterior: '+espPost+'pt.');
+  dirty = true;
+  $('toastDlgParrafo').classList.remove('on');
+  dlgTarget = null;
+};
+
+window.toggleMenu = (id) => {
+  document.querySelectorAll('.wswatch-menu').forEach(m=>{ if(m.id!==id) m.classList.remove('on'); });
+  $(id).classList.toggle('on');
+};
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.wswatch-pop')) document.querySelectorAll('.wswatch-menu').forEach(m=>m.classList.remove('on'));
+});
+
+window.aplicarFuente = (fuente) => { restaurarSeleccion(); document.execCommand('fontName', false, fuente); log('Cambió la fuente a '+fuente+'.'); dirty=true; };
+window.aplicarTamano = (pt) => {
+  restaurarSeleccion();
+  document.execCommand('fontSize', false, '7');
+  document.querySelectorAll('font[size="7"]').forEach(f=>{
+    const span = document.createElement('span');
+    span.style.fontSize = pt+'pt';
+    span.innerHTML = f.innerHTML;
+    f.replaceWith(span);
+  });
+  log('Cambió el tamaño de fuente a '+pt+'pt.');
+  dirty = true;
+};
+window.cmd = (comando) => { document.execCommand(comando, false, null); log('Ejecutó comando: '+comando); dirty=true; };
+window.hacerUndo = () => { document.execCommand('undo', false, null); flags.deshacer = true; log('Usó Deshacer.'); };
+window.hacerRedo = () => { document.execCommand('redo', false, null); flags.rehacer = true; log('Usó Rehacer.'); };
+
+document.addEventListener('keydown', (e)=>{
+  if(!e.ctrlKey) return;
+  if((e.key==='b'||e.key==='B')){ flags.atajoNegrita = true; log('Usó el atajo de teclado Ctrl+B.'); }
+  if((e.key==='z'||e.key==='Z') && !e.shiftKey){ flags.deshacer = true; log('Usó el atajo Ctrl+Z (deshacer).'); }
+  if((e.key==='y'||e.key==='Y') || (e.shiftKey && (e.key==='z'||e.key==='Z'))){ flags.rehacer = true; log('Usó el atajo Ctrl+Y (rehacer).'); }
+});
+
+// RESTRICCIONES ANTICOPIA en el documento (desincentivar, no infalibles — igual que en los demás labs)
+$('wpage').addEventListener('copy', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('cut', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('paste', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('contextmenu', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('dragstart', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('drop', e=>{ e.preventDefault(); return false; });
+$('wpage').addEventListener('keydown', e=>{
+  const k = e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey) && (k==='c'||k==='v'||k==='x')) e.preventDefault();
+});
+
+window.toggleRuler = () => {
+  $('ruler').classList.toggle('on');
+  if($('ruler').classList.contains('on')){ flags.regla = true; log('Activó la regla del documento.'); }
+};
+window.aplicarZoom = (val) => {
+  $('zoomTxt').textContent = val+'%';
+  $('wpage').style.transform = 'scale('+(val/100)+')';
+  if(parseInt(val) !== 100){ flags.zoom = true; log('Cambió el zoom del documento a '+val+'%.'); }
+};
+
+document.addEventListener('selectionchange', ()=>{
+  const sel = window.getSelection();
+  if(!sel || !sel.anchorNode) return;
+  const tituloEl = $('lineTitulo');
+  if(tituloEl && tituloEl.contains(sel.anchorNode)){
+    const seleccionado = sel.toString().trim();
+    const textoTitulo = tituloEl.textContent.trim();
+    if(textoTitulo && seleccionado.length >= textoTitulo.length*0.7){ flags.seleccionoTitulo = true; }
+  }
+});
+
+ELEMS_PARRAFO.forEach(id=>{
+  $(id).addEventListener('input', ()=>{ dirty=true; });
+});
+
+window.guardarManual = async () => { flags.guardadoManual = true; await guardarProgreso(); log('Guardó el documento manualmente.'); $('msgLab').textContent='✓ Documento guardado.'; };
+
+// ============================================================
+// FLAGS
+// ============================================================
+let flags = { tabInicio:false, seleccionoTitulo:false, deshacer:false, rehacer:false, atajoNegrita:false, zoom:false, regla:false, guardadoManual:false };
+
+// ============================================================
+// MISIONES — definición + validación automática
+// ============================================================
+function bloqueTiene(elId, regex){ return regex.test($(elId).innerHTML); }
+function textoContiene(elId, texto){ return $(elId).textContent.trim().toLowerCase().includes(texto.trim().toLowerCase().slice(0,14)); }
+function contarPalabras(elId){ return $(elId).textContent.trim().split(/\s+/).filter(Boolean).length; }
+function quitarAcentos(s){ return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+const RE_NEGRITA = /<(b|strong)[\s>]|font-weight:\s*(bold|[6-9]00)/i;
+
+function nombreArchivoValido(){
+  const val = quitarAcentos($('docNombre').value.trim().toLowerCase());
+  const apellido = quitarAcentos((EST.nombre||'').trim().split(/\s+/).pop().toLowerCase());
+  return val.includes('laborat') && val.includes('365') && /2\b/.test(val) && !!apellido && val.includes(apellido);
+}
+
+function construirMisiones(){
+  return [
+    { id:'m1', cat:'C', pts:1, titulo:'Escribir el título: "'+TITULO_FIJO+'"', ayuda:'Haz clic dentro de la línea del título y escríbelo exactamente como se indica en las instrucciones.', check:()=>textoContiene('lineTitulo', TITULO_FIJO) },
+    { id:'m2', cat:'B', pts:1, titulo:'Centrar el título', ayuda:'Con el cursor en el título, haz clic en el botón de alinear al centro.', check:()=> $('lineTitulo').style.textAlign==='center' },
+    { id:'m3', cat:'A', pts:1, titulo:'Aplicar Negrita al título', ayuda:'Selecciona el título completo y haz clic en el botón "N" (Negrita).', check:()=>bloqueTiene('lineTitulo', RE_NEGRITA) },
+    { id:'m4', cat:'A', pts:1, titulo:'Cambiar el tamaño del título a 18', ayuda:'Selecciona el título completo y elige 18 en el menú de tamaño de fuente.', check:()=>/font-size:\s*18pt/i.test($('lineTitulo').innerHTML) },
+
+    { id:'m5', cat:'C', pts:1, titulo:'Escribir el primer párrafo (mín. '+MIN_PALABRAS+' palabras)', ayuda:'Responde en el párrafo 1, con tus propias palabras: "'+T.preguntas[0]+'"', check:()=>contarPalabras('p1') >= MIN_PALABRAS },
+    { id:'m6', cat:'B', pts:1, titulo:'Justificar el primer párrafo', ayuda:'Con el cursor dentro del párrafo 1, haz clic en el botón de justificar.', check:()=> $('p1').style.textAlign==='justify' },
+    { id:'m7', cat:'B', pts:1, titulo:'Interlineado 1.5 en el primer párrafo', ayuda:'Con el cursor en el párrafo 1, abre el menú de interlineado y elige "1.5 líneas".', check:()=> parseFloat($('p1').style.lineHeight)===1.5 },
+    { id:'m8', cat:'B', pts:1, titulo:'Espacio posterior de 12 pt en el primer párrafo', ayuda:'Con el cursor en el párrafo 1, usa el menú de interlineado y elige "Agregar espacio después de párrafo (12 pt)".', check:()=> parseFloat($('p1').style.marginBottom)===12 },
+    { id:'m9', cat:'B', pts:1, titulo:'Sangría de primera línea de 1.25 cm en el primer párrafo', ayuda:'Abre la ventana de configuración de párrafo (flecha del grupo "Párrafo"), elige Especial → Primera línea, y pon 1.25 cm.', check:()=> parseFloat($('p1').style.textIndent)===1.25 },
+
+    { id:'m10', cat:'C', pts:1, titulo:'Escribir el segundo párrafo (mín. '+MIN_PALABRAS+' palabras)', ayuda:'Responde en el párrafo 2, con tus propias palabras: "'+T.preguntas[1]+'"', check:()=>contarPalabras('p2') >= MIN_PALABRAS },
+    { id:'m11', cat:'B', pts:1, titulo:'Alinear el segundo párrafo a la izquierda', ayuda:'Con el cursor en el párrafo 2, haz clic en el botón de alinear a la izquierda.', check:()=> $('p2').style.textAlign==='left' },
+    { id:'m12', cat:'B', pts:1, titulo:'Sangría izquierda de 2 cm en el segundo párrafo', ayuda:'Abre la ventana de configuración de párrafo con el cursor en el párrafo 2 y pon Sangría izquierda = 2 cm.', check:()=> parseFloat($('p2').style.marginLeft)===2 },
+    { id:'m13', cat:'B', pts:1, titulo:'Sangría derecha de 2 cm en el segundo párrafo', ayuda:'En la misma ventana, pon Sangría derecha = 2 cm.', check:()=> parseFloat($('p2').style.marginRight)===2 },
+
+    { id:'m14', cat:'C', pts:1, titulo:'Escribir el tercer párrafo (mín. '+MIN_PALABRAS+' palabras)', ayuda:'Responde en el párrafo 3, con tus propias palabras: "'+T.preguntas[2]+'"', check:()=>contarPalabras('p3') >= MIN_PALABRAS },
+    { id:'m15', cat:'B', pts:1, titulo:'Centrar el tercer párrafo', ayuda:'Con el cursor en el párrafo 3, haz clic en el botón de centrar.', check:()=> $('p3').style.textAlign==='center' },
+    { id:'m16', cat:'B', pts:1, titulo:'Agregar un borde inferior al tercer párrafo', ayuda:'Con el cursor en el párrafo 3, abre el menú de Bordes y elige "Borde inferior".', check:()=> !!$('p3').style.borderBottom && $('p3').style.borderBottom!=='none' },
+
+    { id:'m17', cat:'C', pts:1, titulo:'Escribir el cuarto párrafo (mín. '+MIN_PALABRAS+' palabras)', ayuda:'Responde en el párrafo 4, con tus propias palabras: "'+T.preguntas[3]+'"', check:()=>contarPalabras('p4') >= MIN_PALABRAS },
+    { id:'m18', cat:'B', pts:1, titulo:'Alinear el cuarto párrafo a la derecha', ayuda:'Con el cursor en el párrafo 4, haz clic en el botón de alinear a la derecha.', check:()=> $('p4').style.textAlign==='right' },
+    { id:'m19', cat:'B', pts:1, titulo:'Interlineado doble (2.0) en el cuarto párrafo', ayuda:'Con el cursor en el párrafo 4, abre el menú de interlineado y elige "Doble (2.0)".', check:()=> parseFloat($('p4').style.lineHeight)===2 },
+
+    { id:'m20', cat:'D', pts:1, titulo:'Guardar el archivo como "Laboratorio_365_#2_TuApellido"', ayuda:'Cambia el nombre del documento (arriba a la izquierda) para que incluya "Laboratorio_365_#2" y tu apellido, y luego haz clic en "Guardar".', check:()=> nombreArchivoValido() && flags.guardadoManual }
+  ];
+}
+const FLAG_MISIONES = ['m20'];
+
+let MISIONES = [];
+let autorreporte = {};
+
+function inicializarMisiones(){
+  MISIONES = construirMisiones();
+  autorreporte = {};
+  renderMisionesLista();
+  clearInterval(window._misTimer);
+  window._misTimer = setInterval(actualizarProgresoYPalabras, 1000);
+}
+function renderMisionesLista(){
+  if(!MISIONES.length) return;
+  $('misLista').innerHTML = MISIONES.map(m=>{
+    const marcado = !!autorreporte[m.id];
+    return `<label class="mision ${marcado?'done':''}">
+      <input type="checkbox" ${marcado?'checked':''} onchange="marcarAutorreporte('${m.id}', this.checked)">
+      <div><b>${m.titulo}</b><div class="mi-help">${m.ayuda}</div></div>
+    </label>`;
+  }).join('');
+  actualizarProgresoYPalabras();
+}
+window.marcarAutorreporte = (id, val) => { autorreporte[id] = val; dirty = true; actualizarProgresoYPalabras(); renderMisionesLista(); };
+function actualizarProgresoYPalabras(){
+  if(!MISIONES.length) return;
+  const marcadas = MISIONES.filter(m=>autorreporte[m.id]).length;
+  $('misProgTxt').textContent = marcadas+'/'+MISIONES.length;
+  $('misProgBar').style.width = Math.round(marcadas/MISIONES.length*100)+'%';
+  const palabras = (['lineTitulo',...PARRAFOS]).reduce((s,id)=> s + $(id).textContent.trim().split(/\s+/).filter(Boolean).length, 0);
+  $('wordCountTxt').textContent = palabras+' palabras';
+}
+function reconstruirHistorialUI(){
+  $('historialBox').innerHTML = '';
+  bitacora.slice().reverse().forEach(b=>{
+    const d = document.createElement('div');
+    d.className='hist-item';
+    d.innerHTML = `<b>${b.hora}</b><br>${b.accion}`;
+    $('historialBox').appendChild(d);
+  });
+}
+
+// ============================================================
+// GUARDADO AUTOMÁTICO
+// ============================================================
+async function guardarProgreso(){
+  if(!EST) return;
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado, entregado:false,
+      horaInicio:horaInicioMs, docSnap:snapshotDocumento(),
+      bitacora, advertencias, penalizacionTotal, flags
+    },{merge:true});
+    $('guardadoTxt').textContent = 'Guardado';
+    dirty = false;
+  }catch(e){}
+}
+setInterval(()=>{ if(dirty && EST && !_autoEnviando) guardarProgreso(); }, 20000);
+
+// ============================================================
+// ENTREGA + EVALUACIÓN AUTOMÁTICA
+// ============================================================
+window.pedirConfirmacionEnvio = () => $('toastConfirmEnvio').classList.add('on');
+window.cerrarConfirmEnvio = () => $('toastConfirmEnvio').classList.remove('on');
+window.confirmarEnvio = () => { $('toastConfirmEnvio').classList.remove('on'); entregarLaboratorio(false); };
+
+function calcularRubrica(resultado){
+  const cats = {A:[0,0],B:[0,0],C:[0,0],D:[0,0]};
+  resultado.forEach(r=>{ cats[r.cat][1]++; if(r.logrado) cats[r.cat][0]++; });
+  const rubricaDetalle = ['A','B','C','D'].map(c=> Math.round((cats[c][1]?cats[c][0]/cats[c][1]:0)*5*2)/2 );
+  const totalRub = rubricaDetalle.reduce((s,v)=>s+v,0);
+  return { rubricaDetalle, totalRub };
+}
+
+async function entregarLaboratorio(automatico){
+  clearInterval(timerInterval); clearInterval(window._misTimer);
+  MISIONES = construirMisiones();
+  const resultado = MISIONES.map(m=>({ id:m.id, titulo:m.titulo, cat:m.cat, ayuda:m.ayuda, logrado:!!m.check() }));
+  const correctas = resultado.filter(r=>r.logrado).length;
+  const total = resultado.length;
+
+  const { rubricaDetalle, totalRub } = calcularRubrica(resultado);
+  // La nota se calcula de forma lineal: cada uno de los 20 checklist vale exactamente 1 punto
+  // (perder 1 de 20 = 19/20 = 4.8, no un descuento mayor). "rubricaDetalle" (4 categorías, 5 pts
+  // c/u) queda solo como desglose informativo para el panel del docente, ya no determina la nota.
+  const puntosFinal = Math.max(0, correctas - penalizacionTotal);
+  const nota = notaMeduca(puntosFinal, 20);
+
+  const xp = correctas*30;
+  const monedas = correctas*5;
+  const pct = Math.round(correctas/total*100);
+  let tier = 'bronce';
+  if(pct>=90) tier='diamante'; else if(pct>=75) tier='oro'; else if(pct>=50) tier='plata';
+
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado, entregado:true, horaEntrega:Date.now(),
+      horaInicio:horaInicioMs, docSnap:snapshotDocumento(),
+      bitacora, advertencias, penalizacionTotal,
+      rubrica_detalle: rubricaDetalle, puntosBrutos: correctas, puntosFinal, nota,
+      checklistMisiones: resultado, correctas, totalMisiones: total,
+      xp, monedas, entregaAutomatica: !!automatico
+    },{merge:true});
+  }catch(e){}
+
+  mostrarResultadoFinal(resultado, correctas, total, nota, xp, monedas, pct, tier, correctas, puntosFinal);
+}
+
+function mostrarResultadoFinal(resultado, correctas, total, nota, xp, monedas, pct, tier, puntosBrutos, puntosFinal){
+  $('resNum').textContent = puntosFinal+'/20';
+  $('resPct').textContent = pct+'% de acciones correctas';
+  $('resPen').textContent = penalizacionTotal ? ('Puntaje bruto: '+puntosBrutos+'/20 · Advertencias: -'+penalizacionTotal+' pts') : '';
+  $('resBadge').innerHTML = `<span class="badge-tier ${tier}">Insignia ${tier.charAt(0).toUpperCase()+tier.slice(1)}</span>`;
+  $('gXp').textContent = xp;
+  $('gCoins').textContent = monedas;
+  $('gNota').textContent = nota;
+  $('resLista').innerHTML = resultado.map(r=>`<div class="res-item ${r.logrado?'ok':'bad'}"><i class="ti ${r.logrado?'ti-check':'ti-x'}"></i><span>${r.titulo}</span></div>`).join('');
+  const fallidas = resultado.filter(r=>!r.logrado);
+
+  const MOTIVACION = {
+    diamante: '¡Excelente trabajo! Dominaste el formato de párrafos casi a la perfección. Sigue así en el próximo laboratorio.',
+    oro:      '¡Muy buen desempeño! Estás cerca de la perfección, revisa los puntos abajo para llegar al máximo.',
+    plata:    'Buen esfuerzo. Vas por buen camino, pero hay varias acciones que necesitas reforzar antes del siguiente laboratorio.',
+    bronce:   'Este resultado es bajo. No te desanimes: revisa con calma cada punto pendiente y repásalo antes del próximo laboratorio; con práctica vas a mejorar.'
+  };
+
+  let feedbackHTML = '<p style="margin-bottom:14px"><b>'+(MOTIVACION[tier]||'')+'</b></p>';
+  if(penalizacionTotal){
+    feedbackHTML += '<p style="margin-bottom:14px;color:#ff9b93">Se descontaron '+penalizacionTotal+' puntos de tu puntaje bruto ('+puntosBrutos+'/20) por salir de la pantalla durante el laboratorio, dejando '+puntosFinal+'/20.</p>';
+  }
+  if(fallidas.length){
+    feedbackHTML += '<p style="margin-bottom:8px">Esto fue lo que te faltó y cómo corregirlo la próxima vez:</p><ul style="margin:0 0 0 20px">'
+      + fallidas.map(r=>'<li style="margin-bottom:6px"><b>'+r.titulo+':</b> '+r.ayuda+'</li>').join('')
+      + '</ul>';
+  } else {
+    feedbackHTML += '<p>Completaste correctamente todas las acciones del laboratorio.</p>';
+  }
+  $('resFeedback').innerHTML = feedbackHTML;
+  show('scrResultado');
+}
+
+$('inCod').addEventListener('keydown', e=>{ if(e.key==='Enter') window.login(); });
+
+const MODO_REANALISIS = new URLSearchParams(location.search).get('reanalizar');
+if(MODO_REANALISIS){
+  document.documentElement.classList.add('reanalisis-mode');
+  $('inCod').value = MODO_REANALISIS;
+  window.login();
+}
+</script>
+</body>
+</html>
