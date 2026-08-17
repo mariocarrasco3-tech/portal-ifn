@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Panel Docente — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#0a0d12;--panel:#12161f;--panel2:#161b26;--linea:rgba(255,255,255,.07);--linea2:rgba(255,255,255,.14);--tx:#eef3f8;--tx2:#8c98a8;--tx3:#57616e;--neon:#22d3ee;--ok:#34d399;--err:#fb7185;--oro:#fbbf24;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);line-height:1.6;overflow-x:hidden;min-height:100vh;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 20% 0%,rgba(0,240,255,.1),transparent 38%),radial-gradient(circle at 90% 12%,rgba(255,45,155,.08),transparent 40%);pointer-events:none;}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.br{display:flex;align-items:center;gap:12px;}.br img{height:42px;width:42px;object-fit:contain;border-radius:9px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:14px;color:#fff;display:block;line-height:1.1;}.br span{font-size:10px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+.back{font-size:13px;color:var(--tx2);text-decoration:none;padding:8px 14px;border:1px solid var(--linea2);border-radius:7px;display:flex;align-items:center;gap:6px;cursor:pointer;}.back:hover{color:var(--neon);}
+.box{background:var(--panel);border:1px solid var(--linea2);border-radius:12px;padding:28px 26px;position:relative;overflow:hidden;box-shadow:0 0 50px -22px rgba(0,240,255,.3);}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--neon);box-shadow:0 0 12px var(--neon);}
+.ico-big{width:70px;height:70px;border-radius:18px;background:rgba(255,210,63,.1);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--oro);margin:0 auto 18px;}
+.box h1{font-family:'Chakra Petch';font-size:26px;color:#fff;text-align:center;margin-bottom:6px;}
+.box .sub{text-align:center;color:var(--tx2);font-size:14px;margin-bottom:24px;}
+.fl{max-width:360px;margin:0 auto;}
+.fl label{display:block;font-family:'Chakra Petch';font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.fl input{width:100%;padding:14px 16px;font-family:'Chakra Petch';font-size:16px;font-weight:600;letter-spacing:3px;border:1.5px solid var(--linea2);border-radius:8px;color:var(--neon);background:var(--bg);text-align:center;}
+.fl input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 4px rgba(0,240,255,.12);}
+.be{width:100%;margin-top:14px;padding:15px;font-family:'Chakra Petch';font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--bg);background:var(--neon);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:.18s;box-shadow:0 0 24px -6px var(--neon);}
+.be:hover{transform:translateY(-1px);}.be:disabled{opacity:.5;cursor:not-allowed;}
+.be.sec{background:transparent;border:1px solid var(--linea2);color:var(--tx2);box-shadow:none;}.be.sec:hover{color:var(--neon);border-color:var(--neon);}
+.be.sm{width:auto;margin:0;padding:9px 16px;font-size:13px;}
+.msg{font-size:13px;font-weight:500;padding:11px 14px;border-radius:8px;margin-top:14px;text-align:center;display:none;}
+.msg.err{display:block;background:rgba(255,77,109,.12);color:#ffb3c0;border:1px solid rgba(255,77,109,.3);}
+.msg.ok{display:block;background:rgba(0,255,163,.12);color:#7dffce;border:1px solid rgba(0,255,163,.3);}
+.msg.warn{display:block;background:rgba(255,210,63,.12);color:#ffe79a;border:1px solid rgba(255,210,63,.3);}
+.hide{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea2);border-top-color:var(--neon);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}@keyframes sp{to{transform:rotate(360deg);}}
+/* tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{font-family:'Chakra Petch';font-size:13px;padding:9px 16px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;transition:.15s;}
+.tab.on{background:var(--neon);color:var(--bg);border-color:var(--neon);}.tab:not(.on):hover{color:var(--neon);}
+/* ================= CONTROL DE ACTIVIDADES — tabla compacta + drawer ================= */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
+.kpi{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:14px 16px;}
+.kpi span{display:block;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:6px;}
+.kpi b{font-family:'Chakra Petch';font-size:24px;font-weight:600;color:var(--tx);line-height:1;}
+.kpi.ab b{color:var(--ok);}.kpi.ce b{color:var(--err);}.kpi.sy b{color:var(--neon);}
+
+.actl-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+.actl-search{position:relative;flex:1;min-width:180px;}
+.actl-search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:14px;pointer-events:none;}
+.actl-search input{width:100%;padding:9px 12px 9px 34px;font-size:13px;border:1px solid var(--linea2);border-radius:8px;background:var(--panel2);color:var(--tx);font-family:'Inter';}
+.actl-search input:focus{outline:none;border-color:var(--neon);}
+.actl-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.actl-chip{font-family:'Chakra Petch';font-size:11px;padding:7px 12px;border-radius:100px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;white-space:nowrap;transition:.15s;}
+.actl-chip.on{background:rgba(34,211,238,.14);border-color:var(--neon);color:var(--neon);}
+.actl-chip:not(.on):hover{color:var(--tx);}
+.actl-trim{font-family:'Inter';font-size:13px;padding:9px 14px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx);cursor:pointer;}
+.actl-trim:focus{outline:none;border-color:var(--neon);}
+
+.actl-table{width:100%;border-collapse:collapse;font-size:13px;}
+.actl-table thead th{font-family:'Chakra Petch';font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--tx2);text-align:left;padding:9px 14px;border-bottom:1px solid var(--linea2);position:sticky;top:0;background:var(--panel);z-index:1;}
+.actl-row{cursor:pointer;border-bottom:1px solid var(--linea);transition:.12s;}
+.actl-row:hover{background:rgba(34,211,238,.05);}
+.actl-row td{padding:11px 14px;vertical-align:middle;}
+.actl-name b{display:block;font-family:'Inter';font-weight:600;font-size:13px;color:var(--tx);}
+.actl-name span{font-size:11px;color:var(--tx3);}
+.actl-tipo{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2);white-space:nowrap;}
+.actl-tipo i{color:var(--neon);font-size:14px;}
+.actl-medida{font-size:12px;color:var(--tx2);white-space:nowrap;}
+.actl-gear{background:none;border:1px solid var(--linea2);color:var(--tx2);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.actl-gear:hover{color:var(--neon);border-color:var(--neon);}
+.actl-empty{text-align:center;color:var(--tx3);padding:40px 20px;}
+.actl-empty button{margin-top:12px;}
+.actl-foot{font-size:12px;color:var(--tx3);padding:10px 4px;}
+
+.estado{font-family:'Chakra Petch';font-size:10px;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+.estado.abierta{background:rgba(52,211,153,.15);color:var(--ok);border:1px solid rgba(52,211,153,.3);}
+.estado.cerrada{background:rgba(251,113,133,.15);color:var(--err);border:1px solid rgba(251,113,133,.3);}
+.estado.mixta{background:rgba(251,191,36,.15);color:var(--oro);border:1px solid rgba(251,191,36,.3);}
+.estado.sync{background:rgba(34,211,238,.12);color:var(--neon);border:1px solid rgba(34,211,238,.3);}
+.estado.nosync{background:var(--bg);color:var(--tx3);border:1px dashed var(--linea2);}
+
+/* drawer lateral */
+.drawer-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250;display:none;}
+.drawer-ov.on{display:block;}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;background:var(--panel);border-left:1px solid var(--linea2);z-index:260;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-30px 0 60px -20px rgba(0,0,0,.5);}
+.drawer.on{transform:translateX(0);}
+.drawer-hdr{padding:20px 22px;border-bottom:1px solid var(--linea);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.drawer-hdr .eyebrow{font-family:'Chakra Petch';font-size:10.5px;color:var(--neon);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.drawer-hdr h2{font-size:15px;color:#fff;line-height:1.35;}
+.drawer-hdr .muted{font-size:11.5px;color:var(--tx3);margin-top:3px;}
+.drawer-close{background:none;border:1px solid var(--linea2);color:var(--tx2);width:30px;height:30px;border-radius:8px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.drawer-close:hover{color:var(--neon);border-color:var(--neon);}
+.drawer-body{flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:22px;}
+.dsec-label{font-family:'Chakra Petch';font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--tx2);margin-bottom:12px;}
+.drawer-footer{padding:16px 22px;border-top:1px solid var(--linea);display:flex;gap:10px;}
+.drawer-footer .be{flex:1;margin:0;}
+
+.grp-chips{display:flex;gap:6px;flex-wrap:wrap;}
+
+.row-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.row-toggle b{font-family:'Inter';font-weight:600;font-size:12.5px;color:var(--tx);}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-grid label{display:block;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.field-grid input,.field-grid select{width:100%;padding:9px 10px;font-size:13px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--tx);font-family:'Inter';}
+.field-grid input:focus,.field-grid select:focus{outline:none;border-color:var(--neon);}
+
+.rubric-summary{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--panel2);border:1px solid var(--linea);border-radius:8px;color:var(--tx);font-size:12.5px;cursor:pointer;}
+.rubric-summary:hover{border-color:var(--neon);color:var(--neon);}
+.rubric-summary i{color:var(--tx3);}
+
+.tg{width:50px;height:26px;border-radius:100px;background:var(--bg);border:1px solid var(--linea2);cursor:pointer;position:relative;transition:.2s;flex-shrink:0;}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--tx3);transition:.2s;}
+.tg.on{background:rgba(52,211,153,.2);border-color:var(--ok);}.tg.on::after{left:24px;background:var(--ok);box-shadow:0 0 10px var(--ok);}
+.tgwrap{display:flex;align-items:center;gap:8px;}.tgwrap b{font-family:'Chakra Petch';font-size:12px;color:#fff;}
+/* editor de rúbrica (modal) */
+.rub-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.rub-row .rc-label{flex:1;}
+.rub-row .rc-pts{width:70px;text-align:center;flex-shrink:0;}
+.rub-row .rc-del{background:none;border:1px solid var(--linea2);color:var(--err);border-radius:7px;width:36px;height:36px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.rub-row .rc-del:hover{border-color:var(--err);background:rgba(251,113,133,.1);}
+.rub-bulk{width:100%;padding:8px 10px;font-size:12px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--tx);font-family:'JetBrains Mono',monospace;resize:vertical;min-height:54px;}
+.rub-bulk:focus{outline:none;border-color:var(--neon);}
+/* selector nivel/grupo en Resultados */
+.res-picker{margin-bottom:20px;}
+.res-picker-title{font-family:'Chakra Petch';font-size:13px;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+.res-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+.res-card{background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;color:var(--tx);transition:.15s;}
+.res-card:hover{border-color:var(--neon);transform:translateY(-2px);}
+.res-card-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.res-card-txt{text-align:center;}
+.res-card-txt b{display:block;font-family:'Chakra Petch';font-size:16px;color:#fff;}
+.res-card-txt span{font-size:11px;color:var(--tx2);}
+.res-breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.res-back{background:var(--panel2);border:1px solid var(--linea2);color:var(--neon);border-radius:7px;padding:7px 12px;font-size:12px;font-family:'Chakra Petch';cursor:pointer;display:flex;align-items:center;gap:6px;}
+.res-back:hover{border-color:var(--neon);}
+.res-crumb{font-family:'Chakra Petch';font-size:13px;color:#fff;padding:7px 4px;}
+.res-sep{color:var(--tx3);}
+/* stats + tabla */
+.dstat{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.ds{flex:1;min-width:100px;background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:14px;text-align:center;}
+.ds b{font-family:'Chakra Petch';font-size:24px;color:var(--neon);display:block;line-height:1;}.ds span{font-size:11px;color:var(--tx2);}
+.ds.ap b{color:var(--ok);}.ds.re b{color:var(--err);}
+.dtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+.dtools select,.dtools button{font-family:'Inter';font-size:13px;padding:9px 14px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx);cursor:pointer;}
+.dtools button:hover{border-color:var(--neon);color:var(--neon);}
+.dtools .sp{flex:1;}
+.tbl-wrap{max-height:440px;overflow:auto;border:1px solid var(--linea);border-radius:10px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-family:'Chakra Petch';font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--linea2);position:sticky;top:0;background:var(--panel);}
+td{padding:10px 12px;border-bottom:1px solid var(--linea);color:var(--tx);}
+tr:hover td{background:rgba(0,240,255,.04);}
+.tnota{font-family:'Chakra Petch';font-weight:700;}.tnota.ap{color:var(--ok);}.tnota.re{color:var(--err);}
+.selact{margin-bottom:14px;}
+.selact label{display:block;font-family:'Chakra Petch';font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.selact select{width:100%;max-width:420px;padding:10px 14px;font-size:13px;border:1px solid var(--linea2);border-radius:8px;background:var(--panel2);color:var(--tx);}
+/* notas aula */
+.trimtabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.trim-tab{font-family:'Chakra Petch';font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;transition:.15s;}
+.trim-tab.on{background:var(--neon);color:var(--bg);border-color:var(--neon);}
+.trim-tab:not(.on):hover{color:var(--neon);}
+.celledit{width:64px;padding:6px 4px;font-size:13px;text-align:center;border:1px solid var(--linea2);border-radius:6px;background:var(--bg);color:var(--tx);font-family:'Chakra Petch';font-weight:600;}
+.celledit:focus{outline:none;border-color:var(--neon);}
+.celledit.ap{color:var(--ok);}.celledit.re{color:var(--err);}
+th.colact{min-width:90px;text-align:center;}
+.delcolbtn{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:13px;margin-left:4px;vertical-align:middle;}
+.delcolbtn:hover{color:var(--err);}
+.thcolname{background:var(--bg);border:1px solid var(--linea2);border-radius:6px;color:var(--neon);font-family:'Chakra Petch';font-size:11px;font-weight:600;text-align:center;width:70px;padding:4px 2px;text-transform:uppercase;}
+.thcolname:focus{outline:none;border-color:var(--neon);}
+.notatotal{background:rgba(0,240,255,.08);font-weight:700;}
+.n-verde{color:var(--ok);}.n-rojo{color:var(--err);}
+.sticky-col{position:sticky;left:0;background:var(--panel);z-index:2;}
+.sticky-col2{position:sticky;left:36px;background:var(--panel);z-index:2;}
+.exp-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px;}
+.exp-modal.hide{display:none!important;}
+.dt-trigger{cursor:pointer;background:var(--bg)!important;}
+.input-err{border-color:#ff4d4f!important;box-shadow:0 0 0 1px #ff4d4f;}
+.dt-trigger::placeholder{color:var(--tx3);}
+.dt-picker{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px;}
+.dt-picker.hide{display:none!important;}
+.dt-card{background:var(--panel);border:1px solid var(--linea2);border-radius:14px;padding:18px;width:100%;max-width:300px;box-shadow:0 0 60px -10px rgba(0,240,255,.3);}
+.dt-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.dt-hdr button{background:none;border:1px solid var(--linea2);color:var(--tx2);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.dt-hdr button:hover{color:var(--neon);border-color:var(--neon);}
+.dt-hdr span{font-family:'Chakra Petch';font-size:13px;font-weight:700;color:#fff;text-transform:capitalize;}
+.dt-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.dt-dow span{text-align:center;font-size:10px;color:var(--tx3);font-weight:600;}
+.dt-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px;}
+.dt-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:7px;cursor:pointer;color:var(--tx2);background:var(--panel2);border:1px solid transparent;}
+.dt-day:hover{border-color:var(--linea2);color:var(--tx);}
+.dt-day.off{opacity:.25;pointer-events:none;}
+.dt-day.today{border-color:var(--neon);color:var(--neon);}
+.dt-day.sel{background:var(--neon);color:var(--bg);font-weight:700;}
+.dt-time{border-top:1px solid var(--linea);padding-top:14px;margin-bottom:14px;}
+.dt-time-row{display:flex;align-items:center;justify-content:center;gap:6px;}
+.dt-time-row select{font-family:'Chakra Petch';font-size:16px;font-weight:700;text-align:center;padding:8px 4px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--neon);width:58px;}
+.dt-time-row span{color:var(--tx3);font-weight:700;}
+.dt-ampm{display:flex;gap:4px;margin-left:8px;}
+.dt-ampm button{font-family:'Chakra Petch';font-size:12px;font-weight:700;padding:8px 10px;border-radius:7px;border:1px solid var(--linea2);background:var(--bg);color:var(--tx2);cursor:pointer;}
+.dt-ampm button.on{background:var(--neon);color:var(--bg);border-color:var(--neon);}
+.dt-actions{display:flex;gap:8px;}
+.dt-clear{flex:1;font-family:'Chakra Petch';font-size:12px;padding:9px;border-radius:8px;border:1px solid rgba(255,77,109,.35);background:transparent;color:var(--err);cursor:pointer;}
+.dt-ok{flex:1;font-family:'Chakra Petch';font-size:12px;font-weight:700;padding:9px;border-radius:8px;border:none;background:var(--neon);color:var(--bg);cursor:pointer;}
+/* materiales */
+.mat-item{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:16px 18px;margin-bottom:12px;}
+.mat-item.inact{opacity:.5;}
+.mat-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.mat-ico{width:38px;height:38px;border-radius:9px;background:rgba(255,210,63,.1);color:var(--oro);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.mat-body{flex:1;min-width:200px;}
+.mat-body b{font-family:'Chakra Petch';font-size:13px;color:#fff;display:block;margin-bottom:2px;}
+.mat-body .url-chip{font-size:11px;color:var(--tx3);word-break:break-all;}
+.mat-body .fecha-chip{font-size:11px;color:var(--neon);margin-top:3px;}
+.mat-acts{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.mat-acts button{font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--linea2);background:var(--bg);color:var(--tx2);cursor:pointer;}
+.mat-acts button:hover{border-color:var(--neon);color:var(--neon);}
+.mat-acts .bdel{border-color:rgba(255,77,109,.3);color:var(--err);}
+.mat-acts .bdel:hover{background:rgba(255,77,109,.1);}
+.mat-new{background:var(--panel2);border:1px dashed var(--linea2);border-radius:10px;padding:20px;}
+.mat-new h3{font-family:'Chakra Petch';font-size:13px;color:var(--neon);margin-bottom:14px;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fg input{width:100%;padding:9px 11px;font-size:13px;border:1px solid var(--linea2);border-radius:7px;background:var(--bg);color:var(--tx);font-family:'Inter';}
+.fg input:focus{outline:none;border-color:var(--neon);}
+.mat-msec{margin-bottom:28px;}
+.mat-msec h2{font-family:'Chakra Petch';font-size:13px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;padding:10px 0 10px;border-bottom:1px solid var(--linea);margin-bottom:14px;}
+.grp-checks{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+.grp-checks.hide{display:none!important;}
+.grp-chk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);background:var(--bg);border:1px solid var(--linea2);border-radius:7px;padding:6px 10px;cursor:pointer;white-space:nowrap;}
+.grp-chk input{accent-color:var(--neon);cursor:pointer;}
+.grp-save{font-family:'Chakra Petch';font-size:11px;font-weight:700;padding:7px 14px;border-radius:7px;border:none;background:var(--neon);color:var(--bg);cursor:pointer;align-self:flex-start;margin-top:2px;}
+.grp-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;transition:.15s;}
+.grp-edit{margin-top:10px;}
+.grp-edit-btn{font-family:'Chakra Petch';font-size:11px;padding:6px 12px;border-radius:7px;border:1px solid var(--linea2);background:var(--bg);color:var(--tx2);cursor:pointer;}
+.grp-edit-btn:hover{color:var(--neon);border-color:var(--neon);}
+.grp-fechas{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.grp-fecha-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.grp-badge{font-size:10px;font-family:'Chakra Petch';font-weight:600;padding:3px 9px;border-radius:100px;background:rgba(0,240,255,.1);color:var(--neon);border:1px solid var(--linea2);white-space:nowrap;}
+.fecha-chip.sm{font-size:11px;padding:2px 8px;}
+.fecha-chip.vacia{color:var(--tx3);background:transparent;border:1px dashed var(--linea);}
+.dt-trigger-sm{width:200px;max-width:100%;font-size:12px;padding:8px 10px;}
+@media(max-width:560px){.box{padding:22px 16px;}.ds{min-width:80px;}}
+@media(max-width:640px){
+  .dtools{flex-direction:column;align-items:stretch;}
+  .dtools .selact{width:100%;}
+  .dtools select,.dtools button{width:100%;justify-content:center;}
+  .dtools .sp{display:none;}
+  .tabs{gap:6px;}
+  .tab{flex:1;min-width:auto;padding:9px 8px;font-size:11px;justify-content:center;display:flex;align-items:center;gap:4px;}
+  .trimtabs{gap:6px;}
+  .trim-tab{flex:1;padding:8px 6px;font-size:11px;text-align:center;}
+  .mat-acts{flex-direction:column;align-items:stretch;}
+  .mat-acts > div{justify-content:space-between;}
+  .mat-acts button{width:100%;justify-content:center;display:flex;align-items:center;gap:6px;}
+  .ahead{gap:8px;}
+  .top h1{font-size:18px;}
+  table{font-size:12px;}
+  th,td{padding:8px 8px;}
+  .kpis{grid-template-columns:repeat(2,1fr);}
+  .actl-toolbar{flex-direction:column;align-items:stretch;}
+  .actl-trim{width:100%;}
+  .actl-table thead th:nth-child(2),.actl-table thead th:nth-child(3),
+  .actl-table td:nth-child(2),.actl-table td:nth-child(3){display:none;}
+  .drawer{width:100%;max-width:100%;}
+  .field-grid{grid-template-columns:1fr;}
+}
+@media(min-width:1300px){
+  .wrap{max-width:1280px;}
+  .box{padding:36px 44px;}
+}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.on{display:flex;}
+.mdbox{background:var(--panel);border:1px solid var(--linea2);border-radius:16px;padding:26px;max-width:600px;width:100%;max-height:86vh;overflow-y:auto;}
+.mdbox h3{font-size:17px;color:#fff;margin-bottom:2px;}
+.mdbox .mdsub{font-size:12px;color:var(--tx2);margin-bottom:14px;}
+.mdchip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--panel2);border:1px solid var(--linea);border-radius:100px;padding:5px 10px;margin:0 6px 6px 0;color:var(--tx2);}
+.mdchip.warn{color:var(--oro);border-color:rgba(255,210,63,.3);}
+.mdcode{background:#03040a;border:1px solid var(--linea);border-radius:10px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#c9f9ff;white-space:pre-wrap;max-height:160px;overflow-y:auto;margin:10px 0 16px;}
+.mdrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--linea);font-size:13px;}
+.mdrow small{color:var(--tx3);}
+.mdrow input{width:64px;background:var(--panel2);border:1px solid var(--linea);border-radius:6px;color:#fff;padding:5px 8px;text-align:center;}
+.mdbox.wide{max-width:760px;}
+.md-toggle{background:var(--panel2);border:1px solid var(--linea2);color:var(--neon);border-radius:8px;padding:9px 14px;font-size:12.5px;cursor:pointer;margin:6px 0 14px;display:inline-flex;align-items:center;gap:6px;}
+.md-toggle:hover{border-color:var(--neon);}
+.md-docpreview{background:#fff;color:#1b1b1b;border-radius:10px;padding:30px 34px;font-family:'Calibri',Arial,sans-serif;font-size:13.5px;margin:0 0 16px;max-height:340px;overflow-y:auto;}
+.md-docpreview div{margin-bottom:7px;}
+.md-checklist{margin:0 0 16px;max-height:340px;overflow-y:auto;border:1px solid var(--linea);border-radius:10px;padding:6px;}
+.md-item{display:flex;gap:9px;align-items:flex-start;padding:8px 8px;border-radius:7px;font-size:12.5px;}
+.md-item.no{background:rgba(255,77,109,.08);}
+.md-item.si{background:rgba(0,255,163,.06);}
+.md-item i{margin-top:2px;flex-shrink:0;}
+.md-item.no i{color:var(--err);}.md-item.si i{color:var(--ok);}
+.md-item b{display:block;color:#fff;font-weight:600;}
+.md-item span{color:var(--tx2);font-size:11.5px;}
+.md-reanalisis{background:var(--panel2);border:1px solid var(--linea2);border-radius:10px;padding:14px;margin:0 0 16px;display:none;}
+.md-reanalisis.on{display:block;}
+.md-reanalisis .cmp{display:flex;align-items:center;gap:14px;font-family:'Chakra Petch';margin:10px 0;}
+.md-reanalisis .cmp b{font-size:20px;color:var(--neon);}
+.md-reanalisis .cmp .arrow{color:var(--tx3);}
+.md-reanalisis .nota-vieja{color:var(--tx3);text-decoration:line-through;}
+.mdtot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px 14px;background:var(--panel2);border-radius:10px;border:1px solid var(--linea2);}
+.mdtot b{font-family:'Chakra Petch';font-size:20px;color:var(--neon);}
+.mdbtns{display:flex;gap:10px;margin-top:16px;}
+</style></head><body><div class="wrap">
+
+<div class="top">
+  <div class="br"><img src="logo.png"><div><b>Instituto Fermín Naudeau</b><span>Aula Virtual · Panel Docente</span></div></div>
+  <a class="back" href="index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+</div>
+
+<!-- LOGIN -->
+<div class="box" id="scrLogin">
+  <div class="ico-big"><i class="ti ti-shield-lock"></i></div>
+  <h1>Panel Académico</h1>
+  <p class="sub">Control del aula virtual. Acceso restringido al docente.</p>
+  <div class="fl">
+    <label>Clave de profesor</label>
+    <input id="inPass" type="password" placeholder="••••••">
+    <button class="be" id="btnLogin" onclick="entrar()"><i class="ti ti-login-2"></i> Entrar</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="box hide" id="scrPanel">
+  <div class="top" style="margin-bottom:18px">
+    <h1 style="font-size:22px;text-align:left">Panel Académico</h1>
+    <a class="back" onclick="salir()"><i class="ti ti-logout"></i> Salir</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabCtrl" onclick="verTab('ctrl')"><i class="ti ti-settings"></i> Control</button>
+    <button class="tab" id="tabMat" onclick="verTab('mat')"><i class="ti ti-paperclip"></i> Materiales</button>
+    <button class="tab" id="tabRes" onclick="verTab('res')"><i class="ti ti-chart-bar"></i> Resultados</button>
+  </div>
+
+  <!-- CONTROL DE ACTIVIDADES -->
+  <div id="panCtrl">
+    <section class="kpis" aria-label="Resumen del trimestre">
+      <div class="kpi"><span>Total</span><b id="kpiTotal">0</b></div>
+      <div class="kpi ab"><span>Abiertas</span><b id="kpiAbiertas">0</b></div>
+      <div class="kpi ce"><span>Cerradas</span><b id="kpiCerradas">0</b></div>
+      <div class="kpi sy"><span>Sincroniz.</span><b id="kpiSync">0</b></div>
+    </section>
+
+    <div class="actl-toolbar">
+      <div class="actl-search"><i class="ti ti-search"></i><input id="actlBuscar" type="search" placeholder="Buscar actividad… ( / )" oninput="renderControl()"></div>
+      <div class="actl-chips" id="actlChips"></div>
+      <select class="actl-trim" id="actlTrimSel" onchange="setTrimCtrl(this.value)">
+        <option value="1">Trimestre 1</option>
+        <option value="2">Trimestre 2</option>
+        <option value="3">Trimestre 3</option>
+      </select>
+    </div>
+
+    <div class="tbl-wrap" style="max-height:560px">
+      <table class="actl-table">
+        <thead><tr><th>Actividad</th><th>Tipo</th><th>Medida</th><th>Estado</th><th>Sync</th><th></th></tr></thead>
+        <tbody id="listaCtrl"></tbody>
+      </table>
+    </div>
+    <p class="actl-foot" id="actlFoot"></p>
+    <div class="msg" id="msgCtrl"></div>
+  </div>
+
+  <!-- MATERIALES -->
+  <div id="panMat" class="hide">
+    <div class="trimtabs">
+      <button class="trim-tab on" id="mtrim1" onclick="setTrimMat(1,this)">Trimestre 1</button>
+      <button class="trim-tab" id="mtrim2" onclick="setTrimMat(2,this)">Trimestre 2</button>
+      <button class="trim-tab" id="mtrim3" onclick="setTrimMat(3,this)">Trimestre 3</button>
+    </div>
+    <div id="listaMat"></div>
+    <div class="msg" id="msgMat"></div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="panRes" class="hide">
+    <div id="resBreadcrumb" class="res-breadcrumb hide"></div>
+    <div id="resNivelPicker" class="res-picker"></div>
+    <div id="resGrupoPicker" class="res-picker hide"></div>
+
+    <div id="resContenido" class="hide">
+      <div class="dtools">
+        <div class="selact" style="margin:0;flex:1">
+          <select id="selActRes" onchange="cargarResultados()"></select>
+        </div>
+        <select id="filGrado" onchange="renderTabla()"><option value="">Todos los grupos</option></select>
+        <button onclick="cargarResultados()"><i class="ti ti-refresh"></i></button>
+        <div class="sp"></div>
+        <button onclick="abrirPegarNotas()"><i class="ti ti-clipboard-list"></i> Pegar notas</button>
+        <button onclick="marcarSinEntregarComoCero()"><i class="ti ti-circle-x"></i> Sin entregar = 0.0</button>
+        <button id="btnAnalizarLab1" class="hide" onclick="analizarLab1Automatico()"><i class="ti ti-robot"></i> Analizar Lab 1 automáticamente</button>
+        <button onclick="exportarCSV()"><i class="ti ti-file-spreadsheet"></i> Exportar</button>
+      </div>
+      <div class="dstat">
+        <div class="ds"><b id="dsTot">0</b><span>Entregas</span></div>
+        <div class="ds ap"><b id="dsAp">0</b><span>Aprobados</span></div>
+        <div class="ds re"><b id="dsRe">0</b><span>Reprobados</span></div>
+        <div class="ds"><b id="dsProm">—</b><span>Promedio</span></div>
+      </div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>#</th><th>Estudiante</th><th>Grupo</th><th>Puntaje</th><th>Nota (editable)</th><th>Intentos</th><th>Fecha</th></tr></thead><tbody id="tbRes"></tbody></table>
+      </div>
+      <div class="msg" id="msgRes"></div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<!-- DRAWER DE ACTIVIDAD -->
+<div class="drawer-ov" id="drawerOv" onclick="cerrarDrawer()"></div>
+<aside class="drawer" id="drawerAct" aria-hidden="true">
+  <div class="drawer-hdr">
+    <div>
+      <p class="eyebrow" id="drTipo">Actividad</p>
+      <h2 id="drTitulo">—</h2>
+      <p class="muted" id="drGrupos">—</p>
+    </div>
+    <button class="drawer-close" onclick="cerrarDrawer()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="drawer-body">
+    <section>
+      <p class="dsec-label">Grupo</p>
+      <div class="grp-chips" id="drGrpChips"></div>
+    </section>
+    <section>
+      <p class="dsec-label">Disponibilidad</p>
+      <div class="row-toggle"><b>Actividad abierta</b><div class="tg" id="drTgAbierta" onclick="toggleAbiertaDrawer()"></div></div>
+      <div class="field-grid">
+        <label>Apertura<input type="text" readonly class="dt-trigger" id="drApertura" placeholder="Sin definir" onclick="abrirCal('drApertura')"></label>
+        <label>Cierre<input type="text" readonly class="dt-trigger" id="drCierre" placeholder="Sin definir" onclick="abrirCal('drCierre')"></label>
+      </div>
+    </section>
+    <section>
+      <p class="dsec-label">Reglas</p>
+      <div class="field-grid">
+        <label>Intentos permitidos<input type="number" min="1" max="20" id="drIntentos" value="1"></label>
+        <label>Trimestre
+          <select id="drTrimestre" onchange="moverTrimestreDrawer(this.value)">
+            <option value="1">Trimestre 1</option>
+            <option value="2">Trimestre 2</option>
+            <option value="3">Trimestre 3</option>
+          </select>
+        </label>
+      </div>
+    </section>
+    <section>
+      <p class="dsec-label">Sincronización con Notas IFN</p>
+      <div class="row-toggle"><b>Enviar nota al portal</b><div class="tg" id="drTgSync" onclick="toggleSyncDrawer()"></div></div>
+      <div class="field-grid hide" id="drSyncFields">
+        <label>Tipo de columna<select id="drSyncTipo" onchange="actualizarLabelsIdxDrawer()"><option value="notasDiarias">Nota Diaria (ND)</option><option value="apreciaciones">Apreciación (Ap.)</option><option value="examen">Examen</option></select></label>
+        <label id="drSyncIdxLabel">Número de columna<select id="drSyncIdx"></select></label>
+      </div>
+      <button class="be sec sm hide" id="drSyncGuardar" style="width:100%;margin-top:10px" onclick="guardarSyncDrawer()"><i class="ti ti-link"></i> Guardar sincronización</button>
+    </section>
+    <section id="drRubricaSec" class="hide">
+      <p class="dsec-label">Rúbrica</p>
+      <button class="rubric-summary" onclick="abrirRubricaModal()"><span id="drRubricaResumen">— criterios · — pts</span><i class="ti ti-chevron-right"></i></button>
+    </section>
+  </div>
+  <div class="drawer-footer">
+    <button class="be sec" onclick="cerrarDrawer()">Cancelar</button>
+    <button class="be" onclick="guardarDrawer()"><i class="ti ti-device-floppy"></i> Guardar cambios</button>
+  </div>
+</aside>
+
+<!-- MODAL RÚBRICA (Control de actividades) -->
+<div class="ov" id="ovRubricaCtrl">
+  <div class="mdbox">
+    <h3>Rúbrica del laboratorio</h3>
+    <div class="mdsub">Criterios y puntos — la nota final se calcula sola en escala MEDUCA 1.0–5.0, sin importar el total de puntos.</div>
+    <div id="rubBodyModal"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;flex-wrap:wrap;gap:10px">
+      <button type="button" class="be sec sm" onclick="rubAgregarCriterio()"><i class="ti ti-plus"></i> Agregar criterio</button>
+      <span style="font-size:12px;color:var(--tx2)">Total: <b class="rub-total" id="rubTotalModal" style="color:#fff">0</b> pts</span>
+    </div>
+    <div style="margin-top:14px">
+      <label style="display:block;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Pegar varios criterios a la vez (uno por línea, opcional ";puntos" al final — ej. "Ortografía;5")</label>
+      <textarea class="rub-bulk" id="rubBulkModal" placeholder="Formato de texto;5&#10;Alineación y párrafos;5&#10;Contenido;5&#10;Dominio de herramientas;5" rows="3"></textarea>
+      <button type="button" class="be sec sm" style="margin-top:8px" onclick="rubImportarMasivo()"><i class="ti ti-clipboard-text"></i> Importar lista pegada</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="be sec" style="flex:1;margin:0" onclick="cerrarRubricaModal()">Cerrar</button>
+      <button class="be" style="flex:1;margin:0" onclick="guardarRubricaControl()"><i class="ti ti-device-floppy"></i> Guardar rúbrica</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALENDARIO + HORA PERSONALIZADO -->
+<div id="dtPicker" class="dt-picker hide">
+  <div class="dt-card">
+    <div class="dt-hdr">
+      <button onclick="navMesCal(-1)"><i class="ti ti-chevron-left"></i></button>
+      <span id="dtMesLbl"></span>
+      <button onclick="navMesCal(1)"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <div class="dt-dow">
+      <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+    </div>
+    <div class="dt-grid" id="dtGrid"></div>
+    <div class="dt-time">
+      <div class="dt-time-row">
+        <select id="dtHora"></select>
+        <span>:</span>
+        <select id="dtMin"></select>
+        <div class="dt-ampm">
+          <button type="button" id="dtAM" class="on" onclick="setAmPm('AM')">AM</button>
+          <button type="button" id="dtPM" onclick="setAmPm('PM')">PM</button>
+        </div>
+      </div>
+    </div>
+    <div class="dt-actions">
+      <button class="dt-clear" onclick="limpiarFechaCal()"><i class="ti ti-x"></i> Quitar fecha</button>
+      <button class="dt-ok" onclick="confirmarFechaCal()"><i class="ti ti-check"></i> Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+function show(s){ ['scrLogin','scrPanel'].forEach(x=>$(x).classList.add('hide')); $(s).classList.remove('hide'); window.scrollTo(0,0); }
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let CONFIG_ACTS = {};
+let RESULTADOS = [];
+let trimCtrl = 1;
+let trimMat = 1;
+
+// ============================================================
+// LOGIN
+// ============================================================
+window.entrar = async () => {
+  const p=$('inPass').value, m=$('msgLogin');
+  if(!p){ m.className='msg err'; m.textContent='Escribe la clave.'; return; }
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; $('btnLogin').disabled=true;
+  try{
+    const s=await getDoc(doc(db,'config','admin'));
+    const real=s.exists()?s.data().password:null;
+    $('btnLogin').disabled=false;
+    if(real && p===real){ m.className='msg'; abrirPanel(); }
+    else{ m.className='msg err'; m.textContent='Clave incorrecta.'; }
+  }catch(e){ $('btnLogin').disabled=false; m.className='msg err'; m.textContent='Error de conexión.'; }
+};
+window.salir = ()=>{ $('inPass').value=''; show('scrLogin'); };
+
+async function abrirPanel(){
+  show('scrPanel');
+  await cargarConfigActs();
+  renderControl();
+  renderResNiveles();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+window.verTab = (t)=>{
+  ['ctrl','mat','res'].forEach(x=>{
+    $('tab'+x.charAt(0).toUpperCase()+x.slice(1))?.classList.toggle('on',t===x);
+    const el = $('pan'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(el) el.classList.toggle('hide',t!==x);
+  });
+  if(t==='mat') cargarMateriales();
+};
+
+// ============================================================
+// CONFIG DE ACTIVIDADES
+// ============================================================
+async function cargarConfigActs(){
+  CONFIG_ACTS={};
+  for(const a of CATALOGO_ACTIVIDADES){
+    try{
+      const s=await getDoc(doc(db,'actividades',a.id));
+      CONFIG_ACTS[a.id]=s.exists()?s.data():{};
+    }catch(e){ CONFIG_ACTS[a.id]={}; }
+  }
+}
+
+function gKey(grado){ return 'g_'+grado.replace(/[°\s]/g,''); }
+
+// Trimestre real de una actividad: lo guardado en Firebase tiene prioridad sobre el del catálogo
+function trimestreReal(actId){
+  const c = CONFIG_ACTS[actId]||{};
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  return c.trimestre || a?.trimestre || 1;
+}
+
+window.setTrimCtrl = (t)=>{
+  trimCtrl = parseInt(t);
+  $('actlTrimSel').value = String(trimCtrl);
+  renderControl();
+};
+window.setTrimMat = (t,btn)=>{
+  trimMat=t;
+  document.querySelectorAll('#panMat .trim-tab').forEach(b=>b.classList.remove('on'));
+  btn?.classList.add('on');
+  cargarMateriales();
+};
+
+// ============================================================
+// CONTROL DE ACTIVIDADES — tabla compacta + drawer lateral
+// ============================================================
+let actlFiltroMateria = '';
+let drCurrentActId = null;
+let drCurrentGrado = null;
+
+function renderControl(){
+  const actsDelTrim = CATALOGO_ACTIVIDADES.filter(a=>trimestreReal(a.id)===trimCtrl);
+
+  // Métricas del trimestre completo (no dependen de los filtros de búsqueda/materia)
+  let nAbiertas=0, nCerradas=0, nSync=0;
+  actsDelTrim.forEach(a=>{
+    const c = CONFIG_ACTS[a.id]||{};
+    const algunaAbierta = a.grupos.some(g=>{
+      const gc = c[gKey(g)]||{};
+      return gc.abierta !== undefined ? gc.abierta : (c.abierta !== false);
+    });
+    if(algunaAbierta) nAbiertas++; else nCerradas++;
+    if(c.sync?.activo) nSync++;
+  });
+  $('kpiTotal').textContent = actsDelTrim.length;
+  $('kpiAbiertas').textContent = nAbiertas;
+  $('kpiCerradas').textContent = nCerradas;
+  $('kpiSync').textContent = nSync;
+
+  // Chips de materia (solo las que tienen actividades en este trimestre)
+  const materiasConActs = MATERIAS.filter(m=>actsDelTrim.some(a=>a.materia===m.id));
+  if(actlFiltroMateria && !materiasConActs.some(m=>m.id===actlFiltroMateria)) actlFiltroMateria='';
+  $('actlChips').innerHTML = `<button class="actl-chip ${actlFiltroMateria===''?'on':''}" onclick="setFiltroMateria('')">Todas</button>` +
+    materiasConActs.map(m=>`<button class="actl-chip ${actlFiltroMateria===m.id?'on':''}" onclick="setFiltroMateria('${m.id}')">${m.n}</button>`).join('');
+
+  // Filtro por búsqueda + materia
+  const q = ($('actlBuscar')?.value||'').trim().toLowerCase();
+  let filtradas = actsDelTrim.filter(a=>{
+    if(actlFiltroMateria && a.materia!==actlFiltroMateria) return false;
+    if(q && !(a.nombre.toLowerCase().includes(q) || a.grupos.join(' ').toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((x,y)=> x.materia.localeCompare(y.materia) || x.nombre.localeCompare(y.nombre));
+
+  if(!filtradas.length){
+    $('listaCtrl').innerHTML = `<tr><td colspan="6"><div class="actl-empty">${actsDelTrim.length? 'No hay actividades que coincidan con el filtro.' : `No hay actividades asignadas al Trimestre ${trimCtrl}.`}<br><button class="be sec sm" onclick="limpiarFiltrosCtrl()">Limpiar filtros</button></div></td></tr>`;
+    $('actlFoot').textContent = `0 actividades · Trimestre ${trimCtrl}`;
+    return;
+  }
+  $('listaCtrl').innerHTML = filtradas.map(a=>renderActRow(a)).join('');
+  $('actlFoot').textContent = `${filtradas.length} actividad${filtradas.length>1?'es':''} · Trimestre ${trimCtrl}`;
+}
+
+window.setFiltroMateria = (id)=>{ actlFiltroMateria=id; renderControl(); };
+window.limpiarFiltrosCtrl = ()=>{ actlFiltroMateria=''; if($('actlBuscar')) $('actlBuscar').value=''; renderControl(); };
+
+function renderActRow(a){
+  const c = CONFIG_ACTS[a.id]||{};
+  const estados = a.grupos.map(g=>{
+    const gc = c[gKey(g)]||{};
+    return gc.abierta !== undefined ? gc.abierta : (c.abierta !== false);
+  });
+  const todasAbiertas = estados.every(Boolean);
+  const todasCerradas = estados.every(e=>!e);
+  const estadoCls = todasAbiertas ? 'abierta' : (todasCerradas ? 'cerrada' : 'mixta');
+  const estadoTxt = todasAbiertas ? 'Abierta' : (todasCerradas ? 'Cerrada' : 'Parcial');
+  const sync = c.sync||{};
+  const syncOn = !!sync.activo;
+  const trimReal = trimestreReal(a.id);
+  const syncTipo = sync.tipoColumna || 'apreciaciones';
+  const syncIdx = (sync.indice ?? 0);
+  const syncLabel = syncTipo==='examen' ? 'Examen' : (syncTipo==='notasDiarias'?'ND':'Ap.')+(syncIdx+1);
+  const esLab = a.tipo==='laboratorio';
+  const esExamen = a.tipo==='examen';
+  const medida = esLab ? (rubricaBaseDe(a).reduce((s,x)=>s+(parseFloat(x.pts)||0),0)+' pts · rúbrica') : (a.sub||'—');
+  const tipoIcon = esLab ? 'ti-flask' : (esExamen ? 'ti-certificate' : 'ti-help-circle');
+  const tipoLabel = esLab ? 'Laboratorio' : (esExamen ? 'Examen' : 'Quiz');
+  return `<tr class="actl-row" onclick="abrirDrawer('${a.id}')">
+    <td><span class="actl-name"><b>${a.nombre}</b><span>${a.grupos.join(' · ')}</span></span></td>
+    <td><span class="actl-tipo"><i class="ti ${tipoIcon}"></i> ${tipoLabel}</span></td>
+    <td class="actl-medida">${medida}</td>
+    <td><span class="estado ${estadoCls}">● ${estadoTxt}</span></td>
+    <td>${syncOn?`<span class="estado sync"><i class="ti ti-link"></i> T${trimReal}·${syncLabel}</span>`:`<span class="estado nosync">Sin sync</span>`}</td>
+    <td><button class="actl-gear" onclick="event.stopPropagation();abrirDrawer('${a.id}')" aria-label="Configurar actividad"><i class="ti ti-settings"></i></button></td>
+  </tr>`;
+}
+
+// ---------- RÚBRICA EDITABLE POR LABORATORIO (estado en edición, sin guardar todavía) ----------
+let RUBRICA_EDIT = {}; // actId -> [{criterio, pts}]
+
+function rubricaBaseDe(a){
+  const guardada = (CONFIG_ACTS[a.id]||{}).rubrica;
+  if(guardada && guardada.length) return guardada;
+  return a.rubrica || [
+    {criterio:'Estructura HTML', pts:5},
+    {criterio:'Uso correcto de etiquetas', pts:5},
+    {criterio:'Organización del código', pts:5},
+    {criterio:'Cumplimiento de la actividad', pts:5}
+  ];
+}
+function getRubricaEdit(a){
+  if(!RUBRICA_EDIT[a.id]) RUBRICA_EDIT[a.id] = JSON.parse(JSON.stringify(rubricaBaseDe(a)));
+  return RUBRICA_EDIT[a.id];
+}
+
+// ============================================================
+// DRAWER DE ACTIVIDAD
+// ============================================================
+window.abrirDrawer = (actId)=>{
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  if(!a) return;
+  drCurrentActId = actId;
+  drCurrentGrado = a.grupos[0];
+  $('drTipo').textContent = a.tipo==='laboratorio' ? 'Laboratorio' : (a.tipo==='examen' ? 'Examen' : 'Quiz');
+  $('drTitulo').textContent = a.nombre;
+  $('drGrupos').textContent = a.grupos.join(' · ');
+  $('drGrpChips').innerHTML = a.grupos.map(g=>`<button type="button" class="actl-chip ${g===drCurrentGrado?'on':''}" onclick="seleccionarGrupoDrawer('${g}',this)">${g}</button>`).join('');
+  $('drTrimestre').value = String(trimestreReal(actId));
+  $('drRubricaSec').classList.toggle('hide', a.tipo!=='laboratorio');
+  cargarCamposGrupoDrawer();
+  cargarSyncDrawer();
+  actualizarResumenRubricaDrawer();
+  $('msgCtrl').className='msg'; $('msgCtrl').textContent='';
+  $('drawerOv').classList.add('on');
+  $('drawerAct').classList.add('on');
+  $('drawerAct').setAttribute('aria-hidden','false');
+};
+
+window.cerrarDrawer = ()=>{
+  $('drawerOv').classList.remove('on');
+  $('drawerAct').classList.remove('on');
+  $('drawerAct').setAttribute('aria-hidden','true');
+};
+
+window.seleccionarGrupoDrawer = (g, btn)=>{
+  drCurrentGrado = g;
+  document.querySelectorAll('#drGrpChips .actl-chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  cargarCamposGrupoDrawer();
+};
+
+function cargarCamposGrupoDrawer(){
+  const c = CONFIG_ACTS[drCurrentActId]||{};
+  const gc = c[gKey(drCurrentGrado)]||{};
+  const abierta = gc.abierta !== undefined ? gc.abierta : (c.abierta !== false);
+  const intentos = gc.intentos || c.intentos || 1;
+  const apertura = gc.apertura || '';
+  const cierre = gc.cierre || '';
+  $('drTgAbierta').classList.toggle('on', abierta);
+  $('drIntentos').value = intentos;
+  const ap = $('drApertura'); ap.dataset.iso = apertura; ap.value = fmtFecha12h(apertura); ap.classList.remove('input-err');
+  const ci = $('drCierre'); ci.dataset.iso = cierre; ci.value = fmtFecha12h(cierre); ci.classList.remove('input-err');
+}
+
+window.toggleAbiertaDrawer = ()=>{ $('drTgAbierta').classList.toggle('on'); };
+
+window.guardarDrawer = async ()=>{
+  const actId = drCurrentActId, grado = drCurrentGrado;
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const c = CONFIG_ACTS[actId]||{}; const k = gKey(grado);
+  if(!c[k]) c[k]={};
+  const apInput = $('drApertura'), ciInput = $('drCierre');
+  const apertura = apInput.dataset.iso||'';
+  const cierre = ciInput.dataset.iso||'';
+  const m = $('msgCtrl');
+  apInput.classList.remove('input-err'); ciInput.classList.remove('input-err');
+
+  // Las fechas se guardan como texto "YYYY-MM-DDTHH:MM" (hora local, sin zona horaria),
+  // así que aquí las convertimos a timestamps reales para compararlas. Si alguna quedó mal
+  // formada (dato corrupto/viejo), la tratamos como "sin definir" en vez de bloquear el guardado.
+  const tsApertura = apertura ? new Date(apertura).getTime() : NaN;
+  const tsCierre = cierre ? new Date(cierre).getTime() : NaN;
+  const aperturaValida = apertura && !isNaN(tsApertura);
+  const cierreValido = cierre && !isNaN(tsCierre);
+
+  if(aperturaValida && cierreValido && tsCierre <= tsApertura){
+    m.className='msg err';
+    m.textContent = `⚠ La fecha de cierre (${fmtFecha12h(cierre)}) queda antes o igual que la de apertura (${fmtFecha12h(apertura)}). Corrige una de las dos fechas (revisa también AM/PM) y guarda de nuevo — mientras tanto no se guardó ningún cambio de fechas.`;
+    apInput.classList.add('input-err'); ciInput.classList.add('input-err');
+    return;
+  }
+
+  c[k] = {
+    ...c[k],
+    abierta: $('drTgAbierta').classList.contains('on'),
+    intentos: parseInt($('drIntentos').value)||1,
+    apertura: aperturaValida ? apertura : '',
+    cierre: cierreValido ? cierre : ''
+  };
+  CONFIG_ACTS[actId]=c;
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    const data={nombre:a.nombre};
+    data[k]=c[k];
+    await setDoc(doc(db,'actividades',actId),data,{merge:true});
+    renderControl();
+    m.className='msg ok'; m.textContent=`✓ "${a.nombre}" guardado para ${grado}${c[k].apertura?` · abre ${fmtFecha12h(c[k].apertura)}`:''}${c[k].cierre?` · cierra ${fmtFecha12h(c[k].cierre)}`:''}.`;
+  }catch(e){
+    console.error('guardarDrawer: fallo al guardar', actId, k, c[k], e);
+    m.className='msg err'; m.textContent='Error: '+e.message;
+  }
+};
+
+// Mover una actividad a otro trimestre (afecta también la sincronización si está activa).
+// Se aplica de inmediato (como antes), porque cambia en qué trimestre aparece la fila.
+window.moverTrimestreDrawer = async (nuevoTrim) => {
+  nuevoTrim = parseInt(nuevoTrim);
+  const actId = drCurrentActId;
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const c = CONFIG_ACTS[actId]||{};
+  const m = $('msgCtrl');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Moviendo actividad…';
+  try{
+    const data={trimestre:nuevoTrim};
+    if(c.sync?.activo){
+      data.sync = {...c.sync, trimestre:nuevoTrim};
+    }
+    await setDoc(doc(db,'actividades',actId),data,{merge:true});
+    CONFIG_ACTS[actId]={...c, ...data};
+    if(c.sync?.activo) await propagarActividadANotas(actId);
+    cerrarDrawer();
+    renderControl();
+    m.className='msg ok'; m.textContent=`✓ "${a.nombre}" movida a Trimestre ${nuevoTrim}.`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ---------- Sincronización con Notas IFN (drawer) ----------
+function cargarSyncDrawer(){
+  const c = CONFIG_ACTS[drCurrentActId]||{};
+  const sync = c.sync||{};
+  const on = !!sync.activo;
+  $('drTgSync').classList.toggle('on', on);
+  $('drSyncFields').classList.toggle('hide', !on);
+  $('drSyncGuardar').classList.toggle('hide', !on);
+  $('drSyncTipo').value = sync.tipoColumna || 'apreciaciones';
+  actualizarLabelsIdxDrawer(sync.indice ?? 0);
+}
+
+window.toggleSyncDrawer = ()=>{
+  const on = $('drTgSync').classList.toggle('on');
+  $('drSyncFields').classList.toggle('hide', !on);
+  $('drSyncGuardar').classList.toggle('hide', !on);
+  if(!on) guardarSyncDrawer(true);
+};
+
+window.actualizarLabelsIdxDrawer = (curIdx) => {
+  const tipo = $('drSyncTipo').value;
+  const esExamen = tipo==='examen';
+  $('drSyncIdxLabel').classList.toggle('hide', esExamen);
+  if(esExamen){
+    $('drSyncIdx').innerHTML = '<option value="0" selected>Examen (única casilla)</option>';
+    return;
+  }
+  const pref = tipo==='notasDiarias'?'ND':'Ap.';
+  const sel = $('drSyncIdx');
+  const cur = curIdx!==undefined ? curIdx : (parseInt(sel.value)||0);
+  sel.innerHTML = Array.from({length:10},(_,i)=>`<option value="${i}" ${i===cur?'selected':''}>${pref}${i+1}</option>`).join('');
+};
+
+window.guardarSyncDrawer = async (off)=>{
+  const actId = drCurrentActId;
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const c = CONFIG_ACTS[actId]||{};
+  const activo = off ? false : $('drTgSync').classList.contains('on');
+  const trimReal = trimestreReal(actId);
+  const sync = activo?{
+    activo:true,
+    trimestre:trimReal,
+    tipoColumna: $('drSyncTipo').value || 'apreciaciones',
+    indice: parseInt($('drSyncIdx').value)||0
+  }:{activo:false};
+  const m=$('msgCtrl');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    await setDoc(doc(db,'actividades',actId),{sync},{merge:true});
+    CONFIG_ACTS[actId]={...c,sync};
+    if(activo) await propagarActividadANotas(actId);
+    renderControl();
+    m.className='msg ok'; m.textContent=`✓ Sincronización de "${a.nombre}" actualizada.`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ---------- Rúbrica (modal dedicado, abierto desde el drawer) ----------
+function actualizarResumenRubricaDrawer(){
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===drCurrentActId);
+  if(!a || a.tipo!=='laboratorio') return;
+  const arr = rubricaBaseDe(a);
+  const total = arr.reduce((s,x)=>s+(parseFloat(x.pts)||0),0);
+  $('drRubricaResumen').textContent = `${arr.length} criterio${arr.length!==1?'s':''} · ${total} pts`;
+}
+
+function renderRubricaRowsModal(){
+  const arr = RUBRICA_EDIT[drCurrentActId]||[];
+  if(!arr.length) return `<p style="font-size:12px;color:var(--tx3);margin-bottom:8px">Sin criterios. Agrega al menos uno.</p>`;
+  return arr.map((c,i)=>`
+    <div class="rub-row">
+      <input type="text" class="rc-label" value="${(c.criterio||'').replace(/"/g,'&quot;')}" placeholder="Nombre del criterio" onchange="rubActualizarLabel(${i},this.value)">
+      <input type="number" class="rc-pts" min="0" step="0.5" value="${c.pts}" oninput="rubActualizarPts(${i},this.value)">
+      <button type="button" class="rc-del" title="Eliminar criterio" onclick="rubEliminarCriterio(${i})"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+}
+function refrescarRubricaTotalModal(){
+  const arr = RUBRICA_EDIT[drCurrentActId]||[];
+  const total = arr.reduce((s,c)=>s+(parseFloat(c.pts)||0),0);
+  $('rubTotalModal').textContent = total;
+}
+function refrescarRubricaModal(){
+  $('rubBodyModal').innerHTML = renderRubricaRowsModal();
+  refrescarRubricaTotalModal();
+}
+
+window.abrirRubricaModal = ()=>{
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===drCurrentActId);
+  getRubricaEdit(a);
+  refrescarRubricaModal();
+  $('ovRubricaCtrl').classList.add('on');
+};
+window.cerrarRubricaModal = ()=>{ $('ovRubricaCtrl').classList.remove('on'); };
+
+window.rubAgregarCriterio = ()=>{
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===drCurrentActId);
+  getRubricaEdit(a);
+  RUBRICA_EDIT[drCurrentActId].push({criterio:'Nuevo criterio', pts:5});
+  refrescarRubricaModal();
+};
+window.rubEliminarCriterio = (idx)=>{
+  RUBRICA_EDIT[drCurrentActId].splice(idx,1);
+  refrescarRubricaModal();
+};
+window.rubActualizarLabel = (idx, val)=>{ RUBRICA_EDIT[drCurrentActId][idx].criterio = val; };
+window.rubActualizarPts = (idx, val)=>{
+  let v = parseFloat(val); if(isNaN(v)||v<0) v=0;
+  RUBRICA_EDIT[drCurrentActId][idx].pts = v;
+  refrescarRubricaTotalModal();
+};
+// Pegar varias líneas a la vez en lugar de dar clic en "Agregar criterio" una por una.
+// Acepta líneas tipo "Nombre del criterio;5", "Nombre del criterio,5", "Nombre - 5",
+// o pegado directo desde Excel/Sheets (separado por tab). Si una línea no trae puntos,
+// se agrega con 5 pts por defecto para que el docente solo ajuste el número.
+window.rubImportarMasivo = ()=>{
+  const ta = $('rubBulkModal');
+  const texto = ta.value;
+  if(!texto || !texto.trim()){ alert('Pega primero la lista de criterios en el cuadro de texto (uno por línea).'); return; }
+  const lineas = texto.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const nuevos = lineas.map(linea=>{
+    const m = linea.match(/^(.*?)[\t;,]\s*(\d+(?:[.,]\d+)?)\s*(?:pts?)?$/i) || linea.match(/^(.*?)\s+-\s*(\d+(?:[.,]\d+)?)\s*(?:pts?)?$/i);
+    if(m) return { criterio: m[1].trim(), pts: parseFloat(m[2].replace(',','.')) };
+    return { criterio: linea, pts: 5 };
+  }).filter(c=>c.criterio);
+  if(!nuevos.length){ alert('No se reconoció ningún criterio en el texto pegado.'); return; }
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===drCurrentActId);
+  getRubricaEdit(a);
+  RUBRICA_EDIT[drCurrentActId].push(...nuevos);
+  ta.value = '';
+  refrescarRubricaModal();
+};
+window.guardarRubricaControl = async ()=>{
+  const actId = drCurrentActId;
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const arr = (RUBRICA_EDIT[actId]||[]).filter(c=>c.criterio && c.criterio.trim()).map(c=>({criterio:c.criterio.trim(), pts: parseFloat(c.pts)||0}));
+  if(!arr.length){ alert('Agrega al menos un criterio con nombre.'); return; }
+  const m=$('msgCtrl'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    await setDoc(doc(db,'actividades',actId),{ rubrica: arr, nombre:a.nombre }, {merge:true});
+    CONFIG_ACTS[actId] = {...(CONFIG_ACTS[actId]||{}), rubrica: arr};
+    RUBRICA_EDIT[actId] = JSON.parse(JSON.stringify(arr));
+    actualizarResumenRubricaDrawer();
+    renderControl();
+    cerrarRubricaModal();
+    m.className='msg ok'; m.textContent=`✓ Rúbrica de "${a.nombre}" actualizada — ${arr.reduce((s,c)=>s+c.pts,0)} pts totales (nota se ajusta sola a la escala MEDUCA 1.0–5.0).`;
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// Convierte cualquier fecha (timestamp numérico de Date.now(), ISO string, o ya "YYYY-MM-DD")
+// al formato "YYYY-MM-DD" que espera el portal del estudiante. Si esto no se hace, un
+// timestamp numérico (como horaEntrega) queda guardado tal cual y rompe estudiante.html
+// al intentar hacer fecha.split('-') sobre un número.
+function normFechaISO(f){
+  if(!f) return '';
+  if(typeof f==='string' && /^\d{4}-\d{2}-\d{2}/.test(f)) return f.slice(0,10);
+  const d=new Date(f);
+  if(isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Escribe la nota de UN estudiante directo en su documento del portal docente (estudiantes/{codigo}),
+// en la categoría (notasDiarias/apreciaciones/examen) y posición configuradas para la actividad.
+async function sincronizarNotaAdmin(codigo, trimestre, tipoColumna, indice, nota, nombreActividad, fecha, rubrica, comentario){
+  try{
+    const ref = doc(db,'estudiantes',codigo);
+    const snap = await getDoc(ref);
+    if(!snap.exists()) return; // el código no existe en el portal docente todavía
+    const data = snap.data();
+    const tKey = 'T'+trimestre;
+    const trim = data[tKey] || {notasDiarias:[], apreciaciones:[], examen:0, notaTrim:0};
+    // "Examen" es un campo único por trimestre (número), no una lista con columnas — a diferencia
+    // de ND/Ap. no lleva índice ni se guarda como arreglo.
+    if(tipoColumna === 'examen'){
+      trim.examen = nota;
+      await setDoc(ref, { [tKey]: trim }, {merge:true});
+      return;
+    }
+    const arr = (trim[tipoColumna]||[]).slice();
+    while(arr.length <= indice) arr.push({nota:0, desc:'', fecha:''});
+    const entrada = { nota, desc: nombreActividad||'', fecha: normFechaISO(fecha) };
+    if(rubrica && rubrica.length) entrada.rubrica = rubrica;
+    if(comentario && comentario.trim()) entrada.comentario = comentario.trim();
+    arr[indice] = entrada;
+    trim[tipoColumna] = arr;
+    await setDoc(ref, { [tKey]: trim }, {merge:true});
+  }catch(e){ /* si el estudiante no existe en el portal docente, no interrumpe el flujo del Aula Virtual */ }
+}
+
+// Sincronización masiva: recorre todas las entregas ya calificadas de una actividad
+// (se usa al activar la sincronización o al mover la actividad de trimestre, para ponerse al día)
+async function propagarActividadANotas(actId){
+  const c=CONFIG_ACTS[actId]||{}; const sync=c.sync||{};
+  if(!sync.activo) return;
+  const a = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  const snap = await getDocs(collection(db,'actividades',actId,'resultados'));
+  const tareas = [];
+  snap.forEach(d=>{
+    const r = d.data();
+    if(typeof r.nota === 'number'){
+      const fecha = r.horaEntrega || r.fecha || new Date().toISOString();
+      tareas.push(sincronizarNotaAdmin(d.id, sync.trimestre, sync.tipoColumna, sync.indice, r.nota, a?.nombre||'', fecha));
+    }
+  });
+  await Promise.all(tareas);
+}
+
+// ============================================================
+// MATERIALES
+// ============================================================
+async function cargarMateriales(){
+  const m=$('msgMat'); m.className='msg'; m.textContent='';
+  $('listaMat').innerHTML='<div style="padding:20px;color:var(--tx3)"><span class="spin"></span> Cargando…</div>';
+  try{
+    let html='';
+    for(const mat of MATERIAS){
+      const snap=await getDoc(doc(db,'materiales',mat.id));
+      const allItems = snap.exists() ? (snap.data().items || []) : [];
+      // Mantener el índice real del array completo, pero mostrar solo los del trimestre activo
+      const itemsConIdx = allItems.map((it,i)=>({it,i})).filter(({it})=>(it.trimestre||1)===trimMat);
+      html+=`<div class="mat-msec">
+        <h2><i class="ti ${mat.icon}"></i> ${mat.n}</h2>
+        ${itemsConIdx.length ? itemsConIdx.map(({it,i})=>renderMatItem(mat.id,it,i)).join('') : '<div style="color:var(--tx3);font-size:12px;padding:8px 0 14px">Sin materiales en este trimestre.</div>'}
+        ${renderMatNew(mat.id)}
+      </div>`;
+    }
+    $('listaMat').innerHTML=html;
+  }catch(e){ m.className='msg err'; m.textContent='Error al cargar: '+e.message; }
+}
+
+function renderMatItem(matId,it,i){
+  const activo=it.activo!==false;
+  const trimActual = it.trimestre||1;
+  const todosGrupos = MATERIA_GRUPOS[matId]||[];
+  const gruposItem = it.grupos && it.grupos.length ? it.grupos : todosGrupos;
+  const fechasPorGrupo = it.fechasPorGrupo || {};
+  // Compatibilidad con materiales viejos que usaban fechaEvento único
+  return `<div class="mat-item ${activo?'':'inact'}" id="mitem_${matId}_${i}">
+    <div class="mat-row">
+      <div class="mat-ico"><i class="ti ti-file-description"></i></div>
+      <div class="mat-body">
+        <b>${it.titulo||'Sin título'}</b>
+        ${it.descripcion?`<div style="font-size:12px;color:var(--tx2);margin-top:2px">${it.descripcion}</div>`:''}
+        ${it.url?`<div class="url-chip"><i class="ti ti-link"></i> ${it.url}</div>`:''}
+        ${it.fechaEvento?`<div class="fecha-chip"><i class="ti ti-calendar-event"></i> Todos: ${fmtFecha12h(it.fechaEvento)}</div>`:''}
+        <div class="grp-fechas">
+          ${gruposItem.map(g=>{
+            const iso = fechasPorGrupo[g];
+            return `<div class="grp-fecha-row">
+              <span class="grp-badge">${g}</span>
+              ${iso?`<span class="fecha-chip sm"><i class="ti ti-calendar-event"></i> ${fmtFecha12h(iso)}</span>`:`<span class="fecha-chip sm vacia">Sin fecha</span>`}
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="grp-edit" id="grpEdit_${matId}_${i}">
+          <button class="grp-edit-btn" onclick="abrirEditGrupos('${matId}',${i})"><i class="ti ti-pencil"></i> Editar grupos y fechas</button>
+          <div class="grp-checks hide" id="grpEditChecks_${matId}_${i}">
+            ${todosGrupos.map(g=>{
+              const gid = g.replace(/[°\s]/g,'');
+              const checked = gruposItem.includes(g);
+              const iso = fechasPorGrupo[g] || '';
+              return `<div class="grp-row">
+                <label class="grp-chk"><input type="checkbox" class="grpEditCk_${matId}_${i}" value="${g}" ${checked?'checked':''} onchange="toggleGrpFechaEdit('${matId}',${i},'${gid}',this.checked)"> ${g}</label>
+                <input type="text" readonly class="dt-trigger dt-trigger-sm" id="mfe_${matId}_${i}_${gid}" data-iso="${iso}" value="${fmtFecha12h(iso)}" placeholder="Sin fecha (opcional)" ${checked?'':'disabled'} onclick="abrirCal('mfe_${matId}_${i}_${gid}')">
+              </div>`;
+            }).join('')}
+            <button class="grp-save" onclick="guardarGruposMat('${matId}',${i})"><i class="ti ti-check"></i> Aplicar cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mat-acts">
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:10px;color:var(--tx3);text-transform:uppercase">Mover a</label>
+        <select onchange="moverMatTrim('${matId}',${i},this.value)" style="font-size:11px;padding:5px 8px;border-radius:6px;border:1px solid var(--linea2);background:var(--bg);color:var(--neon);font-family:'Chakra Petch';cursor:pointer">
+          <option value="1" ${trimActual===1?'selected':''}>T1</option>
+          <option value="2" ${trimActual===2?'selected':''}>T2</option>
+          <option value="3" ${trimActual===3?'selected':''}>T3</option>
+        </select>
+      </div>
+      <button onclick="toggleMatActivo('${matId}',${i})">${activo?'<i class="ti ti-eye-off"></i> Desactivar':'<i class="ti ti-eye"></i> Activar'}</button>
+      <button class="bdel" onclick="eliminarMat('${matId}',${i})"><i class="ti ti-trash"></i> Eliminar</button>
+    </div>
+  </div>`;
+}
+
+function renderMatNew(matId){
+  const grupos = MATERIA_GRUPOS[matId]||[];
+  return `<div class="mat-new" id="matNew_${matId}">
+    <h3><i class="ti ti-plus"></i> Nuevo material — ${MATERIAS.find(m=>m.id===matId)?.n||matId} <span style="color:var(--tx3);font-weight:400;font-size:11px">(se publicará en Trimestre ${trimMat})</span></h3>
+    <div class="fg"><label>Título</label><input id="mt_${matId}" placeholder="Ej: Guía del Parcial #1"></div>
+    <div class="fg"><label>Descripción corta (opcional)</label><input id="md_${matId}" placeholder="Ej: Repasa los temas 3 y 4"></div>
+    <div class="fg"><label>Enlace (Google Drive, OneDrive, etc.)</label><input id="mu_${matId}" placeholder="https://drive.google.com/..."></div>
+    <div class="fg"><label>Grupos y su fecha/hora (cada grupo puede tener un horario distinto)</label>
+      <div class="grp-checks" id="grp_${matId}">
+        ${grupos.map(g=>{
+          const gid = g.replace(/[°\s]/g,'');
+          return `<div class="grp-row">
+            <label class="grp-chk"><input type="checkbox" class="grpCk_${matId}" value="${g}" checked onchange="toggleGrpFecha('${matId}','${gid}',this.checked)"> ${g}</label>
+            <input type="text" readonly class="dt-trigger dt-trigger-sm" id="mf_${matId}_${gid}" data-iso="" value="" placeholder="Sin fecha (opcional)" onclick="abrirCal('mf_${matId}_${gid}')">
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="be sm" onclick="agregarMat('${matId}')"><i class="ti ti-plus"></i> Publicar material</button>
+    </div>
+  </div>`;
+}
+
+window.toggleGrpFecha = (matId, gid, marcado) => {
+  $('mf_'+matId+'_'+gid).closest('.grp-row').style.opacity = marcado ? '1' : '.35';
+  $('mf_'+matId+'_'+gid).disabled = !marcado;
+};
+
+window.agregarMat = async (matId)=>{
+  const titulo=$('mt_'+matId).value.trim();
+  if(!titulo){ $('msgMat').className='msg warn'; $('msgMat').textContent='Escribe un título.'; return; }
+  const gruposSel = [...document.querySelectorAll('.grpCk_'+matId+':checked')].map(c=>c.value);
+  if(!gruposSel.length){ $('msgMat').className='msg warn'; $('msgMat').textContent='Selecciona al menos un grupo.'; return; }
+  const fechasPorGrupo = {};
+  gruposSel.forEach(g=>{
+    const gid = g.replace(/[°\s]/g,'');
+    const iso = $('mf_'+matId+'_'+gid)?.dataset.iso || '';
+    if(iso) fechasPorGrupo[g] = iso;
+  });
+  const item={
+    titulo,
+    descripcion:$('md_'+matId).value.trim()||'',
+    url:$('mu_'+matId).value.trim()||'',
+    fechasPorGrupo,
+    grupos: gruposSel,
+    trimestre: trimMat,
+    activo:true,
+    creado:new Date().toISOString()
+  };
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Publicando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref);
+    const data=snap.exists()?snap.data():{items:[]};
+    if(!data.items) data.items=[];
+    data.items.push(item);
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Material publicado en '+MATERIAS.find(x=>x.id===matId)?.n+'.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.toggleMatActivo = async (matId,idx)=>{
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Actualizando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    data.items[idx].activo=!data.items[idx].activo;
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Estado actualizado.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.moverMatTrim = async (matId,idx,nuevoTrim)=>{
+  nuevoTrim = parseInt(nuevoTrim);
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Moviendo material…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    const titulo = data.items[idx].titulo || 'Material';
+    data.items[idx].trimestre = nuevoTrim;
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent=`✓ "${titulo}" movido a Trimestre ${nuevoTrim}.`;
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.abrirEditGrupos = (matId, idx) => {
+  $('grpEditChecks_'+matId+'_'+idx).classList.toggle('hide');
+};
+
+window.toggleGrpFechaEdit = (matId, idx, gid, marcado) => {
+  const inp = $('mfe_'+matId+'_'+idx+'_'+gid);
+  inp.closest('.grp-row').style.opacity = marcado ? '1' : '.35';
+  inp.disabled = !marcado;
+};
+
+window.guardarGruposMat = async (matId, idx) => {
+  const checks = document.querySelectorAll('.grpEditCk_'+matId+'_'+idx+':checked');
+  const grupos = [...checks].map(c=>c.value);
+  if(!grupos.length){ $('msgMat').className='msg warn'; $('msgMat').textContent='Selecciona al menos un grupo.'; return; }
+  const fechasPorGrupo = {};
+  grupos.forEach(g=>{
+    const gid = g.replace(/[°\s]/g,'');
+    const iso = $('mfe_'+matId+'_'+idx+'_'+gid)?.dataset.iso || '';
+    if(iso) fechasPorGrupo[g] = iso;
+  });
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Actualizando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    const titulo = data.items[idx].titulo || 'Material';
+    data.items[idx].grupos = grupos;
+    data.items[idx].fechasPorGrupo = fechasPorGrupo;
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent=`✓ "${titulo}" actualizado: ${grupos.join(', ')}.`;
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.eliminarMat = async (matId,idx)=>{
+  if(!confirm('¿Eliminar este material? No se puede deshacer.')) return;
+  const m=$('msgMat');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Eliminando…';
+  try{
+    const ref=doc(db,'materiales',matId);
+    const snap=await getDoc(ref); const data=snap.data();
+    data.items.splice(idx,1);
+    await setDoc(ref,data);
+    m.className='msg ok'; m.textContent='✓ Material eliminado.';
+    cargarMateriales();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ============================================================
+// RESULTADOS
+// ============================================================
+// ---------- NAVEGACIÓN RESULTADOS: NIVEL → GRUPO → ACTIVIDAD ----------
+let RES_NIVEL = null, RES_GRUPO = null;
+
+function renderResNiveles(){
+  $('resBreadcrumb').classList.add('hide'); $('resBreadcrumb').innerHTML='';
+  $('resGrupoPicker').classList.add('hide'); $('resGrupoPicker').innerHTML='';
+  $('resContenido').classList.add('hide');
+  $('resNivelPicker').classList.remove('hide');
+  $('resNivelPicker').innerHTML = `
+    <p class="res-picker-title">Elige el nivel</p>
+    <div class="res-cards">
+      ${MATERIAS.map(m=>`
+        <button class="res-card" onclick="seleccionarNivelRes('${m.id}')">
+          <div class="res-card-ico" style="background:rgba(0,240,255,.1);color:var(--neon)"><i class="ti ${m.icon}"></i></div>
+          <div class="res-card-txt"><b>${m.lvl}</b><span>${m.n}</span></div>
+        </button>`).join('')}
+    </div>`;
+}
+
+window.seleccionarNivelRes = (materiaId) => {
+  RES_NIVEL = materiaId; RES_GRUPO = null;
+  renderResGrupos();
+};
+
+function renderResGrupos(){
+  const grupos = MATERIA_GRUPOS[RES_NIVEL]||[];
+  $('resNivelPicker').classList.add('hide');
+  // Grupo único: entra directo, sin preguntar
+  if(grupos.length<=1){
+    RES_GRUPO = grupos[0]||null;
+    mostrarResContenido();
+    return;
+  }
+  const m = MATERIAS.find(x=>x.id===RES_NIVEL);
+  $('resGrupoPicker').classList.remove('hide');
+  $('resGrupoPicker').innerHTML = `
+    <button class="res-back" onclick="volverNivelRes()"><i class="ti ti-arrow-left"></i> Cambiar nivel</button>
+    <p class="res-picker-title" style="margin-top:14px">${m?.n||''} — Elige el grupo</p>
+    <div class="res-cards">
+      ${grupos.map(g=>`
+        <button class="res-card" onclick="seleccionarGrupoRes('${g}')">
+          <div class="res-card-ico" style="background:rgba(0,240,255,.1);color:var(--neon)"><i class="ti ti-users"></i></div>
+          <div class="res-card-txt"><b>${g}</b></div>
+        </button>`).join('')}
+    </div>`;
+}
+
+window.seleccionarGrupoRes = (g) => { RES_GRUPO = g; mostrarResContenido(); };
+
+window.volverNivelRes = () => { RES_NIVEL=null; RES_GRUPO=null; renderResNiveles(); };
+window.volverGrupoRes = () => { RES_GRUPO=null; renderResGrupos(); };
+
+async function mostrarResContenido(){
+  $('resNivelPicker').classList.add('hide');
+  $('resGrupoPicker').classList.add('hide');
+  $('resContenido').classList.remove('hide');
+
+  const m = MATERIAS.find(x=>x.id===RES_NIVEL);
+  const grupos = MATERIA_GRUPOS[RES_NIVEL]||[];
+  $('resBreadcrumb').classList.remove('hide');
+  $('resBreadcrumb').innerHTML = `
+    <button class="res-back" onclick="volverNivelRes()"><i class="ti ti-arrow-left"></i> Nivel</button>
+    <span class="res-sep">›</span>
+    ${grupos.length>1
+      ? `<button class="res-back" onclick="volverGrupoRes()"><i class="ti ti-arrow-left"></i> ${m?.n||''}</button><span class="res-sep">›</span><span class="res-crumb">${RES_GRUPO}</span>`
+      : `<span class="res-crumb">${m?.n||''}</span><span class="res-sep">›</span><span class="res-crumb">${RES_GRUPO||''}</span>`}
+  `;
+
+  const actsMateria = CATALOGO_ACTIVIDADES.filter(a=>a.materia===RES_NIVEL);
+  $('selActRes').innerHTML = actsMateria.length
+    ? actsMateria.map(a=>`<option value="${a.id}">${a.nombre}</option>`).join('')
+    : '<option value="">Sin actividades en este nivel</option>';
+
+  if(!actsMateria.length){
+    RESULTADOS=[]; renderTabla();
+    return;
+  }
+  await cargarResultados();
+  // Pre-filtrar por el grupo elegido si esa opción existe en los resultados cargados
+  const sel = $('filGrado');
+  if([...sel.options].some(o=>o.value===RES_GRUPO)) sel.value = RES_GRUPO;
+  renderTabla();
+}
+
+window.cargarResultados = async ()=>{
+  const actId=$('selActRes').value; if(!actId) return;
+  $('btnAnalizarLab1').classList.toggle('hide', actId!=='lab-01');
+  const m=$('msgRes');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Cargando…';
+  try{
+    // 1) Entregas/calificaciones ya guardadas para esta actividad
+    const snap=await getDocs(collection(db,'actividades',actId,'resultados'));
+    const entregas={};
+    snap.forEach(d=>{ entregas[d.id]={...d.data(),_codigo:d.id}; });
+
+    // 2) Lista completa de estudiantes de los grupos de esta actividad, para que
+    //    aparezcan TODOS en la tabla aunque no hayan entregado (sin nota, en blanco).
+    const actInfo=CATALOGO_ACTIVIDADES.find(a=>a.id===actId);
+    const grupos=actInfo?.grupos || MATERIA_GRUPOS[RES_NIVEL] || [];
+    const roster={};
+    for(const g of grupos){
+      const rs=await getDocs(query(collection(db,'estudiantes'), where('grado','==',g)));
+      rs.forEach(d=>{ roster[d.id]={ nombre:d.data().nombre||d.id, grado:d.data().grado||g }; });
+    }
+
+    // 3) Fusión: un registro por estudiante del roster, con los datos de su entrega
+    //    (si existe) encima; si el estudiante no entregó nada, queda sin nota.
+    const codigos=new Set([...Object.keys(roster), ...Object.keys(entregas)]);
+    RESULTADOS=[...codigos].map(cod=>{
+      const base=roster[cod] || { nombre:entregas[cod]?.nombre||cod, grado:entregas[cod]?.grado||'' };
+      const entrega=entregas[cod];
+      return { ...base, ...(entrega||{}), _codigo:cod, _sinDatos:!entrega };
+    });
+    RESULTADOS.sort((a,b)=>(a.grado||'').localeCompare(b.grado||'')||(a.nombre||'').localeCompare(b.nombre||''));
+    const grados=[...new Set(RESULTADOS.map(r=>r.grado))].sort();
+    const sel=$('filGrado'); const cur=sel.value;
+    sel.innerHTML='<option value="">Todos los grupos</option>'+grados.map(g=>`<option value="${g}">${g}</option>`).join('');
+    sel.value=cur; m.className='msg'; m.textContent='';
+    renderTabla();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.renderTabla = ()=>{
+  const fil=$('filGrado').value;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  const notas=rows.map(r=>r.nota).filter(n=>typeof n==='number');
+  const actId=$('selActRes').value;
+  const actInfo=CATALOGO_ACTIVIDADES.find(a=>a.id===actId);
+  const esLab = actInfo?.tipo==='laboratorio' || actInfo?.tipo==='examen';
+  $('dsTot').textContent=rows.length;
+  $('dsAp').textContent=notas.filter(n=>n>=3.0).length;
+  $('dsRe').textContent=notas.filter(n=>n<3.0).length;
+  $('dsProm').textContent=notas.length?(notas.reduce((s,n)=>s+n,0)/notas.length).toFixed(1):'—';
+  $('tbRes').innerHTML=rows.length?rows.map((r,i)=>{
+    const fISO = r.fecha || r.horaEntrega;
+    const f=fISO?new Date(fISO).toLocaleDateString('es-PA',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';
+    const tieneNota = typeof r.nota==='number';
+    const n = tieneNota ? r.nota : null;
+    const cls = tieneNota ? (n>=3.0?'ap':'re') : '';
+    const col4 = esLab
+      ? (r._sinDatos ? 'Sin entregar' : (r.entregado ? (r.tiempoUsado? String(Math.floor(r.tiempoUsado/60)).padStart(2,'0')+':'+String(r.tiempoUsado%60).padStart(2,'0') : '—') : 'En progreso'))
+      : (r._sinDatos ? 'Sin entregar' : (r.puntaje??'—'));
+    const col6 = esLab ? (r.advertencias||0)+' adv.' : (r.intentos??'—');
+    const notaCell = esLab
+      ? `<input type="number" min="1" max="5" step="0.1" class="celledit ${cls}" placeholder="—" value="${tieneNota?n.toFixed(1):''}" onchange="editarNotaRes('${r._codigo}',this)" title="Editar la nota directamente, sin llenar la rúbrica">
+         <button class="dbtn" title="Ver detalle y calificar con rúbrica" onclick="verDetalleLab('${r._codigo}')" style="margin-left:6px;background:none;border:1px solid var(--linea2);color:var(--neon);border-radius:6px;padding:5px 8px;cursor:pointer"><i class="ti ti-clipboard-check"></i></button>`
+      : `<input type="number" min="1" max="5" step="0.1" class="celledit ${cls}" placeholder="—" value="${tieneNota?n.toFixed(1):''}" onchange="editarNotaRes('${r._codigo}',this)">`;
+    return `<tr><td>${i+1}</td><td>${r.nombre}<br><span style="font-size:11px;color:var(--tx3)">${r._codigo}</span></td><td>${r.grado}</td><td>${col4}</td>
+    <td>${notaCell}</td>
+    <td>${col6}</td><td>${f}</td></tr>`;
+  }).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:28px">No hay estudiantes en este grupo.</td></tr>';
+};
+
+// ---------- DETALLE DE LABORATORIO + RÚBRICA ----------
+window.verDetalleLab = (codigo) => {
+  const actId=$('selActRes').value;
+  const actInfo=CATALOGO_ACTIVIDADES.find(a=>a.id===actId);
+  const r=RESULTADOS.find(x=>x._codigo===codigo);
+  if(!r||!actInfo) return;
+  const rubrica = (CONFIG_ACTS[actId]||{}).rubrica || actInfo.rubrica || [{criterio:'Estructura HTML',pts:5},{criterio:'Uso correcto de etiquetas',pts:5},{criterio:'Organización del código',pts:5},{criterio:'Cumplimiento de la actividad',pts:5}];
+  const prev = r.rubrica_detalle || {};
+  const t = r.tiempoUsado||0;
+  $('mdTitulo').textContent = actInfo.nombre;
+  $('mdEst').textContent = r.nombre+' · '+r.grado+' · '+codigo;
+  $('mdMeta').innerHTML = `
+    <div class="mdchip"><i class="ti ti-clock"></i> ${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')} usados</div>
+    <div class="mdchip"><i class="ti ti-device-floppy"></i> ${r.guardados||0} guardados</div>
+    <div class="mdchip ${r.advertencias?'warn':''}"><i class="ti ti-alert-triangle"></i> ${r.advertencias||0} advertencias</div>
+    <div class="mdchip"><i class="ti ${r.entregado?'ti-circle-check':'ti-clock-hour-4'}"></i> ${r.entregado?'Entregado':'En progreso'}</div>`;
+
+  // Resultados con checklist detallado (ej. Simulador Word 365): mostrar documento formateado + checklist,
+  // en vez del bloque de código plano usado por las actividades de código (HTML/CSS/JS).
+  const esChecklist = Array.isArray(r.checklistMisiones) && r.checklistMisiones.length > 0;
+  $('mdBox').classList.toggle('wide', esChecklist);
+  $('mdCodigo').style.display = esChecklist ? 'none' : '';
+  $('btnVerDoc').style.display = esChecklist ? 'inline-flex' : 'none';
+  $('btnVerChecklist').style.display = esChecklist ? 'inline-flex' : 'none';
+  $('mdDocPreview').classList.add('hide'); $('txtVerDoc').textContent = 'Ver documento';
+  $('mdChecklist').classList.add('hide'); $('txtVerChecklist').textContent = 'Ver checklist completo';
+  $('btnReanalizar').style.display = esChecklist ? 'inline-flex' : 'none';
+  $('mdReanalisis').classList.remove('on');
+  window._reCodigo = codigo; window._reActId = actId;
+  if(esChecklist){
+    $('mdDocPreview').innerHTML = r.codigoFinal || '<i style="color:#999">Sin documento guardado.</i>';
+    $('mdChecklist').innerHTML = r.checklistMisiones.map(m=>`
+      <div class="md-item ${m.logrado?'si':'no'}">
+        <i class="ti ${m.logrado?'ti-circle-check-filled':'ti-circle-x'}"></i>
+        <div><b>${m.titulo}</b><span>${m.ayuda}</span></div>
+      </div>`).join('');
+  } else {
+    $('mdCodigo').textContent = r.codigoFinal || r.codigoActual || '(sin código guardado aún)';
+  }
+  $('mdRubrica').innerHTML = rubrica.map((c,i)=>`
+    <div class="mdrow">
+      <span>${c.criterio} <small>(máx. ${c.pts})</small></span>
+      <input type="number" min="0" max="${c.pts}" step="0.5" value="${prev[i]??0}" data-max="${c.pts}" onchange="calcRubrica()" id="rub_${i}">
+    </div>`).join('');
+  $('mdObs').value = r.observaciones || '';
+  $('mdEntregaBtns').style.display = r.entregado ? 'flex' : 'none';
+  $('mdBorrarBtns').style.display = 'flex';
+  $('btnEliminarEntrega').textContent = r.entregado ? 'Eliminar entrega' : 'Eliminar intento (reiniciar)';
+  window._rubricaLen = rubrica.length;
+  window._rubricaCriterios = rubrica;
+  window._rubricaCod = codigo;
+  window._rubricaActId = actId;
+  window._rubricaGrado = r.grado;
+  calcRubrica();
+  $('ovDetalleLab').classList.add('on');
+};
+
+window.toggleDocPreview = () => {
+  const on = $('mdDocPreview').classList.toggle('hide') === false;
+  $('txtVerDoc').textContent = on ? 'Ocultar documento' : 'Ver documento';
+};
+window.toggleChecklist = () => {
+  const on = $('mdChecklist').classList.toggle('hide') === false;
+  $('txtVerChecklist').textContent = on ? 'Ocultar checklist' : 'Ver checklist completo';
+};
+
+window.reanalizarEntrega = () => {
+  const codigo = window._reCodigo, actId = window._reActId;
+  const actInfo = CATALOGO_ACTIVIDADES.find(a=>a.id===actId);
+  if(!actInfo || !actInfo.url || actInfo.url==='#'){ alert('No se encontró el archivo del laboratorio.'); return; }
+  const btn = $('btnReanalizar'); btn.disabled = true;
+  $('txtReanalizar').textContent = 'Reanalizando…';
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = actInfo.url + '?reanalizar=' + encodeURIComponent(codigo);
+  const timeout = setTimeout(()=>{
+    limpiarIframeReanalisis(iframe);
+    btn.disabled = false; $('txtReanalizar').textContent = 'Reanalizar con las correcciones';
+    alert('No se pudo completar el reanálisis (tiempo agotado). Intenta de nuevo.');
+  }, 15000);
+  function onMsg(ev){
+    const data = ev.data || {};
+    if(data.tipo !== 'reanalisisWordLab' || data.codigo !== codigo) return;
+    clearTimeout(timeout);
+    window.removeEventListener('message', onMsg);
+    limpiarIframeReanalisis(iframe);
+    btn.disabled = false; $('txtReanalizar').textContent = 'Reanalizar con las correcciones';
+    window._reDatos = data;
+    const r = RESULTADOS.find(x=>x._codigo===codigo);
+    $('reNotaVieja').textContent = (r?.nota ?? '—');
+    $('reNotaNueva').textContent = data.nota;
+    $('mdReanalisis').classList.add('on');
+    // refleja el checklist recién calculado en la vista de "Ver checklist completo"
+    $('mdChecklist').innerHTML = data.checklistMisiones.map(m=>`
+      <div class="md-item ${m.logrado?'si':'no'}">
+        <i class="ti ${m.logrado?'ti-circle-check-filled':'ti-circle-x'}"></i>
+        <div><b>${m.titulo}</b><span>${m.ayuda}</span></div>
+      </div>`).join('');
+  }
+  window.addEventListener('message', onMsg);
+  document.body.appendChild(iframe);
+};
+function limpiarIframeReanalisis(iframe){ try{ iframe.remove(); }catch(e){} }
+
+window.guardarReanalisis = async () => {
+  const data = window._reDatos;
+  if(!data) return;
+  const actId = window._reActId, codigo = window._reCodigo;
+  const r = RESULTADOS.find(x=>x._codigo===codigo);
+  const payload = {
+    checklistMisiones: data.checklistMisiones, rubrica_detalle: data.rubrica_detalle,
+    nota: data.nota, correctas: data.correctas, totalMisiones: data.totalMisiones,
+    reanalizado: true, notaAntesReanalisis: (r && r.notaAntesReanalisis!==undefined) ? r.notaAntesReanalisis : (r?.nota ?? null),
+    fechaReanalisis: Date.now()
+  };
+  try{
+    await setDoc(doc(db,'actividades',actId,'resultados',codigo), payload, {merge:true});
+    if(r) Object.assign(r, payload);
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    if(sync?.activo && r){
+      const actInfo = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+      const fecha = r.horaEntrega || r.fecha || new Date().toISOString();
+      const criterios = (CONFIG_ACTS[actId]||{}).rubrica || actInfo?.rubrica || [];
+      const rubricaParaEnviar = criterios.map((c,i)=>({ n:c.criterio, obt: data.rubrica_detalle[i]??0, max:c.pts }));
+      await sincronizarNotaAdmin(codigo, sync.trimestre, sync.tipoColumna, sync.indice, data.nota, actInfo?.nombre||'', fecha, rubricaParaEnviar, r.observaciones||'');
+    }
+    $('mdReanalisis').classList.remove('on');
+    renderTabla();
+    verDetalleLab(codigo);
+  }catch(e){ alert('No se pudo guardar: '+e.message); }
+};
+
+window.habilitarReenvio = async () => {
+  const codigo=window._rubricaCod, actId=window._rubricaActId;
+  if(!confirm('¿Habilitar reenvío? El estudiante podrá volver a entregar este laboratorio.')) return;
+  const m=$('mdMsg'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Actualizando…';
+  try{
+    await setDoc(doc(db,'actividades',actId,'resultados',codigo),{ entregado:false }, {merge:true});
+    const r=RESULTADOS.find(x=>x._codigo===codigo); if(r) r.entregado=false;
+    m.className='msg ok'; m.textContent='✓ Reenvío habilitado.';
+    renderTabla();
+    setTimeout(cerrarDetalleLab, 700);
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// Limpia la casilla sincronizada en el portal docente (la deja en blanco/0, sin rúbrica ni comentario)
+async function limpiarNotaAdmin(codigo, trimestre, tipoColumna, indice){
+  try{
+    const ref = doc(db,'estudiantes',codigo);
+    const snap = await getDoc(ref);
+    if(!snap.exists()) return;
+    const data = snap.data();
+    const tKey = 'T'+trimestre;
+    const trim = data[tKey] || {};
+    if(tipoColumna === 'examen'){
+      trim.examen = 0;
+      await setDoc(ref, { [tKey]: trim }, {merge:true});
+      return;
+    }
+    const arr = (trim[tipoColumna]||[]).slice();
+    if(arr.length > indice){
+      arr[indice] = { nota:0, desc:'', fecha:'' };
+      trim[tipoColumna] = arr;
+      await setDoc(ref, { [tKey]: trim }, {merge:true});
+    }
+  }catch(e){ /* si falla, no interrumpe el flujo del Aula Virtual */ }
+}
+
+window.eliminarEntrega = async () => {
+  const codigo=window._rubricaCod, actId=window._rubricaActId;
+  if(!confirm('¿Eliminar esta entrega por completo? Esta acción no se puede deshacer.')) return;
+  const m=$('mdMsg'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Eliminando…';
+  try{
+    await deleteDoc(doc(db,'actividades',actId,'resultados',codigo));
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    if(sync?.activo){
+      await limpiarNotaAdmin(codigo, sync.trimestre, sync.tipoColumna, sync.indice);
+    }
+    RESULTADOS = RESULTADOS.filter(x=>x._codigo!==codigo);
+    m.className='msg ok'; m.textContent='✓ Entrega eliminada'+(sync?.activo?' — también se limpió en el portal docente y en el del estudiante.':'.');
+    renderTabla();
+    setTimeout(cerrarDetalleLab, 700);
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+window.calcRubrica = () => {
+  let total=0, max=0;
+  for(let i=0;i<window._rubricaLen;i++){ const inp=$('rub_'+i); let v=parseFloat(inp.value)||0; const mx=parseFloat(inp.dataset.max); if(v>mx)v=mx; if(v<0)v=0; inp.value=v; total+=v; max+=mx; }
+  const nota = Math.round((1.0 + (total/max)*4.0)*10)/10;
+  $('mdTotal').textContent = total+' / '+max+' pts';
+  $('mdNota').textContent = nota.toFixed(1);
+  window._rubricaNota = nota; window._rubricaTotal = total;
+};
+window.cerrarDetalleLab = () => $('ovDetalleLab').classList.remove('on');
+window.guardarRubrica = async () => {
+  const codigo=window._rubricaCod, actId=window._rubricaActId, nota=window._rubricaNota;
+  const detalle = {};
+  for(let i=0;i<window._rubricaLen;i++) detalle[i]=parseFloat($('rub_'+i).value)||0;
+  const observaciones = $('mdObs').value.trim();
+  const m=$('mdMsg'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  const r=RESULTADOS.find(x=>x._codigo===codigo);
+  try{
+    await setDoc(doc(db,'actividades',actId,'resultados',codigo),{ nota, rubrica_detalle:detalle, observaciones, nombre:r?.nombre, grado:r?.grado }, {merge:true});
+    if(r){ r.nota=nota; r.rubrica_detalle=detalle; r.observaciones=observaciones; r._sinDatos=false; }
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    if(sync?.activo){
+      const actInfo = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+      const fecha = (r && (r.horaEntrega||r.fecha)) || new Date().toISOString();
+      const criterios = window._rubricaCriterios || [];
+      const rubricaParaEnviar = criterios.map((c,i)=>({ n: c.criterio, obt: detalle[i]??0, max: c.pts }));
+      await sincronizarNotaAdmin(codigo, sync.trimestre, sync.tipoColumna, sync.indice, nota, actInfo?.nombre||'', fecha, rubricaParaEnviar, observaciones);
+    }
+    m.className='msg ok'; m.textContent='✓ Calificación guardada.';
+    renderTabla();
+    setTimeout(cerrarDetalleLab, 700);
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// Pone nota 0.0 a todos los estudiantes de la vista actual (según el filtro de grupo activo)
+// que aparecen como "Sin entregar" (es decir, sin ningún registro de entrega). No toca a quienes
+// ya tienen una nota o una entrega registrada, aunque esté incompleta.
+// Checklist del Laboratorio 1 (Multimedia) — debe coincidir con el de multimedia/lab-01-estructura-html.html.
+// Se usa para poder analizar automáticamente entregas ya guardadas (codigoFinalLab) sin que el
+// docente tenga que abrir cada una y llenar la rúbrica manualmente.
+const CHECKLIST_LAB1 = [
+  { criterio:'&lt;!DOCTYPE html&gt;', ok:'Se encontró correctamente &lt;!DOCTYPE html&gt;. El documento está definido como HTML5.', no:'No se encontró &lt;!DOCTYPE html&gt; al inicio del documento. Esta declaración es obligatoria para indicar que el archivo utiliza HTML5.', check:c=>/<!doctype\s+html\s*>/i.test(c) },
+  { criterio:'&lt;html lang="es"&gt;...&lt;/html&gt;', ok:'Se encontraron correctamente las etiquetas &lt;html lang="es"&gt; y &lt;/html&gt;. El documento está configurado para el idioma español.', no:'No se encontraron correctamente las etiquetas &lt;html lang="es"&gt; y &lt;/html&gt;. Verifica que ambas existan y que el atributo lang="es" esté presente.', check:c=>/<html[^>]*\blang\s*=\s*["']es["'][^>]*>/i.test(c) && /<\/html\s*>/i.test(c) },
+  { criterio:'&lt;meta charset="UTF-8"&gt;', ok:'Se encontró correctamente la etiqueta &lt;meta charset="UTF-8"&gt;. La página mostrará correctamente los caracteres especiales.', no:'No se encontró la etiqueta &lt;meta charset="UTF-8"&gt;. Agrégala dentro de &lt;head&gt; para definir la codificación del documento.', check:c=>/<meta[^>]*charset\s*=\s*["']?utf-8["']?[^>]*>/i.test(c) },
+  { criterio:'&lt;title&gt;...&lt;/title&gt;', ok:'Se encontraron correctamente las etiquetas &lt;title&gt; y &lt;/title&gt; con un título válido para la página.', no:'No se encontraron correctamente las etiquetas &lt;title&gt; y &lt;/title&gt;, o el título está vacío. Agrega ambas etiquetas con un título relacionado con el tema.', check:c=>{const m=c.match(/<title[^>]*>([\s\S]*?)<\/title>/i);return !!m&&m[1].trim().length>0;} },
+  { criterio:'&lt;body&gt;...&lt;/body&gt;', ok:'Se encontraron correctamente las etiquetas &lt;body&gt; y &lt;/body&gt;. Todo el contenido visible está dentro del cuerpo del documento.', no:'No se encontraron correctamente las etiquetas &lt;body&gt; y &lt;/body&gt;. Todo el contenido visible debe estar dentro de ellas.', check:c=>/<body[^>]*>/i.test(c) && /<\/body\s*>/i.test(c) },
+  { criterio:'&lt;h1&gt;...&lt;/h1&gt;', ok:'Se encontraron correctamente las etiquetas &lt;h1&gt; y &lt;/h1&gt; con un título principal.', no:'No se encontraron correctamente las etiquetas &lt;h1&gt; y &lt;/h1&gt;, o el título principal está vacío.', check:c=>{const m=c.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);return !!m&&m[1].replace(/<[^>]+>/g,'').trim().length>0;} },
+  { criterio:'&lt;h2&gt;...&lt;/h2&gt;', ok:'Se encontraron correctamente las etiquetas &lt;h2&gt; y &lt;/h2&gt; con un subtítulo relacionado con el tema.', no:'No se encontraron correctamente las etiquetas &lt;h2&gt; y &lt;/h2&gt;, o el subtítulo está vacío.', check:c=>{const m=c.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);return !!m&&m[1].replace(/<[^>]+>/g,'').trim().length>0;} },
+  { criterio:'Dos &lt;p&gt;...&lt;/p&gt;', ok:'Se encontraron correctamente dos párrafos completos utilizando las etiquetas &lt;p&gt; y &lt;/p&gt;.', no:'No se encontraron dos párrafos completos. Verifica que ambos utilicen correctamente las etiquetas &lt;p&gt; y &lt;/p&gt; y contengan texto.', check:c=>{const ms=[...c.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)].filter(m=>m[1].replace(/<[^>]+>/g,'').trim().length>0);return ms.length>=2;} },
+  { criterio:'&lt;strong&gt;...&lt;/strong&gt;', ok:'Se encontraron correctamente las etiquetas &lt;strong&gt; y &lt;/strong&gt; resaltando una palabra o frase importante.', no:'No se encontraron correctamente las etiquetas &lt;strong&gt; y &lt;/strong&gt;, o no se resaltó ninguna palabra o frase.', check:c=>{const m=c.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);return !!m&&m[1].replace(/<[^>]+>/g,'').trim().length>0;} },
+  { criterio:'&lt;em&gt;...&lt;/em&gt;', ok:'Se encontraron correctamente las etiquetas &lt;em&gt; y &lt;/em&gt; enfatizando una palabra o frase.', no:'No se encontraron correctamente las etiquetas &lt;em&gt; y &lt;/em&gt;, o no se enfatizó ninguna palabra o frase.', check:c=>{const m=c.match(/<em[^>]*>([\s\S]*?)<\/em>/i);return !!m&&m[1].replace(/<[^>]+>/g,'').trim().length>0;} },
+  { criterio:'&lt;hr&gt;', ok:'Se encontró correctamente la etiqueta &lt;hr&gt; para separar el contenido de la página.', no:'No se encontró la etiqueta &lt;hr&gt;. Agrégala para crear una separación horizontal entre secciones.', check:c=>/<hr\s*\/?>/i.test(c) }
+];
+function evaluarChecklistLab1Panel(codigo){
+  const cod = codigo||'';
+  const resultado = CHECKLIST_LAB1.map(item=>{ const logrado=item.check(cod); return { criterio:item.criterio, logrado, feedback: logrado?item.ok:item.no }; });
+  const correctas = resultado.filter(r=>r.logrado).length;
+  return { resultado, correctas, total: resultado.length };
+}
+
+// Analiza automáticamente (con el checklist) todas las entregas del Laboratorio 1 que
+// todavía no tengan nota. No toca entregas ya calificadas (manual o automáticamente antes).
+window.analizarLab1Automatico = async ()=>{
+  const actId=$('selActRes').value; if(actId!=='lab-01') return;
+  const fil=$('filGrado').value;
+  const pendientes = RESULTADOS.filter(r=>(!fil||r.grado===fil) && r.codigoFinalLab && typeof r.nota!=='number');
+  if(!pendientes.length){ alert('No hay entregas del Laboratorio 1 pendientes de analizar en esta vista.'); return; }
+  if(!confirm(`Se analizará automáticamente el código de ${pendientes.length} entrega(s) con el checklist de 11 criterios y se calculará la nota. ¿Continuar?`)) return;
+  const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Analizando…';
+  try{
+    for(const r of pendientes){
+      const { resultado, correctas, total } = evaluarChecklistLab1Panel(r.codigoFinalLab);
+      const nota = Math.min(5, Math.max(1, Math.round(((4*correctas/total)+1)*10)/10));
+      await setDoc(doc(db,'actividades',actId,'resultados',r._codigo),{ checklistLab1: resultado, correctas, totalChecklist: total, nota },{merge:true});
+      r.nota = nota; r._sinDatos = false;
+    }
+    m.className='msg ok'; m.textContent=`✓ ${pendientes.length} entrega(s) analizadas y calificadas automáticamente.`;
+    renderTabla();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.marcarSinEntregarComoCero = async ()=>{
+  const actId=$('selActRes').value; if(!actId) return;
+  const fil=$('filGrado').value;
+  const pendientes = RESULTADOS.filter(r=>(!fil||r.grado===fil) && r._sinDatos && typeof r.nota!=='number');
+  if(!pendientes.length){ alert('No hay estudiantes "Sin entregar" en esta vista.'); return; }
+  if(!confirm(`Se pondrá nota 0.0 a ${pendientes.length} estudiante(s) que no entregaron. ¿Continuar?`)) return;
+  const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    const actInfo = CATALOGO_ACTIVIDADES.find(a=>a.id===actId);
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    for(const r of pendientes){
+      await setDoc(doc(db,'actividades',actId,'resultados',r._codigo),{ nombre:r.nombre, grado:r.grado, nota:0.0 },{merge:true});
+      r.nota=0.0; r._sinDatos=false;
+      if(sync?.activo){
+        const fecha = r.horaEntrega || r.fecha || new Date().toISOString();
+        await sincronizarNotaAdmin(r._codigo, sync.trimestre, sync.tipoColumna, sync.indice, 0.0, actInfo?.nombre||'', fecha);
+      }
+    }
+    m.className='msg ok'; m.textContent=`✓ ${pendientes.length} estudiante(s) marcados con 0.0.`;
+    renderTabla();
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+window.editarNotaRes = async (codigo,input)=>{
+  const actId=$('selActRes').value;
+  const r=RESULTADOS.find(x=>x._codigo===codigo);
+  const raw=input.value.trim();
+
+  // Casilla vacía: el estudiante queda sin calificar (no se fuerza ninguna nota).
+  if(raw===''){
+    input.classList.remove('ap','re');
+    if(r){ delete r.nota; r._sinDatos = !( r.entregado || r.tiempoUsado || r.puntaje!==undefined ); }
+    const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+    try{
+      await setDoc(doc(db,'actividades',actId,'resultados',codigo),{ nombre:r?.nombre, grado:r?.grado, nota:deleteField() },{merge:true});
+      m.className='msg ok'; m.textContent='✓ Queda sin calificar.';
+    }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+    return;
+  }
+
+  let v=parseFloat(raw);
+  if(isNaN(v)){ input.value = (r && typeof r.nota==='number') ? r.nota.toFixed(1) : ''; return; }
+  if(v<1)v=1.0; if(v>5)v=5.0;
+  v=Math.round(v*10)/10; input.value=v.toFixed(1);
+  input.classList.remove('ap','re'); input.classList.add(v>=3?'ap':'re');
+  if(r){ r.nota=v; r._sinDatos=false; }
+  const m=$('msgRes'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+  try{
+    await setDoc(doc(db,'actividades',actId,'resultados',codigo),{ nombre:r?.nombre, grado:r?.grado, nota:v },{merge:true});
+    const sync=(CONFIG_ACTS[actId]||{}).sync;
+    if(sync?.activo && r){
+      const actInfo = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+      const fecha = r.horaEntrega || r.fecha || new Date().toISOString();
+      await sincronizarNotaAdmin(codigo, sync.trimestre, sync.tipoColumna, sync.indice, v, actInfo?.nombre||'', fecha);
+    }
+    m.className='msg ok'; m.textContent='✓ Nota actualizada.';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ---------- PEGAR NOTAS MASIVO (una columna pegada desde Excel, en el mismo
+// orden en que aparece la tabla — filtrada por el grupo elegido) ----------
+window.abrirPegarNotas = ()=>{
+  const actId=$('selActRes').value;
+  if(!actId){ alert('Primero elige una actividad.'); return; }
+  const fil=$('filGrado').value;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  if(!rows.length){ alert('No hay estudiantes en esta lista todavía.'); return; }
+  $('pegarNotasInfo').textContent = `Se aplicará en este orden (${rows.length} estudiantes${fil?', grupo '+fil:''}):`;
+  $('pegarNotasLista').innerHTML = rows.map((r,i)=>`<div>${i+1}. ${r.nombre} <span style="color:var(--tx3)">${r._codigo}</span></div>`).join('');
+  $('pegarNotasArea').value='';
+  $('pegarNotasPreview').innerHTML='';
+  $('msgPegarNotas').textContent='';
+  $('ovPegarNotas').classList.add('on');
+};
+window.cerrarPegarNotas = ()=> $('ovPegarNotas').classList.remove('on');
+
+window.previsualizarPegarNotas = ()=>{
+  const fil=$('filGrado').value;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  const lineas=$('pegarNotasArea').value.split('\n').map(l=>l.trim().replace(',','.')).filter(l=>l!=='');
+  const prev=$('pegarNotasPreview');
+  if(!lineas.length){ prev.innerHTML=''; return; }
+  prev.innerHTML = lineas.map((l,i)=>{
+    const est=rows[i];
+    const v=parseFloat(l);
+    const valida = !isNaN(v) && est;
+    return `<div style="${valida?'':'color:var(--err)'}">${i+1}. ${est?est.nombre:'(sin estudiante en esta fila)'} → <b>${!isNaN(v)?v.toFixed(1):'valor inválido'}</b></div>`;
+  }).join('');
+};
+
+window.confirmarPegarNotas = async ()=>{
+  const actId=$('selActRes').value;
+  const fil=$('filGrado').value;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  const lineas=$('pegarNotasArea').value.split('\n').map(l=>l.trim().replace(',','.')).filter(l=>l!=='');
+  if(!lineas.length){ alert('Pega al menos una nota.'); return; }
+  if(lineas.length>rows.length){
+    if(!confirm(`Pegaste ${lineas.length} notas pero solo hay ${rows.length} estudiantes en la lista. ¿Continuar aplicando solo las primeras ${rows.length}?`)) return;
+  }
+  const m=$('msgPegarNotas'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando…';
+
+  const sync=(CONFIG_ACTS[actId]||{}).sync;
+  const actInfo = CATALOGO_ACTIVIDADES.find(x=>x.id===actId);
+  let aplicadas=0;
+  const tareas=[];
+  rows.forEach((r,i)=>{
+    if(i>=lineas.length) return;
+    let v=parseFloat(lineas[i]); if(isNaN(v)) return;
+    v=Math.min(5,Math.max(1,v)); v=Math.round(v*10)/10;
+    r.nota=v; aplicadas++;
+    tareas.push(setDoc(doc(db,'actividades',actId,'resultados',r._codigo),{nota:v},{merge:true}));
+    if(sync?.activo){
+      const fecha = r.horaEntrega || r.fecha || new Date().toISOString();
+      tareas.push(sincronizarNotaAdmin(r._codigo, sync.trimestre, sync.tipoColumna, sync.indice, v, actInfo?.nombre||'', fecha));
+    }
+  });
+
+  try{
+    await Promise.all(tareas);
+    m.className='msg ok'; m.textContent=`✓ ${aplicadas} notas aplicadas y guardadas.`;
+    renderTabla();
+    setTimeout(()=>window.cerrarPegarNotas(),900);
+  }catch(e){
+    m.className='msg err'; m.textContent='Error al guardar: '+e.message;
+  }
+};
+
+window.exportarCSV = ()=>{
+  const fil=$('filGrado').value;
+  const actId=$('selActRes').value;
+  const actNom=CATALOGO_ACTIVIDADES.find(a=>a.id===actId)?.nombre||actId;
+  const rows=RESULTADOS.filter(r=>!fil||r.grado===fil);
+  if(!rows.length){ $('msgRes').className='msg warn'; $('msgRes').textContent='No hay datos.'; return; }
+  let csv='\uFEFF#,Código,Estudiante,Grado,Correctas,Incorrectas,Puntaje,Nota,Intentos,Fecha\n';
+  rows.forEach((r,i)=>{
+    const f=r.fecha?new Date(r.fecha).toLocaleString('es-PA'):'';
+    csv+=`${i+1},"${r.codigo||r._codigo}","${r.nombre}","${r.grado}",${r.correctas??''},${r.incorrectas??''},"${r.puntaje??''}",${(typeof r.nota==='number'?r.nota:1.0).toFixed(1)},${r.intentos||1},"${f}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`${actNom.replace(/ /g,'_')}_${fil||'todos'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); $('msgRes').className='msg ok'; $('msgRes').textContent='✓ Exportado.';
+};
+
+// ============================================================
+// CALENDARIO + HORA PERSONALIZADO (12h con AM/PM)
+// ============================================================
+let dtTargetId = null;
+let dtCalMes = new Date().getMonth();
+let dtCalAnio = new Date().getFullYear();
+let dtDiaSel = null;
+let dtAmPm = 'AM';
+
+function fmtFecha12h(iso){
+  if(!iso) return '';
+  const [fecha,hora] = iso.split('T');
+  if(!fecha) return '';
+  const d = new Date(fecha+'T12:00:00');
+  const fStr = d.toLocaleDateString('es-PA',{day:'numeric',month:'short',year:'numeric'});
+  if(!hora) return fStr;
+  let [h,m] = hora.split(':').map(Number);
+  const ampm = h>=12 ? 'p.m.' : 'a.m.';
+  let h12 = h%12; if(h12===0) h12=12;
+  return `${fStr} · ${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function initSelectsHora(){
+  const sh=$('dtHora'), sm=$('dtMin');
+  sh.innerHTML = Array.from({length:12},(_, i)=>i+1).map(h=>`<option value="${h}">${h}</option>`).join('');
+  sm.innerHTML = Array.from({length:60},(_, i)=>String(i).padStart(2,'0')).map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+
+window.abrirCal = (inputId) => {
+  dtTargetId = inputId;
+  const input = $(inputId);
+  const iso = input.dataset.iso || '';
+  const ahora = new Date();
+  let h12=7, min='00', ampm='AM', diaSel=null;
+
+  if(iso){
+    const [fecha,hora] = iso.split('T');
+    diaSel = fecha;
+    const d = new Date(fecha+'T12:00:00');
+    dtCalMes = d.getMonth(); dtCalAnio = d.getFullYear();
+    if(hora){
+      let [h,m] = hora.split(':').map(Number);
+      ampm = h>=12 ? 'PM' : 'AM';
+      h12 = h%12; if(h12===0) h12=12;
+      min = String(m).padStart(2,'0');
+    }
+  } else {
+    dtCalMes = ahora.getMonth(); dtCalAnio = ahora.getFullYear();
+  }
+
+  dtDiaSel = diaSel;
+  dtAmPm = ampm;
+  if(!$('dtHora').options.length) initSelectsHora();
+  $('dtHora').value = h12;
+  $('dtMin').value = min;
+  setAmPm(ampm);
+  renderCalGrid();
+  $('dtPicker').classList.remove('hide');
+};
+
+window.navMesCal = (delta) => {
+  dtCalMes += delta;
+  if(dtCalMes<0){ dtCalMes=11; dtCalAnio--; }
+  if(dtCalMes>11){ dtCalMes=0; dtCalAnio++; }
+  renderCalGrid();
+};
+
+function renderCalGrid(){
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  $('dtMesLbl').textContent = `${meses[dtCalMes]} ${dtCalAnio}`;
+  const primerDia = new Date(dtCalAnio,dtCalMes,1).getDay();
+  const diasEnMes = new Date(dtCalAnio,dtCalMes+1,0).getDate();
+  const diasMesAnt = new Date(dtCalAnio,dtCalMes,0).getDate();
+  const hoyStr = new Date().toISOString().slice(0,10);
+
+  let html='';
+  for(let i=primerDia-1;i>=0;i--){
+    html+=`<div class="dt-day off">${diasMesAnt-i}</div>`;
+  }
+  for(let d=1;d<=diasEnMes;d++){
+    const key = `${dtCalAnio}-${String(dtCalMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let cls='dt-day';
+    if(key===hoyStr) cls+=' today';
+    if(key===dtDiaSel) cls+=' sel';
+    html+=`<div class="${cls}" onclick="seleccionarDiaCal('${key}')">${d}</div>`;
+  }
+  const totalCeldas = primerDia+diasEnMes;
+  const sobran = (7-(totalCeldas%7))%7;
+  for(let d=1;d<=sobran;d++){
+    html+=`<div class="dt-day off">${d}</div>`;
+  }
+  $('dtGrid').innerHTML = html;
+}
+
+window.seleccionarDiaCal = (key) => {
+  dtDiaSel = key;
+  renderCalGrid();
+};
+
+window.setAmPm = (v) => {
+  dtAmPm = v;
+  $('dtAM').classList.toggle('on', v==='AM');
+  $('dtPM').classList.toggle('on', v==='PM');
+};
+
+window.confirmarFechaCal = () => {
+  if(!dtDiaSel){
+    alert('Selecciona un día en el calendario.');
+    return;
+  }
+  let h12 = parseInt($('dtHora').value);
+  const min = $('dtMin').value;
+  let h24 = h12%12;
+  if(dtAmPm==='PM') h24+=12;
+  const iso = `${dtDiaSel}T${String(h24).padStart(2,'0')}:${min}`;
+  const input = $(dtTargetId);
+  input.dataset.iso = iso;
+  input.value = fmtFecha12h(iso);
+  $('dtPicker').classList.add('hide');
+};
+
+window.limpiarFechaCal = () => {
+  const input = $(dtTargetId);
+  input.dataset.iso = '';
+  input.value = '';
+  $('dtPicker').classList.add('hide');
+};
+
+$('inPass').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+
+// Atajos de teclado del panel de Control de Actividades: Esc cierra drawer/modal de rúbrica,
+// "/" enfoca el buscador (como en Notion/Linear) cuando no se está escribiendo en otro campo.
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    if($('ovRubricaCtrl')?.classList.contains('on')){ cerrarRubricaModal(); return; }
+    if($('drawerAct')?.classList.contains('on')){ cerrarDrawer(); return; }
+  }
+  if(e.key==='/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){
+    const buscador = $('actlBuscar');
+    if(buscador && !$('scrPanel').classList.contains('hide') && !$('panCtrl').classList.contains('hide')){
+      e.preventDefault();
+      buscador.focus();
+    }
+  }
+});
+</script>
+<!-- MODAL DETALLE LABORATORIO -->
+<div class="ov" id="ovDetalleLab">
+  <div class="mdbox" id="mdBox">
+    <h3 id="mdTitulo">Laboratorio</h3>
+    <div class="mdsub" id="mdEst">—</div>
+    <div id="mdMeta"></div>
+    <button class="md-toggle" id="btnVerDoc" style="display:none" onclick="toggleDocPreview()"><i class="ti ti-eye"></i> <span id="txtVerDoc">Ver documento</span></button>
+    <div class="md-docpreview hide" id="mdDocPreview"></div>
+    <div class="mdcode" id="mdCodigo">—</div>
+    <button class="md-toggle" id="btnVerChecklist" style="display:none" onclick="toggleChecklist()"><i class="ti ti-list-check"></i> <span id="txtVerChecklist">Ver checklist completo</span></button>
+    <div class="md-checklist hide" id="mdChecklist"></div>
+    <button class="md-toggle" id="btnReanalizar" style="display:none;background:rgba(0,255,163,.1);border-color:var(--ok);color:var(--ok)" onclick="reanalizarEntrega()"><i class="ti ti-refresh"></i> <span id="txtReanalizar">Reanalizar con las correcciones</span></button>
+    <div class="md-reanalisis" id="mdReanalisis">
+      <div style="font-size:12px;color:var(--tx2)">Resultado al revisar de nuevo el documento entregado con la lógica corregida:</div>
+      <div class="cmp"><span class="nota-vieja" id="reNotaVieja">—</span><span class="arrow">→</span><b id="reNotaNueva">—</b></div>
+      <div style="font-size:11.5px;color:var(--tx3);margin-bottom:10px">Las acciones que no dejan rastro en el documento (Ctrl+B, deshacer, zoom, regla, etc.) se mantienen tal como se registraron originalmente.</div>
+      <button class="be sm" onclick="guardarReanalisis()">Guardar nota recalculada</button>
+    </div>
+    <div id="mdRubrica"></div>
+    <div class="mdtot"><span>Nota (escala MEDUCA 1.0 – 5.0)</span><b><span id="mdTotal">0 / 20 pts</span> · <span id="mdNota">1.0</span></b></div>
+    <div style="margin-top:14px">
+      <label style="display:block;font-size:12px;color:var(--tx2);margin-bottom:6px;font-family:'Chakra Petch';letter-spacing:.5px;text-transform:uppercase">Observaciones para el estudiante</label>
+      <textarea id="mdObs" placeholder="Comentarios, sugerencias o correcciones para esta entrega…" style="width:100%;min-height:80px;background:var(--bg,#0d1117);border:1px solid var(--linea2);border-radius:8px;padding:10px;color:inherit;font-family:inherit;font-size:13px;resize:vertical"></textarea>
+    </div>
+    <div class="msg" id="mdMsg"></div>
+    <div class="mdbtns" id="mdEntregaBtns" style="display:none;gap:10px;margin-bottom:10px">
+      <button onclick="habilitarReenvio()" style="flex:1;background:transparent;border:1px solid var(--oro,#d29922);color:var(--oro,#d29922);border-radius:9px;padding:10px;cursor:pointer;font-family:'Chakra Petch';font-weight:700;font-size:13px">Habilitar reenvío</button>
+    </div>
+    <div class="mdbtns" id="mdBorrarBtns" style="display:none;gap:10px;margin-bottom:10px">
+      <button id="btnEliminarEntrega" onclick="eliminarEntrega()" style="flex:1;background:transparent;border:1px solid var(--err,#da3633);color:var(--err,#da3633);border-radius:9px;padding:10px;cursor:pointer;font-family:'Chakra Petch';font-weight:700;font-size:13px">Eliminar entrega</button>
+    </div>
+    <div class="mdbtns">
+      <button onclick="cerrarDetalleLab()" style="flex:1;background:transparent;border:1px solid var(--linea2);color:var(--tx);border-radius:9px;padding:12px;cursor:pointer;font-family:'Chakra Petch';font-weight:700">Cerrar</button>
+      <button onclick="guardarRubrica()" style="flex:1;background:var(--neon);color:#001318;border:none;border-radius:9px;padding:12px;cursor:pointer;font-family:'Chakra Petch';font-weight:700">Guardar calificación</button>
+    </div>
+  </div>
+</div>
+<!-- MODAL PEGAR NOTAS MASIVO -->
+<div class="ov" id="ovPegarNotas">
+  <div class="mdbox" id="pegarNotasBox" style="max-width:640px">
+    <h3><i class="ti ti-clipboard-list"></i> Pegar notas para todos</h3>
+    <p class="mdsub" id="pegarNotasInfo" style="margin-bottom:4px">—</p>
+    <div id="pegarNotasLista" style="max-height:130px;overflow-y:auto;font-size:12px;color:var(--tx3);background:var(--bg,#0d1117);border:1px solid var(--linea2);border-radius:8px;padding:8px 10px;margin-bottom:14px"></div>
+    <label style="display:block;font-size:12px;color:var(--tx2);margin-bottom:6px;font-family:'Chakra Petch';letter-spacing:.5px;text-transform:uppercase">Pega aquí una nota por línea (1.0 a 5.0), en el mismo orden que la lista de arriba</label>
+    <textarea id="pegarNotasArea" oninput="previsualizarPegarNotas()" placeholder="4.5
+5.0
+3.2
+..." style="width:100%;min-height:120px;background:var(--bg,#0d1117);border:1px solid var(--linea2);border-radius:8px;padding:10px;color:inherit;font-family:inherit;font-size:13px;resize:vertical"></textarea>
+    <div id="pegarNotasPreview" style="max-height:150px;overflow-y:auto;font-size:12px;margin-top:10px"></div>
+    <div class="msg" id="msgPegarNotas"></div>
+    <div class="mdbtns" style="margin-top:14px">
+      <button onclick="cerrarPegarNotas()" style="flex:1;background:transparent;border:1px solid var(--linea2);color:var(--tx);border-radius:9px;padding:12px;cursor:pointer;font-family:'Chakra Petch';font-weight:700">Cancelar</button>
+      <button onclick="confirmarPegarNotas()" style="flex:1;background:var(--neon);color:#001318;border:none;border-radius:9px;padding:12px;cursor:pointer;font-family:'Chakra Petch';font-weight:700">Aplicar y guardar</button>
+    </div>
+  </div>
+</div>
+</body></html>
