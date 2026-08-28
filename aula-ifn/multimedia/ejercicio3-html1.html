@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejercicio #3 — HTML #1 | Instituto Fermín Naudeau</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c222b; --linea:#2a313c;
+    --neon:#22d3ee; --neon2:#34d399; --rojo:#f87171; --amarillo:#fbbf24;
+    --tx:#e6edf3; --tx2:#9aa5b1; --tx3:#6b7684;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--tx); font-family:'Inter',Arial,sans-serif; padding:24px 16px 60px;}
+  .wrap{max-width:820px; margin:0 auto;}
+  .hoja{background:var(--panel); border:1px solid var(--linea); border-radius:14px; padding:28px 30px; margin-bottom:22px;}
+  .header{text-align:center; border-bottom:1px solid var(--linea); padding-bottom:16px; margin-bottom:18px;}
+  .header h1{font-family:'Chakra Petch'; font-size:20px; letter-spacing:.5px; margin:0 0 4px; color:#fff;}
+  .header .sub{color:var(--tx2); font-size:13px;}
+  .meta{display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; margin-top:16px;}
+  .meta label{display:block; font-size:11px; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+  .meta input{width:100%; background:var(--panel2); border:1px solid var(--linea); border-radius:8px; padding:9px 10px; color:var(--tx); font-size:14px;}
+  .meta input:focus{outline:none; border-color:var(--neon);}
+
+  .seccion-tit{font-family:'Chakra Petch'; font-size:13px; color:var(--tx2); text-transform:uppercase; letter-spacing:.5px; margin:22px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--linea); display:flex; justify-content:space-between;}
+  .seccion-tit b{color:#fff;}
+
+  .puntaje-top{display:flex; justify-content:space-between; align-items:center; font-family:'Chakra Petch'; font-size:13px; color:var(--tx2); margin-top:14px; text-transform:uppercase; letter-spacing:.5px;}
+  .puntaje-top b{color:#fff;}
+
+  .pregunta{background:var(--panel2); border:1px solid var(--linea); border-radius:12px; padding:18px 20px; margin-bottom:14px;}
+  .pregunta .num{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; background:var(--neon); color:#03272e; font-family:'Chakra Petch'; font-weight:700; font-size:13px; border-radius:50%; margin-right:8px;}
+  .pregunta .enun{font-size:14.5px; line-height:1.55; color:var(--tx);}
+  .pregunta .enun code{background:rgba(255,255,255,.08); padding:2px 6px; border-radius:5px; font-size:13px; color:var(--neon);}
+  .opciones{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .opciones button{
+    background:var(--panel); border:1px solid var(--linea); color:var(--tx);
+    font-family:'Chakra Petch'; font-weight:600; font-size:13px; letter-spacing:.3px;
+    padding:9px 16px; border-radius:8px; cursor:pointer; transition:.15s;
+  }
+  .opciones button code{color:inherit; background:none; padding:0; font-size:inherit;}
+  .opciones button:hover{border-color:var(--neon); color:var(--neon);}
+  .opciones button.sel{border-color:var(--neon); background:rgba(34,211,238,.12); color:var(--neon);}
+  .opciones button.ok{border-color:var(--neon2); background:rgba(52,211,153,.15); color:var(--neon2);}
+  .opciones button.mal{border-color:var(--rojo); background:rgba(248,113,113,.15); color:var(--rojo);}
+  .opciones button:disabled{cursor:default;}
+  .fb{margin-top:10px; font-size:12.5px; display:none;}
+  .fb.on{display:block;}
+  .fb.ok-t{color:var(--neon2);}
+  .fb.mal-t{color:var(--rojo);}
+
+  .btn-enviar{display:block; width:100%; background:var(--neon); color:#03272e; border:none; font-family:'Chakra Petch'; font-weight:700; font-size:15px; letter-spacing:.5px; text-transform:uppercase; padding:16px; border-radius:10px; cursor:pointer; margin-top:8px;}
+  .btn-enviar:disabled{background:var(--panel2); color:var(--tx3); cursor:not-allowed;}
+  .btn-enviar:hover:not(:disabled){filter:brightness(1.08);}
+
+  .resultado{display:none; text-align:center; padding:26px 20px;}
+  .resultado.on{display:block;}
+  .resultado .nota{font-family:'Chakra Petch'; font-size:52px; font-weight:700; color:var(--neon);}
+  .resultado .nota small{font-size:20px; color:var(--tx2);}
+  .resultado .detalle{color:var(--tx2); font-size:13.5px; margin-top:6px;}
+  .resultado .barra{height:8px; background:var(--panel2); border-radius:20px; margin:18px 0; overflow:hidden;}
+  .resultado .barra i{display:block; height:100%; background:linear-gradient(90deg,var(--neon),var(--neon2)); width:0%; transition:width .8s ease;}
+
+  /* ---- pantalla de acceso con código de estudiante ---- */
+  .fl{max-width:320px; margin:0 auto;}
+  .fl label{display:block; font-size:11px; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; font-family:'Chakra Petch';}
+  .fl input{width:100%; padding:13px 14px; font-family:'Chakra Petch'; font-size:16px; font-weight:600; letter-spacing:2px; border:1.5px solid var(--linea); border-radius:8px; text-transform:uppercase; color:var(--neon); background:var(--bg); text-align:center;}
+  .fl input:focus{outline:none; border-color:var(--neon);}
+  .msg{font-size:13px; font-weight:500; padding:11px 14px; border-radius:8px; margin-top:14px; text-align:center; display:none;}
+  .msg.err{display:block; background:rgba(248,113,113,.1); color:var(--rojo); border:1px solid rgba(248,113,113,.3);}
+  .msg.ok{display:block; background:rgba(52,211,153,.1); color:var(--neon2); border:1px solid rgba(52,211,153,.3);}
+  .msg.warn{display:block; background:rgba(251,191,36,.1); color:var(--amarillo); border:1px solid rgba(251,191,36,.3);}
+  .who{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding:12px 14px; background:var(--panel2); border-radius:10px; border:1px solid var(--linea); font-size:13px; color:var(--tx2);}
+  .who b{color:#fff;}
+  .hide{display:none!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== PANTALLA DE ACCESO ===== -->
+  <div class="hoja" id="scrLogin">
+    <div class="header">
+      <h1>Instituto Fermín Naudeau</h1>
+      <div class="sub">Ejercicio — HTML #1 — III Trimestre &nbsp;·&nbsp; Asignatura: Multimedia &nbsp;·&nbsp; Profesor: Mario Carrasco</div>
+    </div>
+    <div class="fl">
+      <label>Tu código de estudiante</label>
+      <input type="text" id="inCod" placeholder="EJ: 1234" onkeydown="if(event.key==='Enter')login()">
+      <button class="btn-enviar" id="btnLogin" style="margin-top:14px" onclick="login()">Entrar</button>
+      <div class="msg" id="msgLogin"></div>
+    </div>
+  </div>
+
+  <!-- ===== PRUEBA ===== -->
+  <div id="scrQuiz" class="hide">
+    <div class="hoja">
+      <div class="header">
+        <h1>Instituto Fermín Naudeau</h1>
+        <div class="sub">Ejercicio — HTML #1 — III Trimestre &nbsp;·&nbsp; Asignatura: Multimedia &nbsp;·&nbsp; Profesor: Mario Carrasco</div>
+      </div>
+      <div class="who"><span>Estudiante: <b id="whoNom">—</b> &nbsp;·&nbsp; Grado: <b id="whoGrado">—</b></span><span>Puntos totales: <b>15</b></span></div>
+      <div class="seccion-tit"><span>I Parte: Selección múltiple (1 pt c/u — 5 pts)</span> <b id="contP1">0</b>/5</div>
+    </div>
+
+    <div id="preguntasP1"></div>
+
+    <div class="hoja">
+      <div class="seccion-tit" style="margin-top:0"><span>II Parte: Completar (2 pts c/u — 10 pts)</span> <b id="contP2">0</b>/5</div>
+    </div>
+
+    <div id="preguntasP2"></div>
+
+    <div class="hoja">
+      <button class="btn-enviar" id="btnEnviar" disabled>Enviar y ver mi nota</button>
+    </div>
+
+    <div class="hoja resultado" id="resultado">
+      <div class="nota"><span id="notaNum">0</span><small>/15</small></div>
+      <div class="barra"><i id="barra"></i></div>
+      <div class="detalle" id="detalle"></div>
+      <div class="msg" id="resGuard" style="display:block"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ACT_ID = "ejercicio3-html1";
+const $ = id => document.getElementById(id);
+
+let EST = null;
+let actConfig = {};
+let actAbierta = true;
+let intentosPrevios = 0;
+
+function gKeyLocal(grado){ return 'g_'+grado.replace(/[°\s]/g,''); }
+
+async function verificarEstado(){
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+    const k = EST.grado ? gKeyLocal(EST.grado) : null;
+    const gc = (k && actConfig[k]) ? actConfig[k] : {};
+    actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+    if(gc.intentos) actConfig._intentos = gc.intentos;
+  }catch(e){ actConfig={}; actAbierta=true; }
+}
+
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin'), btn = $('btnLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Escribe tu código.'; return; }
+  m.className='msg warn'; m.textContent='Verificando…'; btn.disabled = true;
+
+  if(typeof CODIGO_DEMO !== 'undefined' && cod === CODIGO_DEMO){
+    EST = { codigo:cod, ...ESTUDIANTE_DEMO, demo:true };
+    await verificarEstado(); btn.disabled=false; mostrarQuiz(); return;
+  }
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido. Verifica e intenta de nuevo.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    await verificarEstado();
+    if(!actAbierta){ m.className='msg warn'; m.textContent='⏳ Esta prueba está cerrada. Espera a que el docente la abra.'; btn.disabled=false; return; }
+    const maxIntentos = actConfig._intentos || actConfig.intentos || 1;
+    const prev = await getDoc(doc(db,'actividades',ACT_ID,'resultados',cod));
+    if(prev.exists()){
+      intentosPrevios = prev.data().intentos || 1;
+      if(intentosPrevios >= maxIntentos){
+        m.className='msg warn'; m.innerHTML='Ya enviaste esta prueba.<br>Nota registrada: <b>'+(prev.data().nota??'—')+'</b>'; btn.disabled=false; return;
+      }
+    }
+    btn.disabled = false;
+    mostrarQuiz();
+  }catch(e){ m.className='msg err'; m.textContent='Error de conexión. Revisa tu internet.'; btn.disabled=false; }
+};
+
+function mostrarQuiz(){
+  $('whoNom').textContent = EST.nombre;
+  $('whoGrado').textContent = EST.demo ? 'Modo demostración' : EST.grado;
+  $('scrLogin').classList.add('hide');
+  $('scrQuiz').classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+async function guardarResultado(puntos){
+  const nota = notaMeduca(puntos, 15);
+  if(EST.demo){ $('resGuard').className='msg warn'; $('resGuard').textContent='✓ Modo demo: este resultado no se guarda en las notas reales.'; return; }
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado,
+      correctas:puntos, total:15, puntaje: puntos+'/15', nota,
+      intentos: intentosPrevios + 1, entregado:true,
+      fecha: new Date().toISOString()
+    });
+    $('resGuard').className='msg ok'; $('resGuard').textContent='✓ Resultado guardado. Tu nota ha sido registrada.';
+  }catch(e){
+    $('resGuard').className='msg err'; $('resGuard').textContent='⚠️ No se pudo enviar tu resultado. Avisa al docente.';
+  }
+}
+
+window._enviarEjercicio3 = guardarResultado;
+</script>
+
+<script>
+function esc(s){ return s.replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ---------- I PARTE: SELECCIÓN MÚLTIPLE ----------
+const P1 = [
+  { enun:'La etiqueta <html lang="es"> sirve para:', ops:['Mostrar texto en negrita','Agregar un encabezado','Indicar el idioma'], r:2 },
+  { enun:'La sección <head> contiene:', ops:['Solo imágenes','Información sobre la página','Encabezados principales'], r:1 },
+  { enun:'¿Qué etiqueta muestra el título en la pestaña del navegador?', ops:['<body>','<head>','<title>'], r:2 },
+  { enun:'El <body> de una página HTML contiene:', ops:['La descripción del sitio','El idioma','Todo lo que el usuario ve en la página'], r:2 },
+  { enun:'Etiqueta utilizada en los encabezados para escribir un subtítulo en una página web:', ops:['<h1>','<title>','<h2>'], r:2 },
+];
+
+const rP1 = new Array(P1.length).fill(null);
+const contP1 = document.getElementById('preguntasP1');
+const letras = ['a','b','c'];
+
+P1.forEach((p,i)=>{
+  const div = document.createElement('div');
+  div.className = 'pregunta';
+  div.innerHTML = `
+    <div class="enun"><span class="num">${i+1}</span>${esc(p.enun).replace(/&lt;[^&]*&gt;/g, m=>`<code>${m}</code>`)}</div>
+    <div class="opciones" id="p1-${i}">
+      ${p.ops.map((o,j)=>`<button data-j="${j}" onclick="elegirP1(${i},${j})">${letras[j]}) <code>${esc(o)}</code></button>`).join('')}
+    </div>
+    <div class="fb" id="fb1-${i}"></div>
+  `;
+  contP1.appendChild(div);
+});
+
+function elegirP1(i,j){
+  if(rP1[i] !== null) return;
+  rP1[i] = j;
+  document.querySelectorAll(`#p1-${i} button`).forEach((b,k)=>{
+    b.disabled = true;
+    if(k===j) b.classList.add('sel');
+  });
+  document.getElementById('contP1').textContent = rP1.filter(r=>r!==null).length;
+  chequearHabilitarEnvio();
+}
+
+// ---------- II PARTE: COMPLETAR (banco de palabras) ----------
+const BANCO = ['<body> </body>','<html> / </html>','<head>','<!DOCTYPE html>','<meta charset="utf-8" />'];
+
+const P2 = [
+  { enun:'Todo el contenido visible para el usuario se coloca dentro de la etiqueta:', r:'<body> </body>' },
+  { enun:'Indica el inicio y fin del documento HTML. Todo el código debe ir dentro:', r:'<html> / </html>' },
+  { enun:'Todo el contenido no visible para el usuario se coloca dentro de la etiqueta:', r:'<head>' },
+  { enun:'Indica que el documento está escrito en HTML5:', r:'<!DOCTYPE html>' },
+  { enun:'Define el tipo de codificación de caracteres (ñ, á, é, etc.):', r:'<meta charset="utf-8" />' },
+];
+
+const rP2 = new Array(P2.length).fill(null);
+const contP2 = document.getElementById('preguntasP2');
+
+P2.forEach((p,i)=>{
+  const div = document.createElement('div');
+  div.className = 'pregunta';
+  div.innerHTML = `
+    <div class="enun"><span class="num">${i+1}</span>${p.enun}</div>
+    <div class="opciones" id="p2-${i}">
+      ${BANCO.map(o=>`<button data-op="${esc(o)}" onclick="elegirP2(${i},'${esc(o)}')"><code>${esc(o)}</code></button>`).join('')}
+    </div>
+    <div class="fb" id="fb2-${i}"></div>
+  `;
+  contP2.appendChild(div);
+});
+
+function elegirP2(i, op){
+  if(rP2[i] !== null) return;
+  rP2[i] = op;
+  document.querySelectorAll(`#p2-${i} button`).forEach(b=>{
+    b.disabled = true;
+    if(b.dataset.op === op) b.classList.add('sel');
+  });
+  document.getElementById('contP2').textContent = rP2.filter(r=>r!==null).length;
+  chequearHabilitarEnvio();
+}
+
+function chequearHabilitarEnvio(){
+  const todas = rP1.every(r=>r!==null) && rP2.every(r=>r!==null);
+  document.getElementById('btnEnviar').disabled = !todas;
+}
+
+document.getElementById('btnEnviar').addEventListener('click', ()=>{
+  let puntos = 0;
+
+  P1.forEach((p,i)=>{
+    const ok = rP1[i] === p.r;
+    if(ok) puntos += 1;
+    document.querySelectorAll(`#p1-${i} button`).forEach((b,k)=>{
+      if(k===p.r) b.classList.add('ok');
+      else if(k===rP1[i] && !ok) b.classList.add('mal');
+    });
+    const fb = document.getElementById('fb1-'+i);
+    fb.classList.add('on', ok?'ok-t':'mal-t');
+    fb.textContent = ok ? '✔ Correcto' : `✘ Incorrecto — la respuesta correcta es ${letras[p.r]}) ${p.ops[p.r]}`;
+  });
+
+  P2.forEach((p,i)=>{
+    const ok = rP2[i] === esc(p.r);
+    if(ok) puntos += 2;
+    document.querySelectorAll(`#p2-${i} button`).forEach(b=>{
+      if(b.dataset.op === esc(p.r)) b.classList.add('ok');
+      else if(b.dataset.op === rP2[i] && !ok) b.classList.add('mal');
+    });
+    const fb = document.getElementById('fb2-'+i);
+    fb.classList.add('on', ok?'ok-t':'mal-t');
+    fb.textContent = ok ? '✔ Correcto (2 pts)' : `✘ Incorrecto — la respuesta correcta es ${p.r}`;
+  });
+
+  document.getElementById('notaNum').textContent = puntos;
+  document.getElementById('detalle').textContent = `${puntos} de 15 puntos obtenidos`;
+  document.getElementById('barra').style.width = (puntos/15*100)+'%';
+
+  document.getElementById('resultado').classList.add('on');
+  document.getElementById('btnEnviar').disabled = true;
+  document.getElementById('btnEnviar').textContent = 'Examen enviado';
+  document.getElementById('resultado').scrollIntoView({behavior:'smooth', block:'start'});
+
+  window._enviarEjercicio3(puntos);
+});
+</script>
+</body>
+</html>
