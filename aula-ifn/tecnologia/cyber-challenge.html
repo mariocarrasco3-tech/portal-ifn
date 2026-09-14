@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cybersecurity Challenge — Diagnóstico TIC</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#040608;--panel:#0a0f0d;--panel2:#0e1512;--linea:rgba(0,255,140,.14);--linea2:rgba(0,255,140,.32);--tx:#e8fff2;--tx2:#7fa899;--tx3:#4a6559;--neon:#00ff8c;--neon2:#00d4ff;--warn:#ffb020;--err:#ff3b5c;--ok:#00ff8c;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 12% 0%,rgba(0,255,140,.10),transparent 40%),radial-gradient(circle at 88% 8%,rgba(0,212,255,.08),transparent 40%),radial-gradient(circle at 50% 100%,rgba(255,59,92,.05),transparent 45%);pointer-events:none;}
+body::after{content:"";position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,255,140,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,140,.02) 1px,transparent 1px);background-size:38px 38px;pointer-events:none;mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 70%);}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:22px 18px 70px;}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+.br{display:flex;align-items:center;gap:10px;}.br img{height:38px;width:38px;object-fit:contain;border-radius:8px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:13px;color:#fff;display:block;line-height:1.1;}.br span{font-size:10px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;}
+.hide{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea2);border-top-color:var(--neon);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}@keyframes sp{to{transform:rotate(360deg);}}
+.msg{font-size:13px;font-weight:500;padding:11px 14px;border-radius:8px;margin-top:14px;text-align:center;display:none;}
+.msg.err{display:block;background:rgba(255,59,92,.12);color:#ffb3c0;border:1px solid rgba(255,59,92,.3);}
+.msg.ok{display:block;background:rgba(0,255,140,.12);color:#7dffce;border:1px solid rgba(0,255,140,.3);}
+.msg.warn{display:block;background:rgba(255,176,32,.12);color:#ffe0a3;border:1px solid rgba(255,176,32,.3);}
+
+.box{background:var(--panel);border:1px solid var(--linea2);border-radius:16px;padding:34px 30px;position:relative;overflow:hidden;box-shadow:0 0 60px -22px rgba(0,255,140,.28);}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon),var(--neon2),var(--err));box-shadow:0 0 14px var(--neon);}
+
+.ico-act{width:78px;height:78px;border-radius:20px;background:linear-gradient(135deg,rgba(0,255,140,.15),rgba(0,255,140,.04));border:1px solid var(--linea2);display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--neon);margin:0 auto 18px;box-shadow:0 0 30px -8px var(--neon);}
+.act-tag{font-family:'Chakra Petch';font-size:11px;color:var(--neon);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;}
+.act-title{font-family:'Chakra Petch';font-size:29px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;text-shadow:0 0 30px rgba(0,255,140,.25);}
+.act-sub{font-size:13.5px;color:var(--tx2);text-align:center;margin-bottom:26px;}
+.who-box{display:flex;align-items:center;gap:14px;padding:15px 18px;background:var(--panel2);border:1px solid var(--linea);border-radius:12px;margin-bottom:22px;}
+.who-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--neon),#009957);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch';font-weight:700;color:#022;font-size:19px;flex-shrink:0;}
+.who-av.demo{background:linear-gradient(135deg,var(--warn),#a06000);}
+.who-info b{font-family:'Chakra Petch';color:#fff;font-size:15px;display:block;}.who-info span{font-size:12px;color:var(--tx2);}
+
+.rules-box{background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:17px 19px;margin-bottom:22px;}
+.rules-box h3{font-family:'Chakra Petch';font-size:12px;color:var(--neon);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.rules-box ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.rules-box li{font-size:12.8px;color:var(--tx2);display:flex;align-items:flex-start;gap:8px;}
+.rules-box li::before{content:"›";color:var(--neon);font-weight:700;flex-shrink:0;}
+.stat-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.sm-box{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:12px;text-align:center;}
+.sm-box b{display:block;font-family:'Chakra Petch';font-size:20px;color:var(--neon);}
+.sm-box span{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;}
+
+.be{width:100%;padding:16px;font-family:'Chakra Petch';font-size:15.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#022;background:var(--neon);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.18s;box-shadow:0 0 28px -6px var(--neon);}
+.be:hover{transform:translateY(-2px);box-shadow:0 0 40px -4px var(--neon);}
+.be.sec{background:transparent;border:1px solid var(--linea2);color:var(--tx2);box-shadow:none;}.be.sec:hover{color:var(--neon);border-color:var(--neon);}
+.be:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* ── QUIZ ── */
+.q-topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.q-count{font-family:'Chakra Petch';font-size:13px;color:var(--tx2);}
+.q-count b{color:var(--neon);}
+.q-score{font-family:'Chakra Petch';font-size:14px;color:var(--tx);display:flex;align-items:center;gap:6px;}
+.q-score i{color:var(--warn);}
+.q-pbar{height:5px;background:var(--panel2);border-radius:100px;overflow:hidden;border:1px solid var(--linea);margin-bottom:22px;}
+.q-pbar-fill{height:100%;background:linear-gradient(90deg,var(--neon2),var(--neon));box-shadow:0 0 10px var(--neon);transition:width .35s cubic-bezier(.4,0,.2,1);}
+
+.timer-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:22px;}
+.timer-ring{position:relative;width:96px;height:96px;margin-bottom:6px;}
+.timer-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
+.timer-ring circle{fill:none;stroke-width:7;}
+.timer-bg{stroke:var(--panel2);}
+.timer-fg{stroke:var(--neon);stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-weight:700;font-size:28px;color:var(--tx);}
+.timer-lbl{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;}
+
+.tema-chip{display:inline-flex;align-items:center;gap:6px;font-family:'Chakra Petch';font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin:0 auto 14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);color:var(--neon2);width:fit-content;}
+.q-nivel{font-size:10.5px;padding:3px 9px;border-radius:100px;font-family:'Chakra Petch';letter-spacing:.5px;}
+.q-nivel.facil{background:rgba(0,255,140,.15);color:var(--neon);}
+.q-nivel.intermedia{background:rgba(255,176,32,.15);color:var(--warn);}
+.q-nivel.dificil{background:rgba(255,59,92,.15);color:var(--err);}
+
+.q-texto{font-family:'Chakra Petch';font-size:21px;font-weight:600;color:#fff;text-align:center;margin:0 auto 26px;line-height:1.4;max-width:640px;min-height:56px;}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.qb{padding:18px 18px;font-family:'Inter';font-size:14.5px;font-weight:600;border-radius:12px;border:2px solid;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:12px;background:var(--panel2);text-align:left;line-height:1.35;}
+.qb .qb-letra{font-family:'Chakra Petch';font-weight:700;font-size:15px;width:28px;height:28px;flex-shrink:0;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.qb:nth-child(1){border-color:rgba(0,255,140,.35);}.qb:nth-child(1) .qb-letra{background:rgba(0,255,140,.15);color:var(--neon);}
+.qb:nth-child(2){border-color:rgba(0,212,255,.35);}.qb:nth-child(2) .qb-letra{background:rgba(0,212,255,.15);color:var(--neon2);}
+.qb:nth-child(3){border-color:rgba(255,176,32,.35);}.qb:nth-child(3) .qb-letra{background:rgba(255,176,32,.15);color:var(--warn);}
+.qb:nth-child(4){border-color:rgba(255,59,92,.35);}.qb:nth-child(4) .qb-letra{background:rgba(255,59,92,.15);color:var(--err);}
+.qb:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.15);}
+.qb:disabled{cursor:not-allowed;opacity:.55;}
+.qb.chosen{opacity:1!important;background:rgba(0,255,140,.14)!important;border-color:var(--neon)!important;}
+@media(max-width:520px){.q-opts{grid-template-columns:1fr;}.q-texto{font-size:18px;}}
+
+/* ── RESULTADO ── */
+.res-hero{text-align:center;margin-bottom:26px;}
+.res-emoji{font-size:52px;margin-bottom:8px;}
+.res-pts{font-family:'Chakra Petch';font-size:56px;font-weight:700;line-height:1;margin-bottom:4px;color:var(--neon);text-shadow:0 0 30px rgba(0,255,140,.35);}
+.res-pts-lbl{font-size:12px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.res-box{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:14px;text-align:center;}
+.res-box b{display:block;font-family:'Chakra Petch';font-size:22px;}
+.res-box span{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;}
+.res-box.ok b{color:var(--ok);}.res-box.er b{color:var(--err);}.res-box.na b{color:var(--tx2);}
+.res-tiempo{text-align:center;font-size:12.5px;color:var(--tx3);margin-bottom:22px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div class="br"><img src="../logo.png" alt="IFN"><div><b>Instituto Fermín Naudeau</b><span>Aula Virtual · TIC</span></div></div>
+  </div>
+
+  <!-- CARGANDO -->
+  <div id="scrLoad" class="box" style="text-align:center;padding:60px 30px;">
+    <span class="spin" style="width:26px;height:26px;border-width:3px;"></span>
+    <p style="margin-top:16px;color:var(--tx2);font-size:13px;">Cargando reto…</p>
+  </div>
+
+  <!-- BLOQUEADO -->
+  <div id="scrBloq" class="box hide" style="text-align:center;">
+    <div class="ico-act"><i class="ti ti-lock"></i></div>
+    <h2 class="act-title" style="font-size:22px;">Diagnóstico no disponible</h2>
+    <p class="act-sub" id="msgBloq" style="margin-bottom:0;">—</p>
+    <button class="be sec" style="margin-top:22px" onclick="volverMateria()"><i class="ti ti-arrow-left"></i> Volver a TIC</button>
+  </div>
+
+  <!-- INSTRUCCIONES -->
+  <div id="scrInst" class="box hide">
+    <div class="ico-act"><i class="ti ti-shield-lock"></i></div>
+    <p class="act-tag">Diagnóstico competitivo · 10° TIC</p>
+    <h1 class="act-title">Cybersecurity Challenge</h1>
+    <p class="act-sub">Vamos a poner a prueba lo que sabes sobre ciberseguridad</p>
+
+    <div class="who-box">
+      <div class="who-av" id="whoAv">?</div>
+      <div class="who-info"><b id="whoNom">—</b><span id="whoGrado">—</span></div>
+    </div>
+
+    <div class="rules-box">
+      <p style="font-size:13.5px;color:var(--tx2);line-height:1.7;">
+        Lee cada pregunta con calma pero no te confíes: entre más rápido respondas correctamente, más puntos ganas.
+        Una vez que envíes tu respuesta no podrás cambiarla ni regresar a la pregunta anterior, así que piensa bien antes de elegir.
+        Si el tiempo se agota, esa pregunta queda sin responder y avanzamos a la siguiente.
+        <br><br>
+        🏆 Los <b style="color:#fff">tres primeros lugares</b> del grupo se llevarán puntos extra en su nota final:
+        <b style="color:var(--oro,#ffd23f)">1er lugar +5</b>, <b style="color:#c9d3dc">2do lugar +3</b> y <b style="color:#e0995e">3er lugar +1</b>.
+        <br><br>
+        Cuando estés listo, dale <b style="color:#fff">"Comenzar reto"</b>. ¡Mucho éxito!
+      </p>
+    </div>
+
+    <button class="be" id="btnStart" onclick="empezarQuiz()"><i class="ti ti-player-play"></i> <span id="btnStartTxt">Comenzar reto</span></button>
+    <div class="msg" id="msgInst"></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="scrQuiz" class="box hide">
+    <div class="q-topbar">
+      <span class="q-count">Pregunta <b id="qNum">1</b> / 25</span>
+      <span class="q-score"><i class="ti ti-bolt"></i> <span id="qScore">0</span> pts</span>
+    </div>
+    <div class="q-pbar"><div class="q-pbar-fill" id="qPbar" style="width:0%"></div></div>
+
+    <div class="timer-wrap">
+      <div class="timer-ring">
+        <svg viewBox="0 0 100 100"><circle class="timer-bg" cx="50" cy="50" r="44"></circle><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.5" stroke-dashoffset="0"></circle></svg>
+        <div class="timer-num" id="timerNum">--</div>
+      </div>
+      <span class="timer-lbl">Segundos restantes</span>
+    </div>
+
+    <div style="text-align:center">
+      <span class="tema-chip" id="qTema"><i class="ti ti-tag"></i> Tema</span>
+      <span class="q-nivel facil" id="qNivel" style="margin-left:8px">Fácil</span>
+    </div>
+    <p class="q-texto" id="qTexto">—</p>
+    <div class="q-opts" id="qOpts"></div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="scrRes" class="box hide">
+    <div class="res-hero">
+      <div class="res-emoji" id="resEmoji">🛡️</div>
+      <div class="res-pts" id="resPts">0</div>
+      <div class="res-pts-lbl">Puntos totales</div>
+    </div>
+    <div class="res-grid">
+      <div class="res-box ok"><b id="resOk">0</b><span>Correctas</span></div>
+      <div class="res-box er"><b id="resEr">0</b><span>Incorrectas</span></div>
+      <div class="res-box na"><b id="resNa">0</b><span>Sin responder</span></div>
+    </div>
+    <p class="res-tiempo" id="resTiempo">Tiempo total: —</p>
+    <div class="msg" id="resGuard"></div>
+    <button class="be sec" style="margin-top:16px" onclick="volverMateria()"><i class="ti ti-arrow-left"></i> Volver a TIC</button>
+  </div>
+
+</div>
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const $   = id => document.getElementById(id);
+
+// ── Identidad de esta actividad ──
+const ACT_ID     = 'cyber-challenge';
+const ACT_NOMBRE = 'Cybersecurity Challenge';
+const SAVE_KEY   = 'ifn_prog_'+ACT_ID;
+const LIMITE_GENERAL_SEG = 30*60; // 30 minutos
+
+// ── Banco de 25 preguntas ──
+// nivel: facil (18s·100pts) · intermedia (25s·150pts) · dificil (40s·200pts)
+const NIVELES = { facil:{seg:18,pts:100}, intermedia:{seg:25,pts:150}, dificil:{seg:40,pts:200} };
+const PREGUNTAS = [
+  {tema:'Contraseñas',nivel:'facil',p:'¿Cuál de las siguientes contraseñas es más segura?',o:['123456','TuNombre2024','K7$mPz!9qLw','contraseña'],r:2},
+  {tema:'Contraseñas',nivel:'intermedia',p:'Usas la misma contraseña en tu correo, redes sociales y banco. ¿Cuál es el mayor riesgo?',o:['Olvidarla más fácil','Si un sitio es hackeado, todas tus cuentas quedan expuestas','Que sea más lenta de escribir','Ningún riesgo real'],r:1},
+  {tema:'Autenticación',nivel:'facil',p:'¿Para qué sirve la autenticación de dos factores (2FA)?',o:['Para tener dos contraseñas iguales','Para agregar una segunda verificación además de la contraseña','Para acelerar el inicio de sesión','Para compartir tu cuenta con alguien más'],r:1},
+  {tema:'Autenticación',nivel:'intermedia',p:'Recibes un código SMS de verificación que tú no solicitaste. ¿Qué debes hacer?',o:['Ignorarlo, no pasa nada','Reenviarlo a un amigo para probarlo','No compartir el código y cambiar tu contraseña de inmediato','Responder el SMS pidiendo información'],r:2},
+  {tema:'Phishing',nivel:'facil',p:'¿Cuál es el objetivo principal de un ataque de phishing?',o:['Dañar el hardware de la computadora','Engañar a la persona para robar información personal o contraseñas','Mejorar la velocidad de internet','Actualizar el sistema operativo'],r:1},
+  {tema:'Phishing',nivel:'intermedia',p:'Recibes un correo de tu "banco" pidiendo confirmar tu contraseña en un enlace urgente. ¿Qué haces?',o:['Hacer clic de inmediato porque es urgente','Responder con tu contraseña por si acaso','No hacer clic y verificar directamente en la app o sitio oficial','Reenviarlo a varios contactos'],r:2},
+  {tema:'Phishing',nivel:'dificil',p:'¿Cuál de estas señales es la más confiable para detectar un sitio de phishing?',o:['El sitio tiene un logo bonito','El dominio de la URL es ligeramente distinto al oficial (ej. banc0-nacional.com)','El sitio carga rápido','El sitio pide iniciar sesión'],r:1},
+  {tema:'Ingeniería social',nivel:'facil',p:'La ingeniería social se basa principalmente en:',o:['Programar virus complejos','Manipular psicológicamente a las personas para obtener información','Romper contraseñas con fuerza bruta','Instalar antivirus falsos'],r:1},
+  {tema:'Ingeniería social',nivel:'intermedia',p:'Alguien te llama diciendo ser del "soporte técnico" y te pide tu contraseña para "solucionar un problema". ¿Qué es esto?',o:['Un procedimiento normal de soporte','Un ataque de ingeniería social','Una actualización automática','Un firewall'],r:1},
+  {tema:'Malware',nivel:'facil',p:'¿Qué es el malware?',o:['Un tipo de contraseña segura','Software diseñado para dañar o acceder sin permiso a un sistema','Un componente de hardware','Una red social'],r:1},
+  {tema:'Malware',nivel:'dificil',p:'Un archivo cifra todos tus documentos y pide un pago para liberarlos. ¿Qué tipo de malware es?',o:['Spyware','Adware','Ransomware','Firewall'],r:2},
+  {tema:'Redes Wi-Fi',nivel:'facil',p:'¿Cuál es una práctica segura al usar Wi-Fi público?',o:['Hacer compras y pagos bancarios sin protección','Evitar ingresar datos sensibles, o usar una VPN','Desactivar el antivirus para navegar más rápido','Compartir la contraseña con desconocidos'],r:1},
+  {tema:'Redes Wi-Fi',nivel:'intermedia',p:'Tu router sigue con la contraseña de fábrica por defecto. ¿Cuál es el riesgo principal?',o:['Ninguno, esas contraseñas son únicas','Que alguien la busque en internet y acceda fácilmente a tu red','Que el router se apague solo','Que baje la velocidad de internet'],r:1},
+  {tema:'Firewall',nivel:'facil',p:'¿Cuál es la función principal de un firewall?',o:['Aumentar la velocidad de la computadora','Filtrar y controlar el tráfico de red para bloquear accesos no autorizados','Guardar copias de seguridad','Traducir archivos'],r:1},
+  {tema:'Firewall',nivel:'intermedia',p:'¿Qué riesgo corres si desactivas el firewall de tu computadora sin motivo?',o:['Ninguno','Tu equipo queda más expuesto a accesos y ataques externos','La computadora se vuelve más rápida sin riesgos','Se eliminan los virus automáticamente'],r:1},
+  {tema:'Copias de seguridad',nivel:'facil',p:'¿Por qué son importantes las copias de seguridad (backups)?',o:['Porque ocupan espacio útil','Permiten recuperar información si se pierde o es atacada por ransomware','Hacen que el sistema operativo se actualice','Sirven para navegar más rápido'],r:1},
+  {tema:'Copias de seguridad',nivel:'intermedia',p:'La regla de backup 3-2-1 recomienda:',o:['3 copias, en 2 tipos de medios distintos, 1 fuera del lugar principal','3 contraseñas, 2 usuarios, 1 computadora','3 antivirus, 2 firewalls, 1 router','3 correos, 2 teléfonos, 1 código'],r:0},
+  {tema:'Sistemas operativos',nivel:'facil',p:'¿Por qué es importante mantener actualizado el sistema operativo?',o:['Corrige errores y cierra vulnerabilidades de seguridad conocidas','Hace que el equipo se vea más bonito','Es obligatorio por ley en todos los países','Elimina la necesidad de contraseñas'],r:0},
+  {tema:'Sistemas operativos',nivel:'dificil',p:'Un sistema operativo dejó de recibir soporte y actualizaciones hace años. ¿Cuál es el mayor riesgo de seguirlo usando?',o:['Ningún riesgo si tiene antivirus','Las vulnerabilidades nuevas ya no se corrigen, quedando expuesto a ataques','Solo afecta la apariencia del sistema','El equipo funcionará más lento únicamente'],r:1},
+  {tema:'Vulnerabilidades',nivel:'intermedia',p:'En ciberseguridad, una "vulnerabilidad" es:',o:['Una debilidad en un sistema que puede ser aprovechada para atacarlo','Un tipo de contraseña','Un antivirus gratuito','Una copia de seguridad'],r:0},
+  {tema:'Vulnerabilidades',nivel:'dificil',p:'Se descubre una vulnerabilidad crítica y la empresa publica una actualización. ¿Qué riesgo hay si no se aplica pronto?',o:['Ninguno, las vulnerabilidades no son urgentes','Atacantes pueden explotarla ya que es conocida públicamente','El software dejará de funcionar','Se corrige sola con el tiempo'],r:1},
+  {tema:'Control de acceso',nivel:'facil',p:'¿Qué busca el control de acceso en un sistema?',o:['Que todos los usuarios tengan los mismos permisos','Que cada usuario solo pueda hacer lo que le corresponde según su rol','Que no se necesiten contraseñas','Que el sistema sea más lento'],r:1},
+  {tema:'Control de acceso',nivel:'intermedia',p:'Un empleado tiene permisos de administrador que no necesita para su trabajo diario. ¿Cuál es el riesgo principal?',o:['Ninguno, mientras más permisos mejor','Si su cuenta es comprometida, el atacante obtiene privilegios mayores a los necesarios','El sistema funciona más rápido','No hay riesgo, es solo una cuenta'],r:1},
+  {tema:'Seguridad web',nivel:'facil',p:'¿Qué indica el "https" y el candado en la barra del navegador?',o:['Que el sitio es gratuito','Que la conexión entre tu navegador y el sitio está cifrada','Que el sitio no tiene publicidad','Que el sitio es el más popular'],r:1},
+  {tema:'Seguridad web',nivel:'dificil',p:'Un formulario web pide tu contraseña pero la página no usa HTTPS (no tiene candado). ¿Cuál es el riesgo?',o:['Ninguno, es solo un formulario','Los datos pueden viajar sin cifrar y ser interceptados','El formulario se verá diferente','No hay ningún problema si el sitio es conocido'],r:1}
+];
+
+// ── Estado global ──
+let EST = null;
+let orden = [], opcOrden = [], qIdx = 0, puntaje = 0, ok = 0, er = 0, na = 0, respuestas = [];
+let actConfig = {}, actAbierta = true, sesionActiva = true;
+let tSeg = 0, tTotal = 0, timerInt = null, inicioGlobal = 0, unsubSesion = null;
+const maxIntentos = 1;
+
+function show(s){ ['scrLoad','scrBloq','scrInst','scrQuiz','scrRes'].forEach(x=>$(x).classList.add('hide')); $(s).classList.remove('hide'); window.scrollTo(0,0); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function gKey(g){ return 'g_'+(g||'').replace(/[°\s]/g,''); }
+window.volverMateria = () => { location.href='../materia.html?m=tecnologia'; };
+
+// ── INICIO ──
+async function init(){
+  try{ EST = JSON.parse(sessionStorage.getItem('ifn_est')); }catch(e){}
+  if(!EST){ location.href='../materia.html?m=tecnologia'; return; }
+
+  try{
+    const s = await getDoc(doc(db,'actividades',ACT_ID));
+    actConfig = s.exists() ? s.data() : {};
+    const gc = actConfig[gKey(EST.grado)] || {};
+    actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+    if(gc.apertura) actConfig._apertura = gc.apertura;
+    if(gc.cierre)   actConfig._cierre   = gc.cierre;
+    sesionActiva = actConfig.sesionActiva === true;
+  }catch(e){ actAbierta = true; sesionActiva = true; }
+
+  if(!EST.demo){
+    const ahora = new Date();
+    if(actConfig._apertura && new Date(actConfig._apertura)>ahora){
+      $('msgBloq').textContent = '🕐 Este diagnóstico abre el '+new Date(actConfig._apertura).toLocaleString('es-PA')+'.';
+      show('scrBloq'); return;
+    }
+    if(actConfig._cierre && new Date(actConfig._cierre)<ahora){
+      $('msgBloq').textContent = '🔒 Este diagnóstico cerró el '+new Date(actConfig._cierre).toLocaleString('es-PA')+'.';
+      show('scrBloq'); return;
+    }
+    if(!actAbierta){
+      $('msgBloq').textContent = '⏳ El diagnóstico está cerrado. Espera a que el docente lo habilite.';
+      show('scrBloq'); return;
+    }
+    if(!sesionActiva){
+      $('msgBloq').textContent = '📡 El docente aún no ha iniciado el reto en vivo. Espera la señal de inicio.';
+      show('scrBloq'); return;
+    }
+    try{
+      const prev = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo));
+      if(prev.exists() && prev.data().terminado){
+        const d = prev.data();
+        $('msgBloq').textContent = `Ya completaste este reto. Puntaje registrado: ${d.puntajeTotal} pts.`;
+        show('scrBloq'); return;
+      }
+    }catch(e){}
+  }
+
+  $('whoAv').textContent = (EST.nombre[0]||'?').toUpperCase();
+  if(EST.demo) $('whoAv').classList.add('demo');
+  $('whoNom').textContent = EST.nombre;
+  $('whoGrado').textContent = EST.demo ? 'Modo demostración' : 'Grado '+EST.grado;
+
+  const prog = cargarProgreso();
+  if(prog && prog.idx > 0 && prog.idx < PREGUNTAS.length){
+    $('btnStartTxt').textContent = `Continuar desde pregunta ${prog.idx + 1}`;
+  }
+
+  // Escuchar en vivo si el docente cierra la sesión mientras el estudiante juega
+  if(!EST.demo){
+    unsubSesion = onSnapshot(doc(db,'actividades',ACT_ID), (snap)=>{
+      const d = snap.data()||{};
+      const enJuego = !$('scrQuiz').classList.contains('hide');
+      if(d.sesionActiva===false && enJuego){
+        // El docente cerró el reto mientras el estudiante estaba jugando
+        finalizar(true);
+      }
+    });
+  }
+
+  show('scrInst');
+}
+
+// ── PROGRESO LOCAL (para poder continuar si se recarga la página) ──
+function guardarProgreso(){
+  if(EST.demo) return;
+  localStorage.setItem(SAVE_KEY+'_'+EST.codigo, JSON.stringify({
+    codigo:EST.codigo, idx:qIdx, puntaje, ok, er, na, respuestas,
+    orden: orden.map(q=>PREGUNTAS.indexOf(q)), opcOrden, inicioGlobal
+  }));
+}
+function cargarProgreso(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY+'_'+EST.codigo)); }catch(e){ return null; } }
+function limpiarProgreso(){ if(EST) localStorage.removeItem(SAVE_KEY+'_'+EST.codigo); }
+
+// ── QUIZ ──
+window.empezarQuiz = () => {
+  const prog = cargarProgreso();
+  if(prog && prog.codigo===EST.codigo && prog.idx > 0 && prog.idx < PREGUNTAS.length){
+    orden = prog.orden.map(i=>PREGUNTAS[i]);
+    opcOrden = prog.opcOrden;
+    qIdx = prog.idx; puntaje = prog.puntaje; ok = prog.ok; er = prog.er; na = prog.na;
+    respuestas = prog.respuestas||[]; inicioGlobal = prog.inicioGlobal;
+  } else {
+    orden = shuffle(PREGUNTAS);
+    // Para cada pregunta, guardamos un mapeo de posiciones mezcladas -> índice original de opción
+    opcOrden = orden.map(q => shuffle(q.o.map((_,i)=>i)));
+    qIdx = 0; puntaje = 0; ok = 0; er = 0; na = 0; respuestas = [];
+    inicioGlobal = Date.now();
+  }
+  // Evitar que el botón "atrás" del navegador saque al estudiante de la pregunta
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate', bloquearAtras);
+  window.addEventListener('beforeunload', avisarSalida);
+
+  show('scrQuiz');
+  pintarPregunta();
+};
+function bloquearAtras(){ history.pushState(null,'',location.href); }
+function avisarSalida(e){ e.preventDefault(); e.returnValue=''; }
+
+function pintarPregunta(){
+  const q = orden[qIdx];
+  const nv = NIVELES[q.nivel];
+  tTotal = nv.seg; tSeg = nv.seg;
+
+  $('qNum').textContent = qIdx+1;
+  $('qScore').textContent = puntaje;
+  $('qPbar').style.width = `${(qIdx/orden.length)*100}%`;
+  $('qTema').innerHTML = `<i class="ti ti-tag"></i> ${q.tema}`;
+  $('qNivel').className = 'q-nivel '+q.nivel;
+  $('qNivel').textContent = q.nivel==='facil'?'Fácil':(q.nivel==='intermedia'?'Intermedia':'Difícil');
+  $('qTexto').textContent = q.p;
+
+  const letras = ['A','B','C','D'];
+  const orderIdx = opcOrden[qIdx];
+  $('qOpts').innerHTML = orderIdx.map((oi,pos)=>`<button class="qb" data-oi="${oi}" onclick="responder(${oi})"><span class="qb-letra">${letras[pos]}</span><span>${q.o[oi]}</span></button>`).join('');
+
+  iniciarTimer();
+}
+
+function iniciarTimer(){
+  clearInterval(timerInt);
+  const circ = 2*Math.PI*44;
+  $('timerFg').style.strokeDasharray = circ;
+  actualizarTimerUI(circ);
+  timerInt = setInterval(()=>{
+    tSeg--;
+    actualizarTimerUI(circ);
+    if(tSeg<=0){
+      clearInterval(timerInt);
+      registrarRespuesta(null); // tiempo agotado
+    }
+  },1000);
+}
+function actualizarTimerUI(circ){
+  $('timerNum').textContent = Math.max(tSeg,0);
+  const frac = Math.max(tSeg,0)/tTotal;
+  $('timerFg').style.strokeDashoffset = circ*(1-frac);
+  $('timerFg').style.stroke = tSeg<=Math.ceil(tTotal*0.25) ? 'var(--err)' : (tSeg<=Math.ceil(tTotal*0.5) ? 'var(--warn)' : 'var(--neon)');
+  // Límite general de 30 minutos
+  if(!EST.demo && inicioGlobal && (Date.now()-inicioGlobal)/1000 >= LIMITE_GENERAL_SEG){
+    clearInterval(timerInt);
+    finalizar(true);
+  }
+}
+
+window.responder = (opcionIdx) => { registrarRespuesta(opcionIdx); };
+
+function registrarRespuesta(opcionIdxElegida){
+  clearInterval(timerInt);
+  const q = orden[qIdx];
+  document.querySelectorAll('.qb').forEach(b=>b.disabled=true);
+
+  let pts = 0, resultado = 'na';
+  if(opcionIdxElegida===null){
+    na++;
+    resultado='na';
+  } else {
+    const correcto = opcionIdxElegida === q.r;
+    const btn = document.querySelector(`.qb[data-oi="${opcionIdxElegida}"]`);
+    if(btn) btn.classList.add('chosen');
+    if(correcto){
+      ok++; resultado='ok';
+      const restante = Math.max(tSeg,0);
+      pts = Math.round(NIVELES[q.nivel].pts * (0.5 + 0.5*(restante/tTotal)));
+    } else {
+      er++; resultado='er';
+    }
+  }
+  puntaje += pts;
+  respuestas.push({ tema:q.tema, nivel:q.nivel, resultado, pts, tiempoUsado: tTotal-Math.max(tSeg,0) });
+  $('qScore').textContent = puntaje;
+
+  qIdx++;
+  guardarProgreso();
+  guardarProgresoRemoto();
+
+  setTimeout(()=>{
+    if(qIdx>=orden.length) finalizar(false);
+    else pintarPregunta();
+  }, 450);
+}
+
+// Escritura ligera a Firestore tras cada pregunta, para que el docente vea progreso en vivo
+async function guardarProgresoRemoto(){
+  if(EST.demo) return;
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado,
+      estado:'jugando', preguntaActual: qIdx, puntajeTotal: puntaje,
+      correctas:ok, incorrectas:er, sinResponder:na,
+      tiempoTotal: Math.round((Date.now()-inicioGlobal)/1000),
+      fecha: new Date().toISOString(), terminado:false
+    },{merge:true});
+  }catch(e){}
+}
+
+// ── FINALIZAR ──
+async function finalizar(cerradaPorDocente){
+  window.removeEventListener('popstate', bloquearAtras);
+  window.removeEventListener('beforeunload', avisarSalida);
+  if(unsubSesion) unsubSesion();
+  clearInterval(timerInt);
+
+  // Si quedan preguntas sin jugar (por cierre del docente o límite de 30 min), se marcan sin responder
+  while(qIdx < orden.length){
+    respuestas.push({ tema:orden[qIdx].tema, nivel:orden[qIdx].nivel, resultado:'na', pts:0, tiempoUsado:0 });
+    na++; qIdx++;
+  }
+
+  const tiempoTotalSeg = Math.round((Date.now()-inicioGlobal)/1000);
+  const mins = Math.floor(tiempoTotalSeg/60), segs = tiempoTotalSeg%60;
+
+  $('resPts').textContent = puntaje;
+  $('resOk').textContent = ok;
+  $('resEr').textContent = er;
+  $('resNa').textContent = na;
+  $('resTiempo').textContent = `Tiempo total: ${mins}m ${segs}s`;
+
+  let emoji='🛡️';
+  if(ok>=22) emoji='🏆'; else if(ok>=18) emoji='🥇'; else if(ok>=14) emoji='😎'; else if(ok>=10) emoji='👍'; else emoji='📚';
+  $('resEmoji').textContent = emoji;
+
+  show('scrRes');
+  limpiarProgreso();
+
+  if(EST.demo){
+    $('resGuard').className='msg warn';
+    $('resGuard').textContent='✓ Modo demo — este resultado NO se guarda.';
+    return;
+  }
+
+  const m = $('resGuard');
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Guardando resultado…';
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      codigo:EST.codigo, nombre:EST.nombre, grado:EST.grado,
+      puntajeTotal:puntaje, correctas:ok, incorrectas:er, sinResponder:na,
+      total: orden.length, tiempoTotal: tiempoTotalSeg,
+      estado:'terminado', terminado:true, cerradaPorDocente: !!cerradaPorDocente,
+      fecha: new Date().toISOString(), respuestas
+    },{merge:true});
+    m.className='msg ok'; m.textContent = cerradaPorDocente
+      ? '✓ El docente cerró el reto — tu resultado parcial ha sido guardado.'
+      : '✓ Tu resultado ha sido registrado correctamente.';
+  }catch(e){
+    m.className='msg err'; m.textContent='⚠️ No se pudo guardar. Avisa al docente. (Puntaje: '+puntaje+')';
+  }
+}
+
+init();
+</script>
+</body></html>
