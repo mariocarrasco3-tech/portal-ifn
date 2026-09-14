@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Control en vivo — Cybersecurity Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#040608;--panel:#0a0f0d;--panel2:#0e1512;--linea:rgba(0,255,140,.14);--linea2:rgba(0,255,140,.3);--tx:#e8fff2;--tx2:#7fa899;--tx3:#4a6559;--neon:#00ff8c;--neon2:#00d4ff;--warn:#ffb020;--err:#ff3b5c;--oro:#ffd23f;--plata:#c9d3dc;--bronce:#e0995e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);line-height:1.55;overflow-x:hidden;min-height:100vh;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+body::before{content:"";position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 15% 0%,rgba(0,255,140,.1),transparent 38%),radial-gradient(circle at 90% 10%,rgba(0,212,255,.08),transparent 40%);pointer-events:none;}
+.wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:22px 20px 60px;}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap;}
+.br{display:flex;align-items:center;gap:10px;}.br img{height:40px;width:40px;object-fit:contain;border-radius:9px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:14px;color:#fff;display:block;line-height:1.1;}.br span{font-size:10px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;}
+.back{font-size:13px;color:var(--tx2);text-decoration:none;padding:8px 14px;border:1px solid var(--linea2);border-radius:7px;display:flex;align-items:center;gap:6px;cursor:pointer;}.back:hover{color:var(--neon);}
+.hide{display:none!important;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea2);border-top-color:var(--neon);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;}@keyframes sp{to{transform:rotate(360deg);}}
+.msg{font-size:13px;font-weight:500;padding:11px 14px;border-radius:8px;margin-top:14px;text-align:center;display:none;}
+.msg.err{display:block;background:rgba(255,59,92,.12);color:#ffb3c0;border:1px solid rgba(255,59,92,.3);}
+.msg.ok{display:block;background:rgba(0,255,140,.12);color:#7dffce;border:1px solid rgba(0,255,140,.3);}
+.msg.warn{display:block;background:rgba(255,176,32,.12);color:#ffe0a3;border:1px solid rgba(255,176,32,.3);}
+
+.box{background:var(--panel);border:1px solid var(--linea2);border-radius:12px;padding:26px 24px;position:relative;overflow:hidden;box-shadow:0 0 50px -22px rgba(0,255,140,.28);}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--neon);box-shadow:0 0 12px var(--neon);}
+
+/* LOGIN */
+.ico-big{width:68px;height:68px;border-radius:18px;background:rgba(0,255,140,.1);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--neon);margin:0 auto 16px;}
+.box h1{font-family:'Chakra Petch';font-size:24px;color:#fff;text-align:center;margin-bottom:6px;}
+.box .sub{text-align:center;color:var(--tx2);font-size:13.5px;margin-bottom:22px;}
+.fl{max-width:340px;margin:0 auto;}
+.fl input{width:100%;padding:14px 16px;font-family:'Chakra Petch';font-size:16px;font-weight:600;letter-spacing:2px;border:1.5px solid var(--linea2);border-radius:8px;color:var(--neon);background:var(--bg);text-align:center;}
+.fl input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 4px rgba(0,255,140,.12);}
+.be{width:100%;margin-top:12px;padding:14px;font-family:'Chakra Petch';font-size:14.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#022;background:var(--neon);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:.18s;box-shadow:0 0 24px -6px var(--neon);}
+.be:hover{transform:translateY(-1px);}.be:disabled{opacity:.5;cursor:not-allowed;}
+.be.sec{background:transparent;border:1px solid var(--linea2);color:var(--tx2);box-shadow:none;}.be.sec:hover{color:var(--neon);border-color:var(--neon);}
+.be.err-btn{background:var(--err);box-shadow:0 0 24px -6px var(--err);}
+.be.sm{width:auto;margin:0;padding:9px 15px;font-size:12.5px;}
+
+/* ESTADO */
+.session-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:16px 18px;margin-bottom:18px;}
+.session-stat{display:flex;align-items:center;gap:10px;}
+.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 10px currentColor;}
+.dot.on{background:var(--neon);color:var(--neon);animation:pulse 1.4s infinite;}
+.dot.off{background:var(--err);color:var(--err);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.session-lbl{font-family:'Chakra Petch';font-size:14px;font-weight:700;}
+.session-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
+.kpi{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:13px 15px;}
+.kpi span{display:block;font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--tx3);margin-bottom:5px;}
+.kpi b{font-family:'Chakra Petch';font-size:22px;font-weight:600;color:var(--tx);line-height:1;}
+.kpi.ju b{color:var(--neon2);}.kpi.te b{color:var(--neon);}
+
+/* PODIO */
+.podio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;align-items:end;}
+.pod-card{background:var(--panel2);border:1px solid var(--linea);border-radius:12px;padding:16px 10px;text-align:center;position:relative;}
+.pod-card.p1{border-color:var(--oro);box-shadow:0 0 30px -14px var(--oro);order:2;padding-top:22px;}
+.pod-card.p2{border-color:var(--plata);order:1;}
+.pod-card.p3{border-color:var(--bronce);order:3;}
+.pod-medal{font-size:30px;margin-bottom:6px;}
+.pod-cod{font-family:'JetBrains Mono';font-weight:700;font-size:15px;color:#fff;}
+.pod-pts{font-family:'Chakra Petch';font-size:20px;font-weight:700;margin-top:4px;}
+.p1 .pod-pts{color:var(--oro);}.p2 .pod-pts{color:var(--plata);}.p3 .pod-pts{color:var(--bronce);}
+.pod-bonus{font-size:10.5px;color:var(--tx3);margin-top:2px;}
+@media(max-width:560px){.podio{grid-template-columns:1fr}.pod-card{order:0!important}}
+
+/* CONTROLES */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.priv-select{font-family:'Inter';font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx);cursor:pointer;}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--linea);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px;}
+thead th{font-family:'Chakra Petch';font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--tx2);text-align:left;padding:10px 14px;border-bottom:1px solid var(--linea2);background:var(--panel2);}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--linea);}
+tbody tr:last-child td{border-bottom:none;}
+.pos-1{color:var(--oro);font-weight:700;}.pos-2{color:var(--plata);font-weight:700;}.pos-3{color:var(--bronce);font-weight:700;}
+.estado-tag{font-size:10.5px;padding:3px 9px;border-radius:100px;font-family:'Chakra Petch';}
+.estado-tag.jugando{background:rgba(0,212,255,.15);color:var(--neon2);}
+.estado-tag.terminado{background:rgba(0,255,140,.15);color:var(--neon);}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{font-family:'Chakra Petch';font-size:13px;padding:9px 16px;border-radius:8px;border:1px solid var(--linea2);background:var(--panel2);color:var(--tx2);cursor:pointer;transition:.15s;}
+.tab.on{background:var(--neon);color:#022;border-color:var(--neon);}
+.hist-item{background:var(--panel2);border:1px solid var(--linea);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.hist-item b{font-family:'Chakra Petch';font-size:14px;}
+.hist-item span{font-size:12px;color:var(--tx2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="br"><img src="../logo.png" alt="IFN"><div><b>Instituto Fermín Naudeau</b><span>Aula Virtual · Control Docente</span></div></div>
+    <a class="back" href="../panel.html"><i class="ti ti-arrow-left"></i> Panel docente</a>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="scrLogin" class="box">
+    <div class="ico-big"><i class="ti ti-shield-lock"></i></div>
+    <h1>Cybersecurity Challenge</h1>
+    <p class="sub">Sala de control en vivo — acceso solo para el docente</p>
+    <div class="fl">
+      <input type="password" id="inPass" placeholder="Clave de docente" onkeydown="if(event.key==='Enter')entrar()">
+      <button class="be" id="btnLogin" onclick="entrar()"><i class="ti ti-login"></i> Entrar</button>
+      <div class="msg" id="msgLogin"></div>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="scrPanel" class="box hide" style="padding:22px 20px;">
+    <div class="session-bar">
+      <div class="session-stat">
+        <span class="dot" id="sesDot"></span>
+        <span class="session-lbl" id="sesLbl">Cargando…</span>
+      </div>
+      <div class="session-actions">
+        <button class="be sm" id="btnIniciar" onclick="iniciarSesion()"><i class="ti ti-player-play"></i> Iniciar diagnóstico</button>
+        <button class="be sm err-btn hide" id="btnCerrar" onclick="cerrarSesion()"><i class="ti ti-player-stop"></i> Cerrar diagnóstico</button>
+        <button class="be sm sec" onclick="cargarTodo()"><i class="ti ti-refresh"></i> Refrescar</button>
+        <button class="be sm sec" onclick="exportarCSV()"><i class="ti ti-file-spreadsheet"></i> Exportar CSV</button>
+        <button class="be sm sec" onclick="reiniciarActividad()"><i class="ti ti-rotate"></i> Reiniciar (archiva y limpia)</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><span>Estudiantes</span><b id="kpiTot">0</b></div>
+      <div class="kpi ju"><span>Jugando</span><b id="kpiJugando">0</b></div>
+      <div class="kpi te"><span>Terminaron</span><b id="kpiTerm">0</b></div>
+      <div class="kpi"><span>Promedio pts.</span><b id="kpiProm">0</b></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" id="tabLive" onclick="verTab('live')"><i class="ti ti-broadcast"></i> En vivo</button>
+      <button class="tab" id="tabHist" onclick="verTab('hist')"><i class="ti ti-history"></i> Histórico</button>
+    </div>
+
+    <div id="panLive">
+      <p style="font-family:'Chakra Petch';font-size:13px;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🏆 Podio</p>
+      <div class="podio" id="podio"></div>
+
+      <div class="toolbar">
+        <label style="font-size:12.5px;color:var(--tx2)">Mostrar en la tabla/podio:</label>
+        <select class="priv-select" id="selPriv" onchange="cambiarPrivacidad(this.value)">
+          <option value="codigo">Solo código</option>
+          <option value="anon">Estudiante #001, #002…</option>
+          <option value="nombre">Nombre completo</option>
+        </select>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Estudiante</th><th>Código</th><th>Puntos</th><th>Correctas</th><th>Incorrectas</th><th>Sin resp.</th><th>Tiempo</th><th>Estado</th></tr></thead>
+          <tbody id="tbLive"></tbody>
+        </table>
+      </div>
+      <div class="msg" id="msgLive"></div>
+    </div>
+
+    <div id="panHist" class="hide">
+      <div id="listaHist"></div>
+      <div class="msg" id="msgHist"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const ACT_ID = 'cyber-challenge';
+const PUNTOS_PODIO = {1:5, 2:3, 3:1};
+
+let RESULTADOS = [];
+let PRIVACIDAD = 'codigo';
+let unsubLive = null;
+
+function show(s){ ['scrLogin','scrPanel'].forEach(x=>$(x).classList.add('hide')); $(s).classList.remove('hide'); window.scrollTo(0,0); }
+
+window.entrar = async () => {
+  const p = $('inPass').value, m = $('msgLogin');
+  if(!p){ m.className='msg err'; m.textContent='Escribe la clave.'; return; }
+  m.className='msg warn'; m.innerHTML='<span class="spin"></span> Verificando…'; $('btnLogin').disabled=true;
+  try{
+    const s = await getDoc(doc(db,'config','admin'));
+    const real = s.exists()?s.data().password:null;
+    $('btnLogin').disabled=false;
+    if(real && p===real){ m.className='msg'; abrirPanel(); }
+    else{ m.className='msg err'; m.textContent='Clave incorrecta.'; }
+  }catch(e){ $('btnLogin').disabled=false; m.className='msg err'; m.textContent='Error de conexión.'; }
+};
+
+async function abrirPanel(){
+  show('scrPanel');
+  await cargarConfig();
+  escucharEnVivo();
+}
+
+// ============================================================
+// SESIÓN (iniciar / cerrar)
+// ============================================================
+async function cargarConfig(){
+  const s = await getDoc(doc(db,'actividades', ACT_ID));
+  const c = s.exists() ? s.data() : {};
+  PRIVACIDAD = c.privacidad || 'codigo';
+  $('selPriv').value = PRIVACIDAD;
+  pintarEstadoSesion(c.sesionActiva===true);
+}
+function pintarEstadoSesion(activa){
+  $('sesDot').className = 'dot '+(activa?'on':'off');
+  $('sesLbl').textContent = activa ? 'Reto EN VIVO' : 'Reto cerrado';
+  $('btnIniciar').classList.toggle('hide', activa);
+  $('btnCerrar').classList.toggle('hide', !activa);
+}
+window.iniciarSesion = async () => {
+  await setDoc(doc(db,'actividades',ACT_ID),{ sesionActiva:true, iniciadoEn:new Date().toISOString() },{merge:true});
+  pintarEstadoSesion(true);
+};
+window.cerrarSesion = async () => {
+  if(!confirm('¿Cerrar el diagnóstico ahora? Los estudiantes que sigan jugando se finalizarán con su progreso actual.')) return;
+  await setDoc(doc(db,'actividades',ACT_ID),{ sesionActiva:false, cerradoEn:new Date().toISOString() },{merge:true});
+  pintarEstadoSesion(false);
+};
+window.cambiarPrivacidad = async (v) => {
+  PRIVACIDAD = v;
+  await setDoc(doc(db,'actividades',ACT_ID),{ privacidad:v },{merge:true});
+  render();
+};
+
+// ============================================================
+// TABS
+// ============================================================
+window.verTab = (t) => {
+  $('tabLive').classList.toggle('on', t==='live');
+  $('tabHist').classList.toggle('on', t==='hist');
+  $('panLive').classList.toggle('hide', t!=='live');
+  $('panHist').classList.toggle('hide', t!=='hist');
+  if(t==='hist') cargarHistorico();
+};
+
+// ============================================================
+// LIVE — resultados en tiempo real
+// ============================================================
+function escucharEnVivo(){
+  if(unsubLive) unsubLive();
+  unsubLive = onSnapshot(collection(db,'actividades',ACT_ID,'resultados'), (snap)=>{
+    RESULTADOS = snap.docs.map(d=>({_codigo:d.id, ...d.data()}));
+    render();
+  }, (err)=>{ $('msgLive').className='msg err'; $('msgLive').textContent='Error de conexión en vivo: '+err.message; });
+}
+
+window.cargarTodo = () => { escucharEnVivo(); };
+
+function nombrePara(r, idxPos){
+  if(PRIVACIDAD==='nombre') return r.nombre || r._codigo;
+  if(PRIVACIDAD==='anon') return 'Estudiante #'+String(idxPos+1).padStart(3,'0');
+  return r._codigo;
+}
+
+function render(){
+  const ordenados = [...RESULTADOS].sort((a,b)=>{
+    const pa=a.puntajeTotal||0, pb=b.puntajeTotal||0;
+    if(pb!==pa) return pb-pa;
+    return (a.tiempoTotal||9e9) - (b.tiempoTotal||9e9);
+  });
+
+  const jugando = RESULTADOS.filter(r=>r.estado==='jugando' && !r.terminado).length;
+  const terminaron = RESULTADOS.filter(r=>r.terminado).length;
+  const prom = RESULTADOS.length ? Math.round(RESULTADOS.reduce((s,r)=>s+(r.puntajeTotal||0),0)/RESULTADOS.length) : 0;
+  $('kpiTot').textContent = RESULTADOS.length;
+  $('kpiJugando').textContent = jugando;
+  $('kpiTerm').textContent = terminaron;
+  $('kpiProm').textContent = prom;
+
+  // Podio (top 3 entre los que ya terminaron; si nadie ha terminado, se muestra vacío)
+  const top3 = ordenados.filter(r=>r.terminado).slice(0,3);
+  const medallas = ['🥇','🥈','🥉'];
+  const clases = ['p1','p2','p3'];
+  $('podio').innerHTML = [0,1,2].map(i=>{
+    const r = top3[i];
+    if(!r) return `<div class="pod-card ${clases[i]}"><div class="pod-medal">${medallas[i]}</div><div class="pod-cod" style="color:var(--tx3)">—</div><div class="pod-pts" style="color:var(--tx3)">—</div></div>`;
+    const idxGlobal = ordenados.indexOf(r);
+    return `<div class="pod-card ${clases[i]}"><div class="pod-medal">${medallas[i]}</div><div class="pod-cod">${nombrePara(r, idxGlobal)}</div><div class="pod-pts">${r.puntajeTotal||0} pts</div><div class="pod-bonus">+${PUNTOS_PODIO[i+1]} pts extra</div></div>`;
+  }).join('');
+
+  // Tabla general completa
+  if(!ordenados.length){
+    $('tbLive').innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--tx3);padding:20px">Aún no hay estudiantes conectados.</td></tr>`;
+    return;
+  }
+  $('tbLive').innerHTML = ordenados.map((r,i)=>{
+    const pos = i+1;
+    const posCls = pos<=3 ? 'pos-'+pos : '';
+    const tSeg = r.tiempoTotal||0;
+    const tTxt = `${Math.floor(tSeg/60)}m ${tSeg%60}s`;
+    const estTag = r.terminado ? `<span class="estado-tag terminado">Terminado</span>` : `<span class="estado-tag jugando">Jugando (${r.preguntaActual||0}/25)</span>`;
+    return `<tr><td class="${posCls}">${pos}</td><td>${nombrePara(r,i)}</td><td style="font-family:'JetBrains Mono';color:var(--tx3)">${r._codigo}</td><td style="font-family:'Chakra Petch';font-weight:700">${r.puntajeTotal||0}</td><td>${r.correctas||0}</td><td>${r.incorrectas||0}</td><td>${r.sinResponder||0}</td><td>${tTxt}</td><td>${estTag}</td></tr>`;
+  }).join('');
+}
+
+// ============================================================
+// EXPORTAR CSV
+// ============================================================
+window.exportarCSV = () => {
+  const ordenados = [...RESULTADOS].sort((a,b)=>{
+    const pa=a.puntajeTotal||0, pb=b.puntajeTotal||0;
+    if(pb!==pa) return pb-pa;
+    return (a.tiempoTotal||9e9) - (b.tiempoTotal||9e9);
+  });
+  const filas = [['Posición','Estudiante','Código','Grado','Puntos','Correctas','Incorrectas','Sin responder','Tiempo(s)','Terminado']];
+  ordenados.forEach((r,i)=>filas.push([i+1, r.nombre||'', r._codigo, r.grado||'', r.puntajeTotal||0, r.correctas||0, r.incorrectas||0, r.sinResponder||0, r.tiempoTotal||0, r.terminado?'Sí':'No']));
+  const csv = filas.map(f=>f.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'cyber-challenge-resultados-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+};
+
+// ============================================================
+// REINICIAR (archiva el estado actual como histórico y limpia resultados)
+// ============================================================
+window.reiniciarActividad = async () => {
+  if(!confirm('Esto archivará el resultado actual en el Histórico y borrará la tabla en vivo para empezar una nueva ronda. ¿Continuar?')) return;
+  const m = $('msgLive'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Archivando…';
+  try{
+    if(RESULTADOS.length){
+      const ordenados = [...RESULTADOS].sort((a,b)=>{
+        const pa=a.puntajeTotal||0, pb=b.puntajeTotal||0;
+        if(pb!==pa) return pb-pa;
+        return (a.tiempoTotal||9e9) - (b.tiempoTotal||9e9);
+      });
+      const fechaId = new Date().toISOString().replace(/[:.]/g,'-');
+      await setDoc(doc(db,'actividades',ACT_ID,'historico',fechaId),{
+        fecha: new Date().toISOString(),
+        totalEstudiantes: ordenados.length,
+        resultados: ordenados.map((r,i)=>({posicion:i+1, codigo:r._codigo, nombre:r.nombre||'', grado:r.grado||'', puntajeTotal:r.puntajeTotal||0, correctas:r.correctas||0, incorrectas:r.incorrectas||0, sinResponder:r.sinResponder||0, tiempoTotal:r.tiempoTotal||0}))
+      });
+    }
+    // Borra todos los resultados en vivo
+    const snap = await getDocs(collection(db,'actividades',ACT_ID,'resultados'));
+    await Promise.all(snap.docs.map(d=>deleteDoc(d.ref)));
+    await setDoc(doc(db,'actividades',ACT_ID),{ sesionActiva:false },{merge:true});
+    pintarEstadoSesion(false);
+    m.className='msg ok'; m.textContent='✓ Actividad archivada y reiniciada. Ya puedes iniciar una nueva ronda.';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+};
+
+// ============================================================
+// HISTÓRICO
+// ============================================================
+async function cargarHistorico(){
+  const m = $('msgHist'); m.className='msg warn'; m.innerHTML='<span class="spin"></span> Cargando histórico…';
+  try{
+    const snap = await getDocs(collection(db,'actividades',ACT_ID,'historico'));
+    const items = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+    if(!items.length){
+      $('listaHist').innerHTML = `<p style="color:var(--tx3);font-size:13px;text-align:center;padding:20px">Aún no hay rondas archivadas.</p>`;
+      m.className='msg'; m.textContent=''; return;
+    }
+    $('listaHist').innerHTML = items.map(h=>{
+      const f = new Date(h.fecha).toLocaleString('es-PA');
+      const top3 = (h.resultados||[]).slice(0,3).map(r=>`${r.codigo} (${r.puntajeTotal}pts)`).join(' · ');
+      return `<div class="hist-item"><div><b>${f}</b><br><span>${h.totalEstudiantes||0} estudiantes · Top: ${top3||'—'}</span></div><button class="be sm sec" onclick='verDetalleHist(${JSON.stringify(h.id)})'><i class="ti ti-eye"></i> Ver tabla completa</button></div>`;
+    }).join('');
+    window._HIST = items;
+    m.className=''; m.textContent='';
+  }catch(e){ m.className='msg err'; m.textContent='Error: '+e.message; }
+}
+window.verDetalleHist = (id) => {
+  const h = (window._HIST||[]).find(x=>x.id===id);
+  if(!h) return;
+  const filas = (h.resultados||[]).map(r=>`${r.posicion}. ${r.codigo} — ${r.puntajeTotal} pts (${r.correctas}✓ / ${r.incorrectas}✗ / ${r.sinResponder}⏱)`).join('\n');
+  alert('Ronda del '+new Date(h.fecha).toLocaleString('es-PA')+'\n\n'+filas);
+};
+</script>
+</body></html>
