@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Examen Trimestral — III Trimestre — Aula IFN</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.3.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg:#0d1117; --panel:#161b22; --panel2:#21262d;
+  --linea:#30363d; --linea2:rgba(88,166,255,.3);
+  --tx:#c9d1d9; --tx2:#8b949e; --tx3:#6e7681;
+  --neon:#58a6ff; --ok:#238636; --ok-tx:#3fb950;
+  --err:#da3633; --err-bg:rgba(218,54,51,.1);
+  --oro:#d29922;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:var(--tx);background:var(--bg);min-height:100vh;line-height:1.5;font-size:16px;}
+h1,h2,h3{font-family:'Chakra Petch',sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:24px 20px 60px;}
+.hide{display:none!important;}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;background:var(--panel);padding:12px 20px;border-radius:12px;border:1px solid var(--linea);}
+.br{display:flex;align-items:center;gap:12px;}
+.br img{height:42px;width:42px;object-fit:contain;border-radius:9px;background:#fff;padding:3px;}
+.br b{font-family:'Chakra Petch';font-weight:700;font-size:15px;color:#fff;display:block;line-height:1.1;}
+.br span{font-size:12px;color:var(--tx2);}
+.back{color:var(--neon);text-decoration:none;font-size:14px;font-weight:500;}
+.back:hover{text-decoration:underline;}
+
+.card{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:28px;}
+.badge{display:inline-block;background:rgba(88,166,255,.12);color:var(--neon);border:1px solid var(--linea2);border-radius:20px;padding:4px 14px;font-size:12px;font-family:'Chakra Petch';letter-spacing:.5px;margin-bottom:14px;}
+.tt{font-size:26px;color:#fff;margin-bottom:8px;}
+.sub{color:var(--tx2);margin-bottom:20px;}
+.fl{margin-bottom:16px;}
+.fl label{display:block;font-size:13px;color:var(--tx2);margin-bottom:6px;}
+.fl input{width:100%;padding:12px 14px;background:var(--bg);border:1.5px solid var(--linea);border-radius:10px;color:#fff;font-size:16px;text-transform:uppercase;}
+.fl input:focus{outline:none;border-color:var(--neon);}
+.btn{border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter';display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--panel2);color:var(--tx);border:1px solid var(--linea);}
+.btn:hover:not(:disabled){border-color:var(--neon);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn.primary{background:var(--neon);color:#04121f;border-color:var(--neon);}
+.btn.action{background:var(--ok);color:#fff;border-color:var(--ok);}
+.btn.danger{background:var(--err);color:#fff;border-color:var(--err);}
+.btn.block{width:100%;}
+.msg{margin-top:12px;font-size:14px;min-height:20px;}
+.msg.err{color:#ff7b72;} .msg.warn{color:var(--oro);} .msg.ok{color:var(--ok-tx);}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--linea);border-top-color:var(--neon);border-radius:50%;animation:g .8s linear infinite;vertical-align:-2px;margin-right:6px;}
+@keyframes g{to{transform:rotate(360deg);}}
+
+/* AVISO */
+.aviso{background:var(--err-bg);border:1px solid var(--err);border-radius:8px;padding:24px;margin-bottom:20px;}
+.aviso h3{color:#ff7b72;font-size:20px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.aviso h4{color:#ff7b72;font-size:16px;margin:12px 0 4px;}
+.aviso p{font-size:16px;color:var(--tx);margin-bottom:10px;}
+.aviso ul{margin:10px 0 10px 24px;font-size:16px;color:var(--tx);}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:14.5px;cursor:pointer;}
+.chk input{margin-top:4px;width:18px;height:18px;}
+
+/* EXAMEN */
+.exbar{position:sticky;top:0;z-index:50;background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 6px 18px rgba(0,0,0,.4);}
+.exbar .chip{font-size:13px;color:var(--tx2);display:flex;align-items:center;gap:6px;}
+.exbar .chip b{color:#fff;font-family:'Chakra Petch';font-size:16px;}
+.timer{font-family:'Chakra Petch';font-size:22px;font-weight:700;color:#fff;}
+.timer.low{color:#ff7b72;animation:pl 1s infinite;}
+@keyframes pl{50%{opacity:.55;}}
+.exbar .sp{flex:1;}
+.progbar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-bottom:16px;}
+.progbar div{height:100%;background:var(--neon);width:0;transition:width .25s;}
+.exgrid{display:grid;grid-template-columns:1fr 250px;gap:16px;align-items:start;}
+@media(max-width:820px){.exgrid{grid-template-columns:1fr;}}
+.qcard{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:26px;user-select:none;-webkit-user-select:none;}
+.qmeta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:13px;color:var(--tx2);}
+.qtema{background:rgba(88,166,255,.12);color:var(--neon);border:1px solid var(--linea2);border-radius:14px;padding:2px 12px;font-size:12px;}
+.qtxt{font-size:19px;color:#fff;font-weight:500;margin-bottom:20px;line-height:1.45;}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--linea);border-radius:10px;padding:13px 15px;margin-bottom:10px;color:var(--tx);font-size:15.5px;cursor:pointer;font-family:'Inter';}
+.opt:hover{border-color:var(--neon);}
+.opt .let{flex:0 0 28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--linea);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch';font-weight:700;font-size:13px;color:var(--tx2);}
+.opt.sel{border-color:var(--neon);background:rgba(88,166,255,.1);color:#fff;}
+.opt.sel .let{background:var(--neon);color:#04121f;border-color:var(--neon);}
+.qnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.lockhint{font-size:12.5px;color:var(--oro);flex:1;min-width:200px;}
+.mapcard{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:16px;position:sticky;top:76px;}
+.mapcard h4{font-family:'Chakra Petch';color:#fff;font-size:14px;margin-bottom:10px;}
+.map{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.map button{aspect-ratio:1;border-radius:8px;border:1px solid var(--linea);background:var(--bg);color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer;font-family:'Chakra Petch';}
+.map button.resp{background:rgba(35,134,54,.25);border-color:var(--ok);color:#fff;}
+.map button.cur{outline:2px solid var(--neon);}
+.map button{cursor:default;}
+.legend{margin-top:10px;font-size:11.5px;color:var(--tx3);}
+
+/* RESULTADO */
+.nota-grande{font-family:'Chakra Petch';font-size:56px;font-weight:700;color:#fff;}
+.nota-grande.ap{color:var(--ok-tx);} .nota-grande.re{color:#ff7b72;}
+.badge-tier{display:inline-block;padding:5px 16px;border-radius:20px;font-family:'Chakra Petch';font-size:13px;font-weight:700;margin:10px 0;}
+.badge-tier.diamante{background:rgba(88,166,255,.18);color:#79c0ff;border:1px solid #58a6ff;}
+.badge-tier.oro{background:rgba(210,153,34,.18);color:#e3b341;border:1px solid var(--oro);}
+.badge-tier.plata{background:rgba(139,148,158,.18);color:#c9d1d9;border:1px solid #8b949e;}
+.badge-tier.bronce{background:rgba(190,110,60,.18);color:#e0956a;border:1px solid #be6e3c;}
+.game-row{display:flex;gap:12px;justify-content:center;margin:14px 0 20px;flex-wrap:wrap;}
+.game-chip{background:var(--bg);border:1px solid var(--linea);border-radius:10px;padding:10px 22px;text-align:center;min-width:120px;}
+.gv{font-family:'Chakra Petch';font-size:24px;font-weight:700;color:#fff;} .gl{font-size:11px;color:var(--tx2);text-transform:uppercase;}
+.sec-h{font-family:'Chakra Petch';color:#fff;font-size:16px;margin:22px 0 10px;display:flex;gap:8px;align-items:center;}
+table.tt2{width:100%;border-collapse:collapse;font-size:14px;}
+table.tt2 th,table.tt2 td{padding:9px 12px;border-bottom:1px solid var(--linea);text-align:left;}
+table.tt2 th{color:var(--tx2);font-weight:500;font-size:12px;text-transform:uppercase;}
+table.tt2 td.r{text-align:right;font-family:'Chakra Petch';}
+.pen-box{background:var(--err-bg);border:1px solid var(--err);border-radius:10px;padding:12px 16px;margin:14px 0;font-size:14px;color:#ff9b93;}
+.obs-box{background:var(--bg);border:1px solid var(--linea);border-radius:8px;padding:16px;font-size:14.5px;}
+
+/* TOASTS / MODAL */
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);z-index:300;max-width:520px;width:92%;background:#2d1215;border:1.5px solid var(--err);color:#ffd7d4;border-radius:12px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.6);transition:transform .3s;}
+.toast.on{transform:translate(-50%,0);}
+.toast b{display:block;color:#fff;margin-bottom:4px;font-family:'Chakra Petch';}
+.toast button{margin-top:10px;}
+.mbg{position:fixed;inset:0;background:rgba(13,17,23,.85);backdrop-filter:blur(4px);z-index:250;display:none;align-items:center;justify-content:center;padding:20px;}
+.mbg.on{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:26px;max-width:440px;width:100%;}
+.modal h3{color:#fff;margin-bottom:8px;}
+.modal p{color:var(--tx);font-size:14.5px;margin-bottom:16px;}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+footer{text-align:center;padding:30px 0;font-size:12px;color:var(--tx3);}
+footer i{color:var(--neon);margin-right:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="br">
+      <img src="https://raw.githubusercontent.com/mcarrasco-ifn/portal-ifn/main/logo.png" onerror="this.style.display='none'">
+      <div><b>Instituto Fermín Naudeau</b><span>Tecnología de la Información · Aula Virtual</span></div>
+    </div>
+    <a class="back" href="../index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="scrLogin" class="card">
+    <span class="badge"><i class="ti ti-certificate"></i> Examen Trimestral · III Trimestre</span>
+    <h1 class="tt">Examen Trimestral</h1>
+    <p class="sub">Escoge la <b style="color:#fff">mejor respuesta</b> de cada pregunta. Ingresa tu código de estudiante para comenzar.</p>
+    <div class="fl">
+      <label>Código de estudiante</label>
+      <input type="text" id="inCod" placeholder="Ej. NPU935986" autocomplete="off">
+    </div>
+    <button class="btn action block" id="btnLogin" onclick="login()"><i class="ti ti-login"></i> Ingresar</button>
+    <div class="msg" id="msgLogin"></div>
+  </div>
+
+  <!-- NO DISPONIBLE -->
+  <div id="scrSoon" class="card hide">
+    <h1 class="tt">Examen no disponible</h1>
+    <p class="sub" id="soonTxt">Esta actividad no está abierta en este momento.</p>
+  </div>
+
+  <!-- REGLAS -->
+  <div id="scrAviso" class="card hide">
+    <div class="aviso">
+      <h3><i class="ti ti-alert-triangle"></i> Antes de comenzar — Reglas del examen</h3>
+      <p>Este examen se evalúa automáticamente. Lee con atención antes de continuar:</p>
+      <h4>Un solo intento</h4>
+      <ul><li>Una vez enviado el examen no podrás modificarlo ni volver a enviarlo por tu cuenta.</li></ul>
+      <h4>Tiempo límite</h4>
+      <ul><li>Tienes un tiempo límite para completar el examen, visible en el cronómetro de la pantalla. Cuando quede poco tiempo, el cronómetro se pondrá en rojo como aviso. Si el tiempo se agota, tu examen se entregará automáticamente con lo que tengas guardado en ese momento.</li></ul>
+      <h4>No cambiar de pestaña</h4>
+      <ul><li>Cambiar de pestaña o minimizar la ventana genera una advertencia <b>con descuento de puntos</b>: la 1ª resta 3 puntos, la 2ª resta 5 puntos adicionales y la 3ª resta 10 puntos adicionales. Al llegar a <b>3 advertencias</b> tu examen se entrega automáticamente, con esos puntos ya descontados de tu nota final.</li></ul>
+      <h4>No ayudar a tus compañeros</h4>
+      <ul><li>Este examen es individual. Ayudar a un compañero o recibir ayuda durante el examen resta puntos de tu calificación final.</li></ul>
+      <h4>Evaluación automática</h4>
+      <ul><li>El sistema valida tus respuestas en tiempo real. Al terminar o al agotarse el tiempo, tu calificación se genera automáticamente al instante.</li></ul>
+      <label class="chk"><input type="checkbox" id="chkAviso" onchange="document.getElementById('btnEmpezar').disabled=!this.checked"> Entiendo las reglas y estoy listo para comenzar el examen.</label>
+    </div>
+    <button class="btn primary block" id="btnEmpezar" disabled onclick="iniciarExamen()"><i class="ti ti-player-play"></i> Comenzar examen</button>
+  </div>
+
+  <!-- EXAMEN -->
+  <div id="scrExamen" class="hide">
+    <div class="exbar">
+      <div class="chip"><i class="ti ti-clock"></i><span class="timer" id="timer">45:00</span></div>
+      <div class="chip"><i class="ti ti-checklist"></i><b id="cntResp">0</b>/<span id="cntTot">35</span> respondidas</div>
+      <div class="chip" id="advChip"><i class="ti ti-alert-triangle"></i><span id="advCount">0 advertencias</span></div>
+      <div class="sp"></div>
+      <div class="chip"><i class="ti ti-cloud-check"></i><span id="guardadoTxt">—</span></div>
+      <button class="btn action" onclick="pedirEntrega()"><i class="ti ti-send"></i> Entregar</button>
+    </div>
+    <div class="progbar"><div id="progFill"></div></div>
+    <div class="exgrid">
+      <div class="qcard" id="qcard">
+        <div class="qmeta"><span id="qNum"></span><span class="qtema" id="qTema"></span></div>
+        <div class="qtxt" id="qTxt"></div>
+        <div id="qOpts"></div>
+        <div class="qnav">
+          <span class="lockhint"><i class="ti ti-lock"></i> Al presionar «Siguiente» no podrás volver a cambiar tu respuesta.</span>
+          <button class="btn primary" id="btnNext" onclick="mover(1)" disabled>Siguiente <i class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+      <div class="mapcard">
+        <h4><i class="ti ti-layout-grid"></i> Mapa de preguntas</h4>
+        <div class="map" id="mapa"></div>
+        <div class="legend">Verde = respondida · Borde azul = pregunta actual. Solo se avanza hacia adelante: una vez que presionas «Siguiente», la respuesta queda registrada.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="scrResultado" class="card hide">
+    <span class="badge"><i class="ti ti-checklist"></i> <span id="resBadgeTxt">Evaluación automática</span></span>
+    <h1 class="tt">Examen Trimestral — Resultado</h1>
+    <div style="text-align:center;margin:10px 0 18px;">
+      <p style="color:var(--tx2);font-size:12px;text-transform:uppercase;font-family:'Chakra Petch';letter-spacing:1px;">Nota final (escala 1.0 – 5.0)</p>
+      <div class="nota-grande" id="gNota">—</div>
+      <p style="color:var(--tx2);font-size:14px;margin-top:6px;" id="resCalif"></p>
+      <div id="resTier"></div>
+    </div>
+    <div id="resPen"></div>
+    <div class="game-row">
+      <div class="game-chip"><div class="gv" id="gOk">0</div><div class="gl">Correctas</div></div>
+      <div class="game-chip"><div class="gv" id="gEr">0</div><div class="gl">Incorrectas</div></div>
+      <div class="game-chip"><div class="gv" id="gNa">0</div><div class="gl">Sin responder</div></div>
+      <div class="game-chip"><div class="gv" id="gXp">0</div><div class="gl">XP ganado</div></div>
+      <div class="game-chip"><div class="gv" id="gCoins">0</div><div class="gl">Monedas</div></div>
+    </div>
+    <div class="sec-h"><i class="ti ti-chart-bar"></i> Tu desempeño por tema</div>
+    <table class="tt2"><thead><tr><th>Tema</th><th style="text-align:right">Correctas</th><th style="text-align:right">%</th></tr></thead><tbody id="resTemas"></tbody></table>
+    <div class="sec-h"><i class="ti ti-message-2"></i> Retroalimentación</div>
+    <div class="obs-box" id="resFeedback">—</div>
+    <a class="btn primary block" style="margin-top:20px;text-decoration:none" href="../index.html"><i class="ti ti-arrow-left"></i> Volver al aula</a>
+  </div>
+</div>
+
+<!-- TOAST ADVERTENCIA -->
+<div class="toast" id="toastAdv"><b id="toastTit"></b><span id="toastTxt"></span><br><button class="btn" onclick="cerrarToast()">Entendido</button></div>
+
+<!-- MODAL ENTREGA -->
+<div class="mbg" id="mbgEntrega"><div class="modal">
+  <h3><i class="ti ti-send"></i> ¿Entregar el examen?</h3>
+  <p id="entregaTxt"></p>
+  <div class="row">
+    <button class="btn" onclick="cerrarEntrega()">Seguir revisando</button>
+    <button class="btn action" onclick="confirmarEntrega()">Sí, entregar</button>
+  </div>
+</div></div>
+
+<footer><div><i class="ti ti-shield-lock"></i> Aula Virtual IFN — <b>Prof. Mario Carrasco</b></div></footer>
+
+<script src="../config.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+
+// ============================================================
+// CONFIGURACIÓN DEL EXAMEN (ajusta aquí si lo necesitas)
+// ============================================================
+const ACT_ID = 'examen-ciberseguridad-t3';
+const VALOR_TOTAL = 70;          // puntos totales del examen
+const PTS_PREG = 2;              // puntos por pregunta (35 preguntas x 2 = 70)
+const DURACION_MS = 45*60*1000;  // 45 minutos (igual que el Laboratorio 6; no se menciona el número en las reglas)
+const LIMITE_ADVERTENCIAS = 3;
+const DEDUCCIONES = [3, 5, 10];  // puntos que se descuentan en la 1ª, 2ª y 3ª advertencia
+
+// ============================================================
+// BANCO DE PREGUNTAS — basado en los 3 PDF de Ciberseguridad
+// En "o" la PRIMERA opción es siempre la correcta; el examen
+// mezcla el orden de las preguntas y de las opciones por estudiante.
+// ============================================================
+const T1 = 'Parte 1 · Historia 1971–1988';
+const T2 = 'Parte 2 · Conceptos y 1999–2000';
+const T3 = 'Parte 3 · Conceptos y 2001–2015';
+const PREGUNTAS = [
+  // ---------- PARTE 1 (10) ----------
+  { tema:T1, q:'¿Cuál es la mejor definición de ciberseguridad?',
+    o:['Conjunto de medidas, técnicas, herramientas y buenas prácticas para proteger equipos, redes, sistemas y datos frente a accesos no autorizados, ataques, daños o robos.',
+       'Programa que elimina únicamente los virus de una computadora.',
+       'Conjunto de leyes que prohíbe usar Internet sin autorización.',
+       'Técnica para aumentar la velocidad de las redes y de los sistemas.'] },
+  { tema:T1, q:'¿Quién creó Creeper en 1971 y en qué red funcionaba?',
+    o:['Bob H. Thomas; ARPANET.', 'Robert Tappan Morris; ARPANET.', 'Bob H. Thomas; la red telefónica pública.', 'John Draper; Internet comercial.'] },
+  { tema:T1, q:'Un programa se desplazaba de una computadora a otra dentro de una red y mostraba el mensaje “I’M THE CREEPER: CATCH ME IF YOU CAN”. ¿Cuál era su propósito original?',
+    o:['Era un experimento para demostrar que un programa podía desplazarse entre computadoras conectadas en una red.',
+       'Robar información bancaria de los usuarios.',
+       'Destruir los archivos de las computadoras de ARPANET.',
+       'Exigir un pago para devolver el acceso a los archivos.'] },
+  { tema:T1, q:'¿A qué se refiere el fenómeno conocido como phreaking?',
+    o:['A la exploración y manipulación de los sistemas telefónicos, aprovechando sus vulnerabilidades.',
+       'Al envío masivo de correos electrónicos con archivos infectados.',
+       'Al cifrado de archivos para exigir un rescate.',
+       'A la instalación de firewalls en las redes de las empresas.'] },
+  { tema:T1, q:'En 1983, un grupo de jóvenes de Milwaukee conocido como los 414s accedió a sistemas de organizaciones importantes usando computadoras, módems y líneas telefónicas. ¿Qué demostró este caso?',
+    o:['Que una persona podía utilizar una conexión remota para intentar acceder a sistemas ubicados a grandes distancias.',
+       'Que los sistemas informáticos no podían ser accedidos desde fuera de la organización.',
+       'Que los gusanos informáticos podían propagarse por correo electrónico.',
+       'Que las líneas telefónicas no podían utilizarse para conectar computadoras.'] },
+  { tema:T1, q:'¿Por qué fue importante el Computer Fraud and Abuse Act (CFAA) de 1986?',
+    o:['Porque demostró que la protección de los sistemas no dependía solo de la tecnología, sino también de leyes que establecieran responsabilidades y consecuencias.',
+       'Porque fue el primer antivirus comercial para ARPANET.',
+       'Porque fue el nombre del gusano que se propagó en 1986.',
+       'Porque obligó a cifrar todos los mensajes enviados por Internet.'] },
+  { tema:T1, q:'¿Qué tipo de malware fue el Morris Worm de 1988?',
+    o:['Un gusano informático, capaz de propagarse automáticamente por una red.',
+       'Un troyano que aparentaba ser un programa legítimo.',
+       'Un ransomware que cifraba los archivos.',
+       'Un macrovirus que infectaba documentos de Word.'] },
+  { tema:T1, q:'¿Por qué el Morris Worm se propagó mucho más de lo previsto?',
+    o:['Por un error en su diseño, que hizo que se reprodujera más de lo que su creador esperaba.',
+       'Porque fue diseñado para destruir toda la información de Internet.',
+       'Porque usaba macros de documentos de Word.',
+       'Porque cifraba los archivos y exigía un pago.'] },
+  { tema:T1, q:'Aproximadamente, ¿a cuántas computadoras afectó el Morris Worm?',
+    o:['Aproximadamente 6,000 computadoras.', 'Aproximadamente 60 computadoras.', 'Aproximadamente 600,000 computadoras.', 'Más de 6 millones de computadoras.'] },
+  { tema:T1, q:'Robert Tappan Morris fue condenado tras la propagación de su gusano. ¿Bajo qué legislación?',
+    o:['La legislación informática estadounidense.', 'La legislación informática de Filipinas.', 'Ninguna: los cargos fueron retirados.', 'Una ley internacional contra el spam.'] },
+
+  // ---------- PARTE 2 (12) ----------
+  { tema:T2, q:'¿Qué es el malware?',
+    o:['Software malicioso que puede realizar acciones perjudiciales o no autorizadas.',
+       'Software legítimo que protege la red contra intrusos.',
+       'Conjunto de instrucciones que automatiza tareas dentro de una aplicación.',
+       'Equipo que coordina la respuesta ante incidentes informáticos.'] },
+  { tema:T2, q:'¿Cuál es la diferencia principal entre un virus y un gusano informático?',
+    o:['El virus se incorpora a un huésped (como un archivo o programa) para propagarse; el gusano se propaga automáticamente entre sistemas, especialmente por redes.',
+       'El virus se propaga automáticamente por redes; el gusano necesita un archivo huésped.',
+       'El virus solo afecta a los celulares y el gusano solo a las computadoras.',
+       'No hay ninguna diferencia: son exactamente lo mismo.'] },
+  { tema:T2, q:'Recibes un mensaje de un supuesto compañero que te pide abrir un archivo y “no mostrárselo a nadie”. Esa técnica de manipulación psicológica para que revelemos información o ejecutemos una acción se llama:',
+    o:['Ingeniería social.', 'Cifrado.', 'Autorización.', 'Propagación.'] },
+  { tema:T2, q:'¿Qué es una vulnerabilidad?',
+    o:['Una debilidad en un sistema, programa, configuración o proceso que puede ser aprovechada para comprometer la seguridad.',
+       'Un ataque que satura un servicio con tráfico.',
+       'Un programa que detecta y bloquea malware.',
+       'Un registro de las actividades realizadas en un sistema.'] },
+  { tema:T2, q:'¿Qué es el CERT y cuándo se creó?',
+    o:['Un equipo creado después del gusano Morris para coordinar la respuesta ante incidentes, compartir alertas y ayudar a proteger los sistemas.',
+       'Una ley estadounidense aprobada en 1986 contra los delitos informáticos.',
+       'Un gusano informático que apareció en 1988.',
+       'Un certificado digital utilizado para cifrar correos.'] },
+  { tema:T2, q:'¿Cuál es la función de un CSIRT dentro de una organización?',
+    o:['Detectar, analizar y atender ataques o vulnerabilidades como equipo de respuesta a incidentes de seguridad informática.',
+       'Instalar el antivirus en todas las computadoras nuevas.',
+       'Cifrar los correos electrónicos de los empleados.',
+       'Definir las reglas de filtrado de un firewall.'] },
+  { tema:T2, q:'¿Cómo se propagaba el virus Melissa (1999)?',
+    o:['Mediante documentos de Word con macros que, al abrirse, se enviaban a los primeros 50 contactos de Outlook.',
+       'Mediante memorias USB infectadas que cifraban los archivos.',
+       'Mediante páginas web falsas que pedían contraseñas bancarias.',
+       'Saturando servidores con una gran cantidad de tráfico.'] },
+  { tema:T2, q:'¿Qué aprovechó Melissa para que sus mensajes parecieran confiables?',
+    o:['La confianza entre compañeros y contactos: el mensaje parecía provenir de una persona conocida.',
+       'Una vulnerabilidad en los servidores de bases de datos SQL.',
+       'Un error de diseño en la red ARPANET.',
+       'La ausencia de contraseñas en las cuentas de correo.'] },
+  { tema:T2, q:'¿Por qué el gusano ILOVEYOU (2000) se propagó tan rápidamente?',
+    o:['Porque muchas personas pensaron que realmente habían recibido una carta de amor y abrieron el archivo.',
+       'Porque aprovechaba una vulnerabilidad de servidores sin que nadie abriera nada.',
+       'Porque cifraba los archivos y exigía un pago.',
+       'Porque solo afectaba a computadoras desconectadas de Internet.'] },
+  { tema:T2, q:'Los cargos contra Onel de Guzman, creador de ILOVEYOU, fueron retirados porque:',
+    o:['En ese momento Filipinas no tenía una legislación específica para perseguir ese tipo de delito informático.',
+       'Se demostró que el gusano había sido un accidente.',
+       'Las autoridades nunca lograron identificarlo.',
+       'Las víctimas retiraron sus denuncias.'] },
+  { tema:T2, q:'¿Cuál de las siguientes acciones NO corresponde al gusano ILOVEYOU?',
+    o:['Cifrar los archivos de la víctima y exigir un pago para recuperarlos.',
+       'Enviarse automáticamente a los contactos de Outlook.',
+       'Dañar archivos del equipo infectado.',
+       'Intentar robar contraseñas.'] },
+  { tema:T2, q:'¿Qué tienen en común Melissa e ILOVEYOU?',
+    o:['Ambos se propagaron por correo electrónico aprovechando la confianza y la curiosidad de los usuarios.',
+       'Ambos cifraban los archivos y exigían un rescate.',
+       'Ambos aprovechaban una vulnerabilidad de servidores SQL.',
+       'Ambos fueron creados antes de 1980.'] },
+
+  // ---------- PARTE 3 (13) ----------
+  { tema:T3, q:'¿Qué componentes forman la tríada CIA de la seguridad de la información?',
+    o:['Confidencialidad, Integridad y Disponibilidad.', 'Control, Identidad y Acceso.', 'Cifrado, Información y Autenticación.', 'Confianza, Integración y Actualización.'] },
+  { tema:T3, q:'Un sistema te pide usuario y contraseña para verificar quién eres y, luego, solo te permite ver tus propias notas. ¿Qué conceptos se aplican?',
+    o:['Autenticación al ingresar y autorización al limitar lo que puedes ver.',
+       'Autorización al ingresar y autenticación al limitar lo que puedes ver.',
+       'Cifrado al ingresar y firewall al limitar lo que puedes ver.',
+       'Phishing al ingresar y ransomware al limitar lo que puedes ver.'] },
+  { tema:T3, q:'Una empresa convierte su información en un formato que no puede entenderse sin la clave correspondiente. ¿Qué técnica está usando?',
+    o:['Cifrado.', 'Firewall.', 'Registro de eventos (logs).', 'Ingeniería social.'] },
+  { tema:T3, q:'¿Qué herramienta controla y filtra el tráfico de red según reglas establecidas?',
+    o:['El firewall.', 'El antivirus.', 'El parche de seguridad.', 'El registro de eventos (logs).'] },
+  { tema:T3, q:'Un gusano como Code Red aprovechaba una vulnerabilidad de servidores con Windows. ¿Qué medida corrige este tipo de vulnerabilidad?',
+    o:['Instalar el parche de seguridad, que es una actualización que corrige vulnerabilidades.',
+       'Desactivar el registro de eventos (logs) del servidor.',
+       'Aumentar la cantidad de tráfico de la red.',
+       'Enviar la contraseña del administrador por correo electrónico.'] },
+  { tema:T3, q:'Recibes un correo que imita a tu banco y te pide “confirmar” tus datos en un enlace. Esta técnica de engaño para obtener información o provocar una acción se llama:',
+    o:['Phishing.', 'Botnet.', 'Firewall.', 'Autorización.'] },
+  { tema:T3, q:'Zeus (2007) es un troyano. ¿Cuál era su objetivo principal?',
+    o:['Robar información financiera, como credenciales y datos de servicios bancarios en línea.',
+       'Saturar servidores con tráfico masivo.',
+       'Afectar sistemas industriales y procesos físicos.',
+       'Cifrar archivos y exigir un pago por recuperarlos.'] },
+  { tema:T3, q:'CryptoLocker (2013) cifraba los archivos de las víctimas y luego los atacantes exigían un pago. ¿Qué tipo de malware es?',
+    o:['Ransomware.', 'Troyano bancario.', 'Gusano de correo electrónico.', 'Macrovirus.'] },
+  { tema:T3, q:'Conficker (2008) mostró que miles o millones de equipos podían usarse en conjunto, controlados de forma remota, sin que sus dueños lo supieran. ¿Cómo se llama ese conjunto de dispositivos infectados?',
+    o:['Botnet.', 'Firewall.', 'CSIRT.', 'Registro de eventos (logs).'] },
+  { tema:T3, q:'¿Qué demostró el caso de SQL Slammer (2003)?',
+    o:['Que el tamaño de un programa malicioso no determina necesariamente el alcance de sus efectos: siendo extremadamente pequeño, congestionó redes.',
+       'Que solo los programas grandes pueden causar daños importantes.',
+       'Que el correo electrónico es el único medio de propagación.',
+       'Que los gusanos no pueden aprovechar vulnerabilidades de servidores.'] },
+  { tema:T3, q:'¿Qué hizo diferente a Stuxnet (2010) respecto de los casos anteriores?',
+    o:['Estaba diseñado para afectar sistemas industriales, llegando a influir sobre procesos físicos controlados por sistemas informáticos.',
+       'Fue el primer virus que se propagó por correo electrónico.',
+       'Fue creado solo para robar contraseñas de Outlook.',
+       'Se limitaba a mostrar mensajes en la pantalla sin causar efectos.'] },
+  { tema:T3, q:'¿Cómo evolucionó Emotet entre 2014 y 2015?',
+    o:['Inició robando información bancaria y se convirtió en una herramienta de entrada para otras amenazas, como troyanos y ransomware.',
+       'Empezó como ransomware y terminó como un antivirus.',
+       'Siempre fue un firewall con fallas de configuración.',
+       'Solo atacaba sistemas industriales aislados de Internet.'] },
+  { tema:T3, q:'¿Por qué el gusano Nimda (2001) destacó entre los programas maliciosos de su época?',
+    o:['Porque usaba diferentes métodos de propagación: correo electrónico, redes y vulnerabilidades de servidores.',
+       'Porque solo se propagaba mediante documentos de Word con macros.',
+       'Porque cifraba los archivos y exigía un rescate.',
+       'Porque fue creado para afectar únicamente sistemas industriales.'] }
+];
+const TOTAL_PREG = PREGUNTAS.length; // 35
+
+// ============================================================
+// UTILIDADES — orden determinístico por código de estudiante
+// (cada estudiante ve un orden distinto, y si recarga ve el mismo)
+// ============================================================
+function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return((t^t>>>14)>>>0)/4294967296; }; }
+function mezclar(arr, seed){
+  const a=arr.slice(), r=rng(seed);
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function construirExamen(cod){
+  return mezclar(PREGUNTAS.map((_,i)=>i), hashStr(cod+'|orden')).map(i=>({
+    id:i, tema:PREGUNTAS[i].tema, q:PREGUNTAS[i].q,
+    opts: mezclar(PREGUNTAS[i].o.map((_,k)=>k), hashStr(cod+'|'+i))   // índices originales (0 = correcta)
+  }));
+}
+function notaMeduca(obtenido, total){
+  const n = (4*obtenido/total) + 1;
+  return Math.min(5, Math.max(1, Math.round(n*10)/10));
+}
+
+// ============================================================
+// ESTADO
+// ============================================================
+let EST = null, ORDEN = [], respuestas = {}, idx = 0, idxInicial = 0;
+let advertencias = 0, penalizacionTotal = 0, bitacora = [];
+let horaInicioMs = null, targetTime = null, timerInterval = null;
+let actAbierta = true, actConfig = {};
+let enExamen = false, _entregando = false, dirty = false, saveT = null, _ultimaSalida = 0;
+
+function show(id){
+  ['scrLogin','scrSoon','scrAviso','scrExamen','scrResultado'].forEach(s=>$(s).classList.add('hide'));
+  $(id).classList.remove('hide');
+  enExamen = (id==='scrExamen');
+  window.scrollTo(0,0);
+}
+function log(accion){
+  const hora = new Date().toLocaleTimeString('es-PA',{hour:'2-digit',minute:'2-digit',timeZone:'America/Panama'});
+  bitacora.push({hora, accion}); dirty = true;
+}
+
+// ============================================================
+// LOGIN Y DISPONIBILIDAD (igual que el resto de actividades del aula)
+// ============================================================
+window.login = async () => {
+  const cod = $('inCod').value.trim().toUpperCase();
+  const m = $('msgLogin');
+  if(!cod){ m.className='msg err'; m.textContent='Ingresa tu código.'; return; }
+  const btn = $('btnLogin'); btn.disabled = true;
+  m.className='msg warn'; m.innerHTML = '<span class="spin"></span> Verificando…';
+
+  if((typeof CODIGO_DEMO !== 'undefined' && cod === CODIGO_DEMO) || cod === 'DEMO-2026'){
+    const base = (typeof ESTUDIANTE_DEMO !== 'undefined') ? ESTUDIANTE_DEMO : { nombre:'Profesor (Demo)', grado:'Admin' };
+    EST = { codigo:cod, ...base, demo:true };
+    await verificarEstado();
+    btn.disabled = false;
+    await despuesLogin();
+    return;
+  }
+  try{
+    const snap = await getDoc(doc(db,'estudiantes',cod));
+    if(!snap.exists()){ m.className='msg err'; m.textContent='Código no reconocido.'; btn.disabled=false; return; }
+    const d = snap.data();
+    EST = { codigo:cod, nombre:d.nombre||'Estudiante', grado:d.grado||'—' };
+    await verificarEstado();
+    let yaTiene = false;
+    try{ const sr = await getDoc(doc(db,'actividades',ACT_ID,'resultados',cod)); yaTiene = sr.exists(); }catch(e){}
+    if(!yaTiene){
+      const dispo = actividadDisponible();
+      if(!dispo.ok){ m.className='msg warn'; m.textContent=dispo.msg; btn.disabled=false; return; }
+    }
+    btn.disabled = false;
+    await despuesLogin();
+  }catch(e){
+    m.className='msg err'; m.textContent='Error de conexión.'; btn.disabled=false;
+  }
+};
+async function verificarEstado(){
+  try{ const s = await getDoc(doc(db,'actividades',ACT_ID)); actConfig = s.exists() ? s.data() : {}; }
+  catch(e){ actConfig = {}; }
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  actAbierta = gc.abierta !== undefined ? gc.abierta : (actConfig.abierta !== false);
+}
+function actividadDisponible(){
+  if(!actAbierta) return {ok:false, msg:'Este examen está cerrado por tu docente en este momento.'};
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const apertura = gc.apertura || actConfig.apertura;
+  const cierre = gc.cierre || actConfig.cierre;
+  const ahora = new Date();
+  if(apertura && new Date(apertura) > ahora) return {ok:false, msg:'Este examen abre el '+new Date(apertura).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  if(cierre && new Date(cierre) < ahora) return {ok:false, msg:'Este examen cerró el '+new Date(cierre).toLocaleString('es-PA',{timeZone:'America/Panama'})+'.'};
+  return {ok:true};
+}
+async function despuesLogin(){
+  let r = null;
+  try{ const s = await getDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo)); if(s.exists()) r = s.data(); }catch(e){}
+  if(r && r.entregado){ mostrarResultadoGuardado(r); return; }
+  ORDEN = construirExamen(EST.codigo);
+  // Intento en progreso (sincronizado desde Firestore: sirve desde cualquier dispositivo).
+  // Si el docente lo reinició desde el panel (había horaEntrega y entregado=false) se empieza de cero.
+  if(r && r.horaInicio && !r.horaEntrega){
+    horaInicioMs = r.horaInicio;
+    respuestas = r.respuestas || {};
+    bitacora = r.bitacora || [];
+    advertencias = r.advertencias || 0;
+    penalizacionTotal = r.penalizacionTotal || 0;
+    idxInicial = Math.min(TOTAL_PREG-1, Math.max(0, r.indiceActual || 0));
+    arrancarExamen();
+    return;
+  }
+  show('scrAviso');
+}
+
+// ============================================================
+// EXAMEN
+// ============================================================
+window.iniciarExamen = () => {
+  horaInicioMs = Date.now();
+  respuestas = {}; bitacora = []; advertencias = 0; penalizacionTotal = 0; idxInicial = 0;
+  log('Inició el examen.');
+  guardarProgreso();
+  arrancarExamen();
+};
+function arrancarExamen(){
+  idx = idxInicial;
+  calcularTargetTime();
+  $('cntTot').textContent = TOTAL_PREG;
+  construirMapa();
+  actualizarAdvUI();
+  show('scrExamen');
+  pintarPregunta();
+  actualizarContadores();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(tick, 1000);
+  tick();
+}
+// Igual que el Laboratorio 6: si el docente fijó una hora de cierre en el panel, manda esa hora;
+// si no, el tiempo es hora de inicio + duración.
+function calcularTargetTime(){
+  const k = 'g_'+(EST.grado||'').replace(/[°\s]/g,'');
+  const gc = actConfig[k]||{};
+  const cierrePanel = gc.cierre || actConfig.cierre;
+  targetTime = cierrePanel ? new Date(cierrePanel).getTime() : horaInicioMs + DURACION_MS;
+}
+function tick(){
+  const rem = targetTime - Date.now();
+  if(rem <= 0){ clearInterval(timerInterval); $('timer').textContent='00:00'; forzarCierre('Tiempo agotado. Enviando tu examen automáticamente…'); return; }
+  const m = Math.floor(rem/60000), s = Math.floor((rem%60000)/1000);
+  $('timer').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  $('timer').classList.toggle('low', rem <= 5*60*1000);   // en rojo cuando faltan 5 minutos
+}
+function pintarPregunta(){
+  const q = ORDEN[idx];
+  $('qNum').textContent = 'Pregunta '+(idx+1)+' de '+TOTAL_PREG+' · '+PTS_PREG+' puntos';
+  $('qTema').textContent = q.tema;
+  $('qTxt').textContent = q.q;
+  const cont = $('qOpts'); cont.innerHTML = '';
+  q.opts.forEach((orig,pos)=>{
+    const b = document.createElement('button');
+    b.className = 'opt'+(respuestas[q.id]===orig?' sel':'');
+    b.innerHTML = '<span class="let">'+'ABCD'[pos]+'</span><span></span>';
+    b.lastChild.textContent = PREGUNTAS[q.id].o[orig];
+    b.onclick = ()=>responder(q.id, orig);
+    cont.appendChild(b);
+  });
+  const ultima = idx===TOTAL_PREG-1;
+  $('btnNext').innerHTML = ultima ? '<i class="ti ti-send"></i> Finalizar y entregar' : 'Siguiente <i class="ti ti-arrow-right"></i>';
+  $('btnNext').disabled = respuestas[q.id]===undefined;   // hay que elegir una respuesta para continuar
+  document.querySelectorAll('#mapa button').forEach((b,i)=>b.classList.toggle('cur', i===idx));
+}
+function responder(id, orig){
+  respuestas[id] = orig; dirty = true;
+  pintarPregunta(); actualizarContadores();
+  clearTimeout(saveT); saveT = setTimeout(guardarProgreso, 700);
+}
+// Solo se avanza: al presionar «Siguiente» la respuesta queda bloqueada y no se puede volver atrás.
+window.mover = d => {
+  if(d<=0 || respuestas[ORDEN[idx].id]===undefined) return;
+  if(idx===TOTAL_PREG-1){ pedirEntrega(); return; }
+  idx++; dirty = true;
+  pintarPregunta(); guardarProgreso();
+  window.scrollTo(0,0);
+};
+function construirMapa(){
+  const mp = $('mapa'); mp.innerHTML='';
+  ORDEN.forEach((q,i)=>{
+    const b = document.createElement('button'); b.textContent = i+1; b.tabIndex = -1;
+    mp.appendChild(b);
+  });
+}
+function actualizarContadores(){
+  const n = ORDEN.filter(q=>respuestas[q.id]!==undefined).length;
+  $('cntResp').textContent = n;
+  $('progFill').style.width = (n/TOTAL_PREG*100)+'%';
+  document.querySelectorAll('#mapa button').forEach((b,i)=>b.classList.toggle('resp', respuestas[ORDEN[i].id]!==undefined));
+}
+
+// ============================================================
+// GUARDADO AUTOMÁTICO (sincroniza con el panel del docente)
+// ============================================================
+async function guardarProgreso(){
+  if(!EST || _entregando) return;
+  try{
+    await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo),{
+      nombre:EST.nombre, grado:EST.grado, entregado:false,
+      horaInicio:horaInicioMs, respuestas, bitacora, advertencias, penalizacionTotal,
+      respondidas: Object.keys(respuestas).length, indiceActual: idx, ultimoGuardado: Date.now()
+    },{merge:true});
+    $('guardadoTxt').textContent = 'Guardado '+new Date().toLocaleTimeString('es-PA',{hour:'2-digit',minute:'2-digit',timeZone:'America/Panama'});
+    dirty = false;
+  }catch(e){ $('guardadoTxt').textContent = 'Sin conexión…'; }
+}
+setInterval(()=>{ if(dirty && EST && enExamen && !_entregando) guardarProgreso(); }, 15000);
+
+// ============================================================
+// ANTI-SALIDA — 3 advertencias con descuento de puntos
+// ============================================================
+function registrarSalida(motivo){
+  if(!enExamen || _entregando) return;
+  const ahora = Date.now();
+  if(ahora - _ultimaSalida < 1500) return;
+  _ultimaSalida = ahora;
+  advertencias++;
+  const descuento = DEDUCCIONES[Math.min(advertencias, DEDUCCIONES.length)-1];
+  penalizacionTotal += descuento;
+  log('⚠ '+motivo+'. Advertencia '+advertencias+'/'+LIMITE_ADVERTENCIAS+' (-'+descuento+' pts, total -'+penalizacionTotal+' pts).');
+  actualizarAdvUI();
+  guardarProgreso();
+  if(advertencias >= LIMITE_ADVERTENCIAS){
+    mostrarToast('Límite de advertencias alcanzado','Llegaste a '+LIMITE_ADVERTENCIAS+' advertencias por salir de esta pantalla. Se te descontaron '+descuento+' puntos adicionales (total acumulado: -'+penalizacionTotal+' pts). Tu examen se entregará automáticamente ahora mismo con las respuestas que tengas marcadas.');
+    _entregando = true;
+    setTimeout(()=>entregar(true), 2200);
+  }else{
+    mostrarToast('Advertencia '+advertencias+' de '+LIMITE_ADVERTENCIAS,'Cambiaste de pestaña o minimizaste la ventana. Se te descontaron '+descuento+' puntos de tu calificación final (total acumulado: -'+penalizacionTotal+' pts). Evita volver a salir.');
+  }
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) registrarSalida('Cambió de pestaña / minimizó la ventana'); });
+function actualizarAdvUI(){
+  $('advCount').textContent = advertencias+' advertencia'+(advertencias===1?'':'s')+(penalizacionTotal?' (-'+penalizacionTotal+' pts)':'');
+  $('advChip').style.color = advertencias ? '#ff7b72' : '';
+}
+window.mostrarToast = (t,x)=>{ $('toastTit').textContent=t; $('toastTxt').textContent=x; $('toastAdv').classList.add('on'); };
+window.cerrarToast = ()=>$('toastAdv').classList.remove('on');
+
+// Bloqueos anti-copia (la cuenta Demo del docente queda libre)
+['copy','cut','paste','contextmenu','dragstart'].forEach(ev=>document.addEventListener(ev, e=>{ if(enExamen && !(EST&&EST.demo)) e.preventDefault(); }));
+document.addEventListener('keydown', e=>{
+  if(enExamen && !(EST&&EST.demo) && (e.ctrlKey||e.metaKey) && ['c','x','v','p','s','u','a'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+// ============================================================
+// ENTREGA Y CALIFICACIÓN AUTOMÁTICA
+// ============================================================
+window.pedirEntrega = ()=>{
+  const n = ORDEN.filter(q=>respuestas[q.id]!==undefined).length, falta = TOTAL_PREG-n;
+  $('entregaTxt').innerHTML = 'Has respondido <b>'+n+' de '+TOTAL_PREG+'</b> preguntas.'+(falta?' <b style="color:#e3b341">Te faltan '+falta+' sin responder.</b>':'')+' Una vez entregado no podrás modificar tus respuestas.';
+  $('mbgEntrega').classList.add('on');
+};
+window.cerrarEntrega = ()=>$('mbgEntrega').classList.remove('on');
+window.confirmarEntrega = ()=>{ cerrarEntrega(); entregar(false); };
+function forzarCierre(){ if(_entregando) return; _entregando = true; entregar(true); }
+
+async function entregar(automatico){
+  _entregando = true; clearInterval(timerInterval); clearTimeout(saveT);
+  cerrarEntrega();
+  let ok=0, er=0, na=0; const porTema = {};
+  ORDEN.forEach(q=>{
+    const t = porTema[q.tema] || (porTema[q.tema]={ok:0,total:0});
+    t.total++;
+    const r = respuestas[q.id];
+    if(r===undefined) na++; else if(r===0){ ok++; t.ok++; } else er++;
+  });
+  const puntosBrutos = ok*PTS_PREG;
+  const puntosFinal = Math.max(0, puntosBrutos - penalizacionTotal);
+  const nota = notaMeduca(puntosFinal, VALOR_TOTAL);
+  const xp = puntosFinal*30, monedas = puntosFinal*5;
+  const pct = Math.round(puntosFinal/VALOR_TOTAL*100);
+  const horaEntrega = Date.now();
+  const tiempoUsado = Math.min(Math.round((horaEntrega-horaInicioMs)/1000), Math.round(DURACION_MS/1000));
+  log(automatico ? 'Examen entregado automáticamente.' : 'Examen entregado por el estudiante.');
+  const datos = {
+    nombre:EST.nombre, grado:EST.grado, entregado:true, horaEntrega, horaInicio:horaInicioMs, tiempoUsado,
+    respuestas, bitacora, advertencias, penalizacionTotal,
+    puntosBrutos, puntosFinal, nota, correctas:ok, incorrectas:er, sinResponder:na, totalPreguntas:TOTAL_PREG,
+    puntaje: puntosFinal+'/'+VALOR_TOTAL, intentos:1, porTema, xp, monedas, entregaAutomatica:!!automatico
+  };
+  try{ await setDoc(doc(db,'actividades',ACT_ID,'resultados',EST.codigo), datos, {merge:true}); }
+  catch(e){ /* si falla la red, igual se muestra el resultado; el panel lo recibirá al reintentar */ }
+  mostrarResultado(datos);
+}
+
+// ============================================================
+// RESULTADO
+// ============================================================
+function mostrarResultadoGuardado(r){ $('resBadgeTxt').textContent='Resultado registrado'; mostrarResultado(r); }
+function mostrarResultado(r){
+  const nota = r.nota, total = VALOR_TOTAL;
+  const pct = Math.round((r.puntosFinal||0)/total*100);
+  const tier = pct>=90?'diamante':pct>=75?'oro':pct>=50?'plata':'bronce';
+  const g = $('gNota'); g.textContent = nota.toFixed(1); g.className = 'nota-grande '+(nota>=3.0?'ap':'re');
+  $('resCalif').textContent = 'Calificación: '+r.puntosFinal+' / '+total+' puntos';
+  $('resTier').innerHTML = '<span class="badge-tier '+tier+'">Insignia '+tier.charAt(0).toUpperCase()+tier.slice(1)+'</span>';
+  $('gOk').textContent = r.correctas; $('gEr').textContent = r.incorrectas; $('gNa').textContent = r.sinResponder;
+  $('gXp').textContent = r.xp||0; $('gCoins').textContent = r.monedas||0;
+  $('resPen').innerHTML = r.penalizacionTotal
+    ? '<div class="pen-box"><b><i class="ti ti-alert-triangle"></i> Penalización aplicada: -'+r.penalizacionTotal+' puntos</b><br>Saliste de la pantalla del examen '+(r.advertencias||0)+' vez'+((r.advertencias||0)===1?'':'es')+'. Puntaje bruto: '+r.puntosBrutos+'/'+total+' → puntaje final: '+r.puntosFinal+'/'+total+'.</div>' : '';
+  const filas = Object.entries(r.porTema||{}).sort((a,b)=>a[0].localeCompare(b[0])).map(([tema,v])=>{
+    const p = v.total?Math.round(v.ok/v.total*100):0;
+    return '<tr><td></td><td class="r">'+v.ok+' / '+v.total+'</td><td class="r" style="color:'+(p>=60?'var(--ok-tx)':'#ff7b72')+'">'+p+'%</td></tr>';
+  });
+  $('resTemas').innerHTML = filas.join('');
+  Object.entries(r.porTema||{}).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([tema],i)=>{ $('resTemas').children[i].children[0].textContent = tema; });
+  const MOT = {
+    diamante:'¡Excelente trabajo! Dominas los conceptos y la historia de la ciberseguridad.',
+    oro:'¡Muy buen desempeño! Estás cerca de la perfección; repasa los temas con menor porcentaje.',
+    plata:'Buen esfuerzo. Vas por buen camino, pero necesitas reforzar varios temas.',
+    bronce:'Este resultado es bajo. No te desanimes: repasa con calma las tres partes de la guía y consulta tus dudas con el profesor.'
+  };
+  let fb = '<p><b>'+MOT[tier]+'</b></p>';
+  const debiles = Object.entries(r.porTema||{}).filter(([,v])=>v.total && v.ok/v.total<0.6).map(([t])=>t);
+  if(debiles.length) fb += '<p style="margin-top:10px">Te recomendamos repasar: <b>'+debiles.join(' · ')+'</b>.</p>';
+  if(r.entregaAutomatica) fb += '<p style="margin-top:10px;color:var(--oro)">Tu examen se entregó automáticamente (por tiempo agotado o por alcanzar el límite de advertencias).</p>';
+  $('resFeedback').innerHTML = fb;
+  show('scrResultado');
+}
+
+$('inCod').addEventListener('keydown', e=>{ if(e.key==='Enter') window.login(); });
+</script>
+</body>
+</html>
